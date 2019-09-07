@@ -22,8 +22,7 @@
 #' @param percentage A logical. Should max_times and min_times be interpreded 
 #'  as a percentage instead of count.
 #' @param max_tokens An integer. Will only keep the top max_tokens tokens
-#'  after filtering done by max_times and min_times. Defaults to Inf meaning all
-#'  words in training will be used.
+#'  after filtering done by max_times and min_times. Defaults to 100.
 #' @param res The words that will be keep will be stored here once 
 #'  this preprocessing step has be trained by [prep.recipe()].
 #' @param skip A logical. Should the step be skipped when the
@@ -66,10 +65,13 @@
 #' appear too many times or too fews times in the data. It can be specified
 #' as counts using `max_times` and `min_times` or as percentages by setting
 #' `percentage` as `TRUE`. In addition one can filter to only use the top
-#' `max_tokens` used tokens.
+#' `max_tokens` used tokens. If `max_tokens` is set to `Inf` then all the tokens
+#' will be used. This will generally lead to very large datasets when then 
+#' tokens are words or trigrams. A good strategy is to start with a low token 
+#' count and go up according to how much RAM you want to use.
 #' 
-#' It is advised to filter before using [step_tf] or [step_tfidf] to limit
-#' the number of variables created.
+#' It is strongly advised to filter before using [step_tf] or [step_tfidf] to 
+#' limit the number of variables created.
 #' 
 #' @seealso [step_untokenize()]
 #' @importFrom recipes add_step step terms_select sel2char ellipse_check 
@@ -83,16 +85,17 @@ step_tokenfilter <-
            max_times = Inf,
            min_times = 0,
            percentage = FALSE,
-           max_tokens = Inf,
+           max_tokens = 100,
            res = NULL,
            skip = FALSE,
            id = rand_id("tokenfilter")
   ) {
-    
-    if(percentage && (max_times > 1 | max_times < 0 | min_times > 1 | min_times < 0))
+
+    if (percentage && (max_times > 1 | max_times < 0 |
+                      min_times > 1 | min_times < 0))
       stop("`max_times` and `min_times` should be in the interval [0, 1].",
            call. = FALSE)
-      
+
     add_step(
       recipe,
       step_tokenfilter_new(
@@ -112,8 +115,8 @@ step_tokenfilter <-
   }
 
 step_tokenfilter_new <-
-  function(terms, role, trained, columns, max_times, min_times, percentage, max_tokens,
-           res, skip, id) {
+  function(terms, role, trained, columns, max_times, min_times, percentage,
+           max_tokens, res, skip, id) {
     step(
       subclass = "tokenfilter",
       terms = terms,
@@ -133,20 +136,20 @@ step_tokenfilter_new <-
 #' @export
 prep.step_tokenfilter <- function(x, training, info = NULL, ...) {
   col_names <- terms_select(x$terms, info = info)
-  
+
   check_list(training[, col_names])
-  
+
   retain_words <- list()
   n_words <- list()
-  
+
   for (i in seq_along(col_names)) {
     retain_words[[i]] <- tokenfilter_fun(training[, col_names[i], drop = TRUE],
                                         x$max_times, x$min_times, x$max_tokens,
                                         x$percentage)
-    
+
     n_words[[i]] <- length(table(unlist(training[, col_names[i], drop = TRUE])))
   }
-  
+
   step_tokenfilter_new(
     terms = x$terms,
     role = x$role,
@@ -169,31 +172,31 @@ prep.step_tokenfilter <- function(x, training, info = NULL, ...) {
 bake.step_tokenfilter <- function(object, new_data, ...) {
   col_names <- object$columns
   # for backward compat
-  
+
   for (i in seq_along(col_names)) {
-    new_data[, col_names[i]] <- 
-      word_tbl_filter(new_data[, col_names[i], drop = TRUE], 
-                      object$res[[i]], 
+    new_data[, col_names[i]] <-
+      word_tbl_filter(new_data[, col_names[i], drop = TRUE],
+                      object$res[[i]],
                       TRUE)
   }
   new_data <- factor_to_text(new_data, col_names)
-  
+
   as_tibble(new_data)
 }
 
-tokenfilter_fun <- function(data, max_times, min_times, max_features, percentage) {
-
+tokenfilter_fun <- function(data, max_times, min_times, max_features,
+                            percentage) {
   tf <- table(unlist(data))
 
-  if(percentage)
+  if (percentage)
     tf <- tf / sum(tf)
-  
+
   ids <- tf <= max_times & tf >= min_times
-  
-  if(is.infinite(max_features)) {
+
+  if (is.infinite(max_features)) {
     names(sort(tf[ids], decreasing = TRUE))
   } else {
-    if(max_features > sum(ids)) {
+    if (max_features > sum(ids)) {
       warning(paste0("max_features was set to '", max_features,
                      "', but only ", sum(ids), " was available and selected."))
       max_features <- sum(ids)

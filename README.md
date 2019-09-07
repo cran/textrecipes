@@ -3,22 +3,34 @@
 
 # textrecipes
 
+<!-- badges: start -->
+
 [![Travis build
 status](https://travis-ci.org/tidymodels/textrecipes.svg?branch=master)](https://travis-ci.org/tidymodels/textrecipes)
 [![Coverage
 status](https://codecov.io/gh/tidymodels/textrecipes/branch/master/graph/badge.svg)](https://codecov.io/github/tidymodels/textrecipes?branch=master)
-[![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
+[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/textrecipes)](https://CRAN.R-project.org/package=textrecipes)
+[![Downloads](http://cranlogs.r-pkg.org/badges/textrecipes)](https://CRAN.R-project.org/package=textrecipes)
+[![Lifecycle:
+maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
+<!-- badges: end -->
 
 ## Introduction
 
-**textrecipes** contains extra steps for the
+**textrecipes** contain extra steps for the
 [`recipes`](https://CRAN.R-project.org/package=recipes) package for
 preprocessing text data.
 
 ## Installation
 
-textrecipes is not avaliable from [CRAN](https://CRAN.R-project.org)
-yet. But the development version can be downloaded with:
+You can install the released version of textrecipes from
+[CRAN](https://CRAN.R-project.org) with:
+
+``` r
+install.packages("textrecipes")
+```
+
+Install the development version from GitHub with:
 
 ``` r
 require("devtools")
@@ -27,10 +39,10 @@ install_github("tidymodels/textrecipes")
 
 ## Example
 
-In the following example we will go through the steps needed to convert
+In the following example we will go through the steps needed, to convert
 a character variable to the TF-IDF of its tokenized words after removing
-stopwords and limeting ourself to only the 100 most used words. We will
-be conduction this preprosession on the variable `essay0` and `essay1`.
+stopwords, and, limiting ourself to only the 100 most used words. The
+preprocessing will be conducted on the variable `essay0` and `essay1`.
 
 ``` r
 library(recipes)
@@ -69,26 +81,26 @@ str(bake(okc_obj, okc_text), list.len = 15)
 
 ## Type chart
 
-**textrecipes** includes a little departure in design from **recipes**
-in the sense that it allows some input and output to be in the form of
-list columns. To avoind confusion here is a table of steps with their
-expected input and output respectively. Notice how you need to end with
-numeric for future analysis to work.
+**textrecipes** includes a little departure in design from **recipes**,
+in the sense that it allows for some input and output to be in the form
+of list columns. To avoind confusion, here is a table of steps with
+their expected input and output respectively. Notice how you need to end
+with numeric for future analysis to work.
 
-| Step               | Input       | Output      |
-| ------------------ | ----------- | ----------- |
-| `step_tokenize`    | character   | list-column |
-| `step_untokenize`  | list-column | character   |
-| `step_stem`        | list-column | list-column |
-| `step_stopwords`   | list-column | list-column |
-| `step_tokenfilter` | list-column | list-column |
-| `step_tfidf`       | list-column | numeric     |
-| `step_tf`          | list-column | numeric     |
-| `step_texthash`    | list-column | numeric     |
-
-(TODO = Yet to be implemented, bug = correnctly not working, working =
-the step works but still not finished i.e. missing
-document/tests/arguemnts, done = finished)
+| Step                     | Input       | Output      |
+| ------------------------ | ----------- | ----------- |
+| `step_tokenize()`        | character   | list-column |
+| `step_untokenize()`      | list-column | character   |
+| `step_stem()`            | list-column | list-column |
+| `step_stopwords()`       | list-column | list-column |
+| `step_tokenfilter()`     | list-column | list-column |
+| `step_tokenmerge()`      | list-column | list-column |
+| `step_tfidf()`           | list-column | numeric     |
+| `step_tf()`              | list-column | numeric     |
+| `step_texthash()`        | list-column | numeric     |
+| `step_textfeature()`     | character   | numeric     |
+| `step_sequence_onehot()` | character   | numeric     |
+| `step_text2vec()`        | character   | numeric     |
 
 This means that valid sequences includes
 

@@ -14,11 +14,11 @@ rec <- recipe(~ ., data = test_data)
 test_that("hashing gives double outputs", {
   rec <- rec %>%
     step_tokenize(text) %>%
-    step_texthash(text) 
-  
+    step_texthash(text)
+
   obj <- rec %>%
     prep(training = test_data, retain = TRUE)
-    
+
   expect_true(
     juice(obj) %>%
       select(contains("hash")) %>%
@@ -36,7 +36,7 @@ test_that("hashing output width changes accordingly with num_terms", {
     step_tokenize(text) %>%
     step_texthash(text, num_terms = 256) %>%
     prep(training = test_data, retain = TRUE)
-  
+
   expect_equal(
     juice(rec) %>%
       select(contains("hash")) %>%
@@ -45,7 +45,29 @@ test_that("hashing output width changes accordingly with num_terms", {
   )
 })
 
-test_that('printing', {
+test_that("hashing output width changes accordingly with num_terms", {
+  
+  signed <- recipe(~ ., data = test_data) %>%
+    step_tokenize(all_predictors()) %>%
+    step_texthash(all_predictors(), num_terms = 2) %>%
+    prep() %>%
+    juice()
+  
+  unsigned <- recipe(~ ., data = test_data) %>%
+    step_tokenize(all_predictors()) %>%
+    step_texthash(all_predictors(), num_terms = 2, signed = FALSE) %>%
+    prep() %>%
+    juice()
+  
+  all(unsigned$text_hash1 == signed$text_hash1)
+  all(unsigned$text_hash2 == signed$text_hash2)
+  expect_false(all(unsigned$text_hash1 == signed$text_hash1))
+  expect_false(all(unsigned$text_hash2 == signed$text_hash2))
+})
+
+
+
+test_that("printing", {
   rec <- rec %>%
     step_tokenize(text) %>%
     step_texthash(text)

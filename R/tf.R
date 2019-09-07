@@ -61,6 +61,11 @@
 #' }
 #' @export
 #' @details
+#' It is strongly advised to use [step_tokenfilter] before using [step_tf] to 
+#' limit the number of variables created, otherwise you might run into memmory
+#' issues. A good strategy is to start with a low token count and go up 
+#' according to how much RAM you want to use.
+#' 
 #' Term frequency is a weight of how many times each token appear in each 
 #' observation. There are different ways to calculate the weight and this 
 #' step can do it in a couple of ways. Setting the argument `weight_scheme` to
@@ -73,8 +78,8 @@
 #' takes the log of 1 plus the count, adding 1 is done to avoid taking log of
 #' 0. Finally "double normalization" is the raw frequency divided by the raw 
 #' frequency of the most occurring term in the document. This is then 
-#' multiplied by `weight` and `weight` is added tot he result. This is again done to 
-#' prevent a bias towards longer documents.
+#' multiplied by `weight` and `weight` is added to the result. This is again 
+#' done to prevent a bias towards longer documents.
 #' 
 #' The new components will have names that begin with `prefix`, then
 #' the name of the variable, followed by the tokens all seperated by
@@ -98,12 +103,11 @@ step_tf <-
            skip = FALSE,
            id = rand_id("tf")
   ) {
-    
-    if(!(weight_scheme %in% tf_funs) | length(weight_scheme) != 1)
+    if (!(weight_scheme %in% tf_funs) | length(weight_scheme) != 1)
       stop("`weight_scheme` should be one of: ",
            paste0("'", tf_funs, "'", collapse = ", "),
            call. = FALSE)
-    
+
     add_step(
       recipe,
       step_tf_new(
@@ -147,16 +151,16 @@ step_tf_new <-
 #' @export
 prep.step_tf <- function(x, training, info = NULL, ...) {
   col_names <- terms_select(x$terms, info = info)
-  
+
   check_list(training[, col_names])
-  
+
   token_list <- list()
-  
+
   for (i in seq_along(col_names)) {
-    token_list[[i]] <- x$vocabulary %||% 
+    token_list[[i]] <- x$vocabulary %||%
       sort(unique(unlist(training[, col_names[i], drop = TRUE])))
   }
-  
+
   step_tf_new(
     terms = x$terms,
     role = x$role,
@@ -180,47 +184,41 @@ prep.step_tf <- function(x, training, info = NULL, ...) {
 bake.step_tf <- function(object, new_data, ...) {
   col_names <- object$columns
   # for backward compat
-  
+
   for (i in seq_along(col_names)) {
-    
     tf_text <- tf_function(new_data[, col_names[i], drop = TRUE],
                            object$res[[i]],
                            paste0(object$prefix, "_", col_names[i]),
                            object$weight_scheme,
                            object$weight)
-    
+
     new_data <- bind_cols(new_data, tf_text)
-    
+
     new_data <-
       new_data[, !(colnames(new_data) %in% col_names[i]), drop = FALSE]
   }
-  
   as_tibble(new_data)
 }
 
 tf_function <- function(data, names, labels, weights, weight) {
-  
+
   counts <- as.matrix(list_to_dtm(data, names))
-  
+
   tf <- tf_weight(counts, weights, weight)
   colnames(tf) <- paste0(labels, "_", names)
   as_tibble(tf)
 }
 
 tf_weight <- function(x, scheme, weight) {
-  if(scheme == "binary")
+  if (scheme == "binary")
     return(x > 0)
-  
-  if(scheme == "raw count")
+  if (scheme == "raw count")
     return(x)
-  
-  if(scheme == "term frequency")
+  if (scheme == "term frequency")
     return(x / rowSums(x))
-  
-  if(scheme == "log normalization")
+  if (scheme == "log normalization")
     return(log(1 + x))
-  
-  if(scheme == "double normalization") {
+  if (scheme == "double normalization") {
     max_ftd <- apply(x, 1, max)
     return(weight + weight * x / max_ftd)
   }
@@ -233,7 +231,7 @@ print.step_tf <-
     cat("Term frequency with ", sep = "")
     printer(x$columns, x$terms, x$trained, width = width)
     invisible(x)
-  }
+}
 
 #' @rdname step_tf
 #' @param x A `step_tf` object.

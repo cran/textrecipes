@@ -1,21 +1,23 @@
-#' Untokenization of list-column variables
+#'  Generate the basic set of text features
 #'
-#' `step_untokenize` creates a *specification* of a recipe step that
-#'  will convert a list of tokens into a character predictor.
+#' `step_tokenmerge` creates a *specification* of a recipe step that
+#'  will take multiple list-columns of tokens and combine them into one 
+#'  list-column.
 #'
 #' @param recipe A recipe object. The step will be added to the
 #'  sequence of operations for this recipe.
 #' @param ... One or more selector functions to choose variables.
-#'  For `step_untokenize`, this indicates the variables to be encoded
+#'  For `step_tokenmerge`, this indicates the variables to be encoded
 #'  into a list column. See [recipes::selections()] for more
 #'  details. For the `tidy` method, these are not currently used.
-#' @param role Not used by this step since no new variables are
-#'  created.
+#' @param role For model terms created by this step, what analysis
+#'  role should they be assigned?. By default, the function assumes
+#'  that the new columns created by the original variables will be 
+#'  used as predictors in a model.
 #' @param columns A list of tibble results that define the
 #'  encoding. This is `NULL` until the step is trained by
 #'  [recipes::prep.recipe()].
-#' @param sep a character to determine how the tokens should be seperated
-#'  when pasted together. Defaults to `" "`.
+#' @param prefix A prefix for generated column names, default to "tokenmerge".
 #' @param skip A logical. Should the step be skipped when the
 #'  recipe is baked by [recipes::bake.recipe()]? While all
 #'  operations are baked when [recipes::prep.recipe()] is run, some
@@ -23,89 +25,83 @@
 #'  processing the outcome variable(s)). Care should be taken when
 #'  using `skip = TRUE` as it may affect the computations for
 #'  subsequent operations.
-#' @param id A character string that is unique to this step to identify it.
+#' @param id A character string that is unique to this step to identify it
 #' @param trained A logical to indicate if the recipe has been
 #'  baked.
 #' @return An updated version of `recipe` with the new step added
 #'  to the sequence of existing steps (if any).
 #' @examples
 #' library(recipes)
-#'
+#' 
 #' data(okc_text)
-#'
+#' 
 #' okc_rec <- recipe(~ ., data = okc_text) %>%
-#'   step_tokenize(essay0) %>%
-#'   step_untokenize(essay0)
-#'
+#'   step_tokenize(essay0, essay1) %>%
+#'   step_tokenmerge(essay0, essay1) 
+#'   
 #' okc_obj <- okc_rec %>%
 #'   prep(training = okc_text, retain = TRUE)
-#'
-#' juice(okc_obj, essay0) %>%
-#'   slice(1:2)
-#'
-#' juice(okc_obj) %>%
-#'   slice(2) %>%
-#'   pull(essay0)
-#'
-#' tidy(okc_rec, number = 2)
-#' tidy(okc_obj, number = 2)
+#' 
+#' juice(okc_obj)
+#'   
+#' tidy(okc_rec, number = 1)
+#' tidy(okc_obj, number = 1)
+#' 
 #' @export
-#' @details
-#' This steps will turn a tokenized list-column back into a character
-#' vector.
 #'
-#' @importFrom recipes add_step step terms_select sel2char ellipse_check
+#' @importFrom recipes add_step step terms_select sel2char ellipse_check 
 #' @importFrom recipes check_type rand_id
-step_untokenize <-
+step_tokenmerge <-
   function(recipe,
            ...,
-           role = NA,
+           role = "predictor",
            trained = FALSE,
            columns = NULL,
-           sep = " ",
+           prefix = "tokenmerge",
            skip = FALSE,
-           id = rand_id("untokenize")
+           id = rand_id("tokenmerge")
   ) {
     add_step(
       recipe,
-      step_untokenize_new(
+      step_tokenmerge_new(
         terms = ellipse_check(...),
         role = role,
         trained = trained,
         columns = columns,
-        sep = sep,
+        prefix = prefix,
         skip = skip,
         id = id
       )
     )
   }
 
-step_untokenize_new <-
-  function(terms, role, trained, columns, sep, skip, id) {
+step_tokenmerge_new <-
+  function(terms, role, trained, columns, prefix,
+           skip, id) {
     step(
-      subclass = "untokenize",
+      subclass = "tokenmerge",
       terms = terms,
       role = role,
       trained = trained,
       columns = columns,
-      sep = sep,
+      prefix = prefix,
       skip = skip,
       id = id
     )
   }
 
 #' @export
-prep.step_untokenize <- function(x, training, info = NULL, ...) {
+prep.step_tokenmerge <- function(x, training, info = NULL, ...) {
   col_names <- terms_select(x$terms, info = info)
 
   check_list(training[, col_names])
 
-  step_untokenize_new(
+  step_tokenmerge_new(
     terms = x$terms,
     role = x$role,
     trained = TRUE,
     columns = col_names,
-    sep = x$sep,
+    prefix = x$prefix,
     skip = x$skip,
     id = x$id
   )
@@ -114,42 +110,42 @@ prep.step_untokenize <- function(x, training, info = NULL, ...) {
 #' @export
 #' @importFrom tibble as_tibble
 #' @importFrom recipes bake prep
-#' @importFrom purrr map_chr
-bake.step_untokenize <- function(object, new_data, ...) {
+#' @importFrom purrr map_dfc pmap
+bake.step_tokenmerge <- function(object, new_data, ...) {
   col_names <- object$columns
   # for backward compat
+  new_col <-
+    tibble(pmap(as.list(unname(new_data[, col_names, drop = FALSE])), c))
+  names(new_col) <- object$prefix
 
-  for (i in seq_along(col_names)) {
-    new_data[, col_names[i]] <- map_chr(new_data[, col_names[i], drop = TRUE],
-                                        paste, collapse = object$sep)
-  }
+  new_data <- bind_cols(new_data, new_col)
 
-  new_data <- factor_to_text(new_data, col_names)
+  new_data <-
+    new_data[, !(colnames(new_data) %in% col_names), drop = FALSE]
 
   as_tibble(new_data)
 }
 
 #' @importFrom recipes printer
 #' @export
-print.step_untokenize <-
+print.step_tokenmerge <-
   function(x, width = max(20, options()$width - 30), ...) {
-    cat("Untokenization for ", sep = "")
+    cat("Merging tokens for ", sep = "")
     printer(x$columns, x$terms, x$trained, width = width)
     invisible(x)
-  }
+}
 
-#' @rdname step_untokenize
-#' @param x A `step_untokenize` object.
-#' @importFrom rlang na_chr na_int
+#' @rdname step_tokenmerge
+#' @param x A `step_tokenmerge` object.
+#' @importFrom recipes sel2char
 #' @export
-tidy.step_untokenize <- function(x, ...) {
+tidy.step_tokenmerge <- function(x, ...) {
   if (is_trained(x)) {
-    res <- tibble(terms = x$terms,
-                  value = x$sep)
+    term_names <- sel2char(x$terms)
+    res <- tibble(terms = term_names)
   } else {
     term_names <- sel2char(x$terms)
-    res <- tibble(terms = term_names,
-                  value = na_chr)
+    res <- tibble(terms = term_names)
   }
   res$id <- x$id
   res

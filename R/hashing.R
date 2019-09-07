@@ -10,8 +10,10 @@
 #'  For `step_texthash`, this indicates the variables to be encoded
 #'  into a list column. See [recipes::selections()] for more
 #'  details. For the `tidy` method, these are not currently used.
-#' @param role Not used by this step since no new variables are
-#'  created.
+#' @param role For model terms created by this step, what analysis
+#'  role should they be assigned?. By default, the function assumes
+#'  that the new columns created by the original variables will be 
+#'  used as predictors in a model.
 #' @param columns A list of tibble results that define the
 #'  encoding. This is `NULL` until the step is trained by
 #'  [recipes::prep.recipe()].
@@ -80,7 +82,7 @@
 step_texthash <-
   function(recipe,
            ...,
-           role = NA,
+           role = "predictor",
            trained = FALSE,
            columns = NULL,
            signed = TRUE,
@@ -88,7 +90,7 @@ step_texthash <-
            prefix = "hash",
            skip = FALSE,
            id = rand_id("texthash")) {
-    
+
     add_step(
       recipe,
       step_texthash_new(
@@ -105,11 +107,11 @@ step_texthash <-
     )
   }
 
-hash_funs <- c("md5", "sha1", "crc32", "sha256", "sha512", "xxhash32", 
+hash_funs <- c("md5", "sha1", "crc32", "sha256", "sha512", "xxhash32",
                "xxhash64", "murmur32")
 
 step_texthash_new <-
-  function(terms, role, trained, columns, signed, num_terms, prefix, skip, 
+  function(terms, role, trained, columns, signed, num_terms, prefix, skip,
            id) {
     step(
       subclass = "texthash",
@@ -128,9 +130,9 @@ step_texthash_new <-
 #' @export
 prep.step_texthash <- function(x, training, info = NULL, ...) {
   col_names <- terms_select(x$terms, info = info)
-  
+
   check_list(training[, col_names])
-  
+
   step_texthash_new(
     terms = x$terms,
     role = x$role,
@@ -152,27 +154,27 @@ prep.step_texthash <- function(x, training, info = NULL, ...) {
 bake.step_texthash <- function(object, new_data, ...) {
   col_names <- object$columns
   # for backward compat
-  
+
   for (i in seq_along(col_names)) {
-    
+
     tf_text <- hashing_function(new_data[, col_names[i], drop = TRUE],
-                                paste0(col_names[i], "_",  
+                                paste0(col_names[i], "_",
                                        names0(object$num_terms, object$prefix)),
                                 object$signed,
                                 object$num_terms)
-    
+
     new_data <- bind_cols(new_data, tf_text)
-    
+
     new_data <-
       new_data[, !(colnames(new_data) %in% col_names[i]), drop = FALSE]
   }
-  
+
   as_tibble(new_data)
 }
 
-hashing_function <- function(data, labels, algo, n) {
-  
-  counts <- list_to_hash(data, n)
+hashing_function <- function(data, labels, signed, n) {
+
+  counts <- list_to_hash(data, n, signed)
 
   colnames(counts) <- labels
   as_tibble(counts)
@@ -180,10 +182,9 @@ hashing_function <- function(data, labels, algo, n) {
 
 # Takes a list of tokens and calculate the hashed token count matrix
 #' @importFrom text2vec itoken create_dtm hash_vectorizer create_vocabulary
-list_to_hash <- function(x, n) {
-  
+list_to_hash <- function(x, n, signed) {
   it <- itoken(x, progress = FALSE)
-  vectorizer <- hash_vectorizer(hash_size = n)
+  vectorizer <- hash_vectorizer(hash_size = n, signed_hash = signed)
   as.matrix(create_dtm(it, vectorizer))
 }
 
