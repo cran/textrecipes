@@ -48,6 +48,7 @@ test_that("step_tf works as intended", {
 })
 
 test_that("step_tf works with vocabulary argument", {
+
   rec <- rec %>%
     step_tokenize(text) %>%
     step_tf(text, vocabulary = letters) 
@@ -63,6 +64,7 @@ test_that("step_tf works with vocabulary argument", {
 
 
 test_that("step_tf works with other weighting schemes", {
+  skip_if_not_installed("text2vec")
   rec <- rec %>%
     step_tokenize(text) %>%
     step_tf(text, weight_scheme = "term frequency") 
@@ -96,6 +98,7 @@ test_that("step_tf works with other weighting schemes", {
 })
 
 test_that("printing", {
+  skip_if_not_installed("text2vec")
   rec <- rec %>%
     step_tokenize(text) %>%
     step_tf(text)

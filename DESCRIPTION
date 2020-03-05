@@ -1,6 +1,6 @@
 Package: textrecipes
 Title: Extra 'Recipes' for Text Processing
-Version: 0.0.2
+Version: 0.1.0
 Authors@R: 
     person(given = "Emil",
            family = "Hvitfeldt",
@@ -15,19 +15,18 @@ License: MIT + file LICENSE
 URL: https://github.com/tidymodels/textrecipes
 BugReports: https://github.com/tidymodels/textrecipes/issues
 Depends: R (>= 2.10), recipes (>= 0.1.4)
-Imports: generics, rlang, tokenizers, dplyr, tibble, purrr, SnowballC,
-        stopwords, magrittr, stringr, text2vec, textfeatures (>=
-        0.3.3), lifecycle
-Suggests: covr, testthat (>= 2.1.0), knitr, rmarkdown
+Imports: generics, rlang, tokenizers, dplyr, tibble, tidyr, purrr,
+        SnowballC, stopwords, magrittr, Matrix, stringr
+Suggests: covr, testthat (>= 2.1.0), knitr, text2vec, rmarkdown,
+        textfeatures (>= 0.3.3)
 VignetteBuilder: knitr
-RdMacros: lifecycle
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2
 SystemRequirements: GNU make, C++11
 NeedsCompilation: no
-Packaged: 2019-09-06 21:42:42 UTC; emilhvitfeldthansen
+Packaged: 2020-03-05 04:51:08 UTC; emilhvitfeldthansen
 Author: Emil Hvitfeldt [aut, cre] (<https://orcid.org/0000-0002-0679-1945>)
 Maintainer: Emil Hvitfeldt <emilhhvitfeldt@gmail.com>
 Repository: CRAN
-Date/Publication: 2019-09-07 11:20:02 UTC
+Date/Publication: 2020-03-05 05:40:02 UTC

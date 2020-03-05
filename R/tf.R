@@ -42,6 +42,7 @@
 #' @return An updated version of `recipe` with the new step added
 #'  to the sequence of existing steps (if any).
 #' @examples
+#' if (requireNamespace("text2vec", quietly = TRUE)) {
 #' \donttest{
 #' library(recipes)
 #' 
@@ -58,6 +59,7 @@
 #' 
 #' tidy(okc_rec, number = 2)
 #' tidy(okc_obj, number = 2)
+#' }
 #' }
 #' @export
 #' @details
@@ -87,8 +89,6 @@
 #' token.
 #' 
 #' @seealso [step_hashing()] [step_tfidf()] [step_tokenize()]
-#' @importFrom recipes add_step step terms_select sel2char ellipse_check 
-#' @importFrom recipes check_type rand_id
 step_tf <-
   function(recipe,
            ...,
@@ -103,10 +103,12 @@ step_tf <-
            skip = FALSE,
            id = rand_id("tf")
   ) {
+    
+    recipes::recipes_pkg_check("text2vec")
+    
     if (!(weight_scheme %in% tf_funs) | length(weight_scheme) != 1)
-      stop("`weight_scheme` should be one of: ",
-           paste0("'", tf_funs, "'", collapse = ", "),
-           call. = FALSE)
+      rlang::abort(paste0("`weight_scheme` should be one of: ",
+                          "'", tf_funs, "'", collapse = ", "))
 
     add_step(
       recipe,
@@ -177,10 +179,6 @@ prep.step_tf <- function(x, training, info = NULL, ...) {
 }
 
 #' @export
-#' @importFrom tibble as_tibble tibble
-#' @importFrom recipes bake prep
-#' @importFrom purrr map
-#' @importFrom dplyr bind_cols
 bake.step_tf <- function(object, new_data, ...) {
   col_names <- object$columns
   # for backward compat
@@ -224,7 +222,6 @@ tf_weight <- function(x, scheme, weight) {
   }
 }
 
-#' @importFrom recipes printer
 #' @export
 print.step_tf <-
   function(x, width = max(20, options()$width - 30), ...) {
@@ -235,7 +232,6 @@ print.step_tf <-
 
 #' @rdname step_tf
 #' @param x A `step_tf` object.
-#' @importFrom rlang na_chr na_int
 #' @export
 tidy.step_tf <- function(x, ...) {
   if (is_trained(x)) {

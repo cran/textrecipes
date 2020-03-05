@@ -80,8 +80,8 @@
 #' give us that much insight, but if it only appear in some it might help
 #' us differentiate the observations. 
 #' 
-#' The IDF is defined as follows: idf = log(# documents in the corpus) / 
-#' (# documents where the term appears + 1)
+#' The IDF is defined as follows: idf = log(1 + (# documents in the corpus) / 
+#' (# documents where the term appears))
 #' 
 #' The new components will have names that begin with `prefix`, then
 #' the name of the variable, followed by the tokens all seperated by
@@ -89,8 +89,6 @@
 #' token.
 #' 
 #' @seealso [step_hashing()] [step_tf()] [step_tokenize()]
-#' @importFrom recipes add_step step terms_select sel2char ellipse_check 
-#' @importFrom recipes check_type rand_id
 step_tfidf <-
   function(recipe,
            ...,
@@ -106,6 +104,8 @@ step_tfidf <-
            skip = FALSE,
            id = rand_id("tfidf")) {
 
+    recipes::recipes_pkg_check("text2vec")
+    
     add_step(
       recipe,
       step_tfidf_new(
@@ -175,10 +175,6 @@ prep.step_tfidf <- function(x, training, info = NULL, ...) {
 }
 
 #' @export
-#' @importFrom tibble as_tibble tibble
-#' @importFrom recipes bake prep
-#' @importFrom purrr map
-#' @importFrom dplyr bind_cols
 bake.step_tfidf <- function(object, new_data, ...) {
   col_names <- object$columns
   # for backward compat
@@ -210,16 +206,34 @@ tfidf_function <- function(data, names, labels, smooth_idf, norm,
   as_tibble(tfidf)
 }
 
-
-#' @importFrom text2vec TfIdf
-dtm_to_tfidf <- function(x, smooth_idf, norm, sublinear_tf) {
-  model_tfidf <- TfIdf$new(smooth_idf = smooth_idf,
-                           norm = norm,
-                           sublinear_tf = sublinear_tf)
-  as.matrix(model_tfidf$fit_transform(x))
+dtm_to_tfidf <- function(dtm, smooth_idf, norm, sublinear_tf) {
+  dtm <- normalize(dtm, norm)
+  
+  if (sublinear_tf) {
+    dtm@x <- 1 + log(dtm@x)
+  }
+  
+  out <- dtm %*% Matrix::Diagonal(x = log(smooth_idf + nrow(dtm) / 
+                                            Matrix::colSums(dtm > 0)))
+  as.matrix(out)
 }
 
-#' @importFrom recipes printer
+normalize = function(dtm, norm = c("l1", "l2", "none")) {
+  if (norm == "none") {
+    return(dtm)
+  }
+  
+  norm_vec <- switch(norm,
+                     l1 = 1 / Matrix::rowSums(dtm),
+                     l2 = 1 / sqrt(Matrix::rowSums(dtm ^ 2))
+  )
+  
+  # case when sum row elements == 0
+  norm_vec[is.infinite(norm_vec)] = 0
+  
+  Matrix::Diagonal(x = norm_vec) %*% dtm
+}
+
 #' @export
 print.step_tfidf <-
   function(x, width = max(20, options()$width - 30), ...) {
@@ -230,7 +244,6 @@ print.step_tfidf <-
 
 #' @rdname step_tfidf
 #' @param x A `step_tfidf` object.
-#' @importFrom rlang na_chr
 #' @export
 tidy.step_tfidf <- function(x, ...) {
   if (is_trained(x)) {

@@ -27,15 +27,13 @@ check_list <- function (dat) {
   all_good <- vapply(dat, is.list, logical(1))
 
   if (!all(all_good))
-    stop("All columns selected for the step should be a list-column",
-         call. = FALSE)
+    rlang::abort("All columns selected for the step should be a list-column")
+  
   invisible(all_good)
 }
 
 # Takes a vector of character vectors and keeps (for keep = TRUE) the words
 # or removes (for keep = FALSE) the words
-#' @importFrom purrr keep
-#' @importFrom stopwords stopwords
 word_list_filter <- function(x, words, keep) {
 
   if (!keep) {
@@ -47,7 +45,6 @@ word_list_filter <- function(x, words, keep) {
 }
 # same as word_list_filter but takes an list as input and returns a tibble with
 # list-column.
-#' @importFrom purrr map
 word_tbl_filter <- function(x, words, keep) {
   tibble(
     map(x, word_list_filter, words, keep)
@@ -55,10 +52,15 @@ word_tbl_filter <- function(x, words, keep) {
 }
 
 # Takes a list of tokens and calculate the token count matrix
-#' @importFrom text2vec itoken create_dtm vocab_vectorizer create_vocabulary
-list_to_dtm <- function(x, values) {
-
-  it <- itoken(x, progress = FALSE)
-  vectorizer <- vocab_vectorizer(create_vocabulary(values))
-  create_dtm(it, vectorizer)
+list_to_dtm <- function(word_list, dict) {
+  i <- rep(seq_along(word_list), lengths(word_list))
+  j <- match(unlist(word_list), dict)
+  
+  out <- sparseMatrix(i = i[!is.na(j)],  
+                      j = j[!is.na(j)], 
+                      dims = c(length(word_list), length(dict)),
+                      x = 1)
+  
+  out@Dimnames[[2]] <- dict
+  out
 }

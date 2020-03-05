@@ -33,6 +33,7 @@
 #' @return An updated version of `recipe` with the new step added
 #'  to the sequence of existing steps (if any).
 #' @examples
+#' if (requireNamespace("textfeatures", quietly = TRUE)) {
 #' library(recipes)
 #' 
 #' data(okc_text)
@@ -60,7 +61,7 @@
 #'                    extract_functions = list(nchar10 = nchar_round_10)) %>%
 #'   prep(training = okc_text) %>%
 #'   juice()
-#' 
+#' }
 #' @export
 #' @details 
 #' This step will take a character column and returns a number of numeric 
@@ -71,21 +72,20 @@
 #' All the functions passed to `extract_functions` must take a character vector
 #' as input and return a numeric vector of the same length, otherwise an error 
 #' will be thrown.
-#'
-#' @importFrom recipes add_step step terms_select sel2char ellipse_check 
-#' @importFrom recipes check_type rand_id
-#' @importFrom textfeatures count_functions
 step_textfeature <-
   function(recipe,
            ...,
            role = "predictor",
            trained = FALSE,
            columns = NULL,
-           extract_functions = count_functions,
+           extract_functions = textfeatures::count_functions,
            prefix = "textfeature",
            skip = FALSE,
            id = rand_id("textfeature")
   ) {
+    
+    recipes::recipes_pkg_check("textfeatures")
+    
     add_step(
       recipe,
       step_textfeature_new(
@@ -140,9 +140,6 @@ prep.step_textfeature <- function(x, training, info = NULL, ...) {
 }
 
 #' @export
-#' @importFrom tibble as_tibble
-#' @importFrom recipes bake prep
-#' @importFrom purrr map_dfc
 bake.step_textfeature <- function(object, new_data, ...) {
   col_names <- object$columns
   # for backward compat
@@ -164,7 +161,6 @@ bake.step_textfeature <- function(object, new_data, ...) {
   as_tibble(new_data)
 }
 
-#' @importFrom recipes printer
 #' @export
 print.step_textfeature <-
   function(x, width = max(20, options()$width - 30), ...) {
@@ -175,7 +171,6 @@ print.step_textfeature <-
 
 #' @rdname step_textfeature
 #' @param x A `step_textfeature` object.
-#' @importFrom recipes sel2char
 #' @export
 tidy.step_textfeature <- function(x, ...) {
   if (is_trained(x)) {
@@ -196,17 +191,11 @@ validate_string2num <- function(fun) {
 
   out <- fun(string)
   if (!(is.numeric(out) | is.logical(out))) {
-    stop(deparse(substitute(fun)), " must return a numeric.")
+    rlang::abort(paste0(deparse(substitute(fun)), " must return a numeric."))
   }
 
   if (length(string) != length(out)) {
-    stop(deparse(substitute(fun)),
-         " must return the same length output as its input.")
+    rlang::abort(paste0(deparse(substitute(fun)),
+                        " must return the same length output as its input."))
   }
 }
-
-#' Counting functions from textfeatures
-#' @name count_functions
-#' @export
-#' @importFrom textfeatures count_functions
-NULL

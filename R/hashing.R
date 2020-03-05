@@ -36,6 +36,7 @@
 #' @return An updated version of `recipe` with the new step added
 #'  to the sequence of existing steps (if any).
 #' @examples
+#' if (requireNamespace("text2vec", quietly = TRUE)) {
 #' library(recipes)
 #' 
 #' data(okc_text)
@@ -52,6 +53,7 @@
 #' 
 #' tidy(okc_rec, number = 2)
 #' tidy(okc_obj, number = 2)
+#' }
 #' @export
 #' @details
 #' Feature hashing, or the hashing trick, is a transformation of a 
@@ -76,9 +78,6 @@
 #'  Alex Smola; Josh Attenberg (2009).
 #'  
 #' @seealso [step_tf()] [step_tfidf()] [step_tokenize()]
-#' 
-#' @importFrom recipes add_step step terms_select sel2char ellipse_check 
-#' @importFrom recipes check_type rand_id
 step_texthash <-
   function(recipe,
            ...,
@@ -91,6 +90,8 @@ step_texthash <-
            skip = FALSE,
            id = rand_id("texthash")) {
 
+    recipes::recipes_pkg_check("text2vec")
+    
     add_step(
       recipe,
       step_texthash_new(
@@ -147,10 +148,6 @@ prep.step_texthash <- function(x, training, info = NULL, ...) {
 }
 
 #' @export
-#' @importFrom tibble as_tibble tibble
-#' @importFrom recipes bake prep names0
-#' @importFrom purrr map
-#' @importFrom dplyr bind_cols
 bake.step_texthash <- function(object, new_data, ...) {
   col_names <- object$columns
   # for backward compat
@@ -181,14 +178,12 @@ hashing_function <- function(data, labels, signed, n) {
 }
 
 # Takes a list of tokens and calculate the hashed token count matrix
-#' @importFrom text2vec itoken create_dtm hash_vectorizer create_vocabulary
 list_to_hash <- function(x, n, signed) {
-  it <- itoken(x, progress = FALSE)
-  vectorizer <- hash_vectorizer(hash_size = n, signed_hash = signed)
-  as.matrix(create_dtm(it, vectorizer))
+  it <- text2vec::itoken(x, progress = FALSE)
+  vectorizer <- text2vec::hash_vectorizer(hash_size = n, signed_hash = signed)
+  as.matrix(text2vec::create_dtm(it, vectorizer))
 }
 
-#' @importFrom recipes printer
 #' @export
 print.step_texthash <-
   function(x, width = max(20, options()$width - 30), ...) {
@@ -199,9 +194,6 @@ print.step_texthash <-
 
 #' @rdname step_texthash
 #' @param x A `step_texthash` object.
-#' @importFrom rlang na_lgl na_int
-#' @importFrom generics tidy
-#' @importFrom recipes is_trained
 #' @export
 tidy.step_texthash <- function(x, ...) {
   if (is_trained(x)) {

@@ -1,3 +1,11 @@
+# textrecipes 0.1.0
+
+* `step_word2vec()` have been changed to `step_lda()` to reflect what is actually happening.
+* `step_word_embeddings()` has been added. Allows for use of pre-trained word embeddings to convert token columns to vectors in a high-dimensional "meaning" space. (@jonthegeek, #20)
+* text2vec have been changed from Imports to Suggests.
+* textfeatures have been changed from Imports to Suggests.
+* `step_tfidf()` calculations are slightly changed due to flaw in original implementation https://github.com/dselivanov/text2vec/issues/280.
+
 # textrecipes 0.0.2
 
 * Custom stemming function can now be used in step_stem using the custom_stemmer argument.

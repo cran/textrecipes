@@ -1,16 +1,16 @@
-## ----setup, include = FALSE----------------------------------------------
+## ----setup, include = FALSE---------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
 
-## ---- message=FALSE------------------------------------------------------
+## ---- message=FALSE-----------------------------------------------------------
 library(dplyr)
 library(recipes)
 library(textrecipes)
 data("okc_text")
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 words <- c("you", "i", "sad", "happy")
 
 okc_rec <- recipe(~ ., data = okc_text) %>%
@@ -24,7 +24,8 @@ okc_obj <- okc_rec %>%
 bake(okc_obj, okc_text) %>%
   select(starts_with("tf_essay0"))
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
+if (requireNamespace("text2vec", quietly = TRUE)) {
 words <- c("sad", "happy")
 
 okc_rec <- recipe(~ ., data = okc_text) %>%
@@ -38,8 +39,10 @@ okc_obj <- okc_rec %>%
    
 bake(okc_obj, okc_text) %>%
   select(starts_with("tfidf_essay0"))
+}
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
+if (requireNamespace("text2vec", quietly = TRUE)) {
 okc_rec <- recipe(~ ., data = okc_text) %>%
   step_tokenize(essay0, token = "characters") %>%
   step_stopwords(essay0, custom_stopword_source = letters, keep = TRUE) %>%
@@ -50,8 +53,10 @@ okc_obj <- okc_rec %>%
    
 bake(okc_obj, okc_text) %>%
   select(starts_with("tf_essay0"))
+}
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
+if (requireNamespace("text2vec", quietly = TRUE)) {
 okc_rec <- recipe(~ ., data = okc_text) %>%
   step_tokenize(essay0, token = "words") %>%
   step_stem(essay0) %>%
@@ -65,4 +70,5 @@ okc_obj <- okc_rec %>%
    
 bake(okc_obj, okc_text) %>%
   select(starts_with("tfidf_essay0"))
+}
 
