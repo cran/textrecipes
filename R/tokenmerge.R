@@ -1,14 +1,14 @@
 #'  Generate the basic set of text features
 #'
 #' `step_tokenmerge` creates a *specification* of a recipe step that
-#'  will take multiple list-columns of tokens and combine them into one 
-#'  list-column.
+#'  will take multiple [tokenlist]s and combine them into one 
+#'  [tokenlist].
 #'
 #' @param recipe A recipe object. The step will be added to the
 #'  sequence of operations for this recipe.
 #' @param ... One or more selector functions to choose variables.
 #'  For `step_tokenmerge`, this indicates the variables to be encoded
-#'  into a list column. See [recipes::selections()] for more
+#'  into a [tokenlist]. See [recipes::selections()] for more
 #'  details. For the `tidy` method, these are not currently used.
 #' @param role For model terms created by this step, what analysis
 #'  role should they be assigned?. By default, the function assumes
@@ -32,7 +32,7 @@
 #'  to the sequence of existing steps (if any).
 #' @examples
 #' library(recipes)
-#' 
+#' library(modeldata)
 #' data(okc_text)
 #' 
 #' okc_rec <- recipe(~ ., data = okc_text) %>%
@@ -40,7 +40,7 @@
 #'   step_tokenmerge(essay0, essay1) 
 #'   
 #' okc_obj <- okc_rec %>%
-#'   prep(training = okc_text, retain = TRUE)
+#'   prep()
 #' 
 #' juice(okc_obj)
 #'   
@@ -48,6 +48,9 @@
 #' tidy(okc_obj, number = 1)
 #' 
 #' @export
+#' 
+#' @seealso [step_tokenize()] to turn character into tokenlist.
+#' @family tokenlist to tokenlist steps
 step_tokenmerge <-
   function(recipe,
            ...,
@@ -108,15 +111,18 @@ prep.step_tokenmerge <- function(x, training, info = NULL, ...) {
 bake.step_tokenmerge <- function(object, new_data, ...) {
   col_names <- object$columns
   # for backward compat
-  new_col <-
-    tibble(pmap(as.list(unname(new_data[, col_names, drop = FALSE])), c))
+  
+  new_col <- as.list(unname(new_data[, col_names, drop = FALSE])) %>%
+    map(get_tokens) %>%
+    pmap(c)
+  new_col <- tibble(tokenlist(new_col))
   names(new_col) <- object$prefix
-
-  new_data <- bind_cols(new_data, new_col)
 
   new_data <-
     new_data[, !(colnames(new_data) %in% col_names), drop = FALSE]
 
+  new_data <- vctrs::vec_cbind(new_data, new_col)
+  
   as_tibble(new_data)
 }
 

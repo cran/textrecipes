@@ -1,14 +1,14 @@
 #' Term frequency of tokens
 #'
 #' `step_texthash` creates a *specification* of a recipe step that
-#'  will convert a list of tokens into multiple variables using the 
+#'  will convert a [tokenlist] into multiple variables using the 
 #'  hashing trick.
 #'
 #' @param recipe A recipe object. The step will be added to the
 #'  sequence of operations for this recipe.
 #' @param ... One or more selector functions to choose variables.
 #'  For `step_texthash`, this indicates the variables to be encoded
-#'  into a list column. See [recipes::selections()] for more
+#'  into a [tokenlist]. See [recipes::selections()] for more
 #'  details. For the `tidy` method, these are not currently used.
 #' @param role For model terms created by this step, what analysis
 #'  role should they be assigned?. By default, the function assumes
@@ -38,7 +38,7 @@
 #' @examples
 #' if (requireNamespace("text2vec", quietly = TRUE)) {
 #' library(recipes)
-#' 
+#' library(modeldata)
 #' data(okc_text)
 #' 
 #' okc_rec <- recipe(~ ., data = okc_text) %>%
@@ -47,7 +47,7 @@
 #'   step_texthash(essay0)
 #'   
 #' okc_obj <- okc_rec %>%
-#'   prep(training = okc_text, retain = TRUE)
+#'   prep()
 #'   
 #' bake(okc_obj, okc_text)
 #' 
@@ -69,7 +69,7 @@
 #' chance of collision.
 #' 
 #' The new components will have names that begin with `prefix`, then
-#' the name of the variable, followed by the tokens all seperated by
+#' the name of the variable, followed by the tokens all separated by
 #' `-`. The variable names are padded with zeros. For example,
 #' if `num_terms < 10`, their names will be `hash1` - `hash9`.
 #' If `num_terms = 101`, their names will be `hash001` - `hash101`.
@@ -77,7 +77,8 @@
 #' @references Kilian Weinberger; Anirban Dasgupta; John Langford; 
 #'  Alex Smola; Josh Attenberg (2009).
 #'  
-#' @seealso [step_tf()] [step_tfidf()] [step_tokenize()]
+#' @seealso [step_tokenize()] to turn character into tokenlist.
+#' @family tokenlist to numeric steps
 step_texthash <-
   function(recipe,
            ...,
@@ -154,34 +155,19 @@ bake.step_texthash <- function(object, new_data, ...) {
 
   for (i in seq_along(col_names)) {
 
-    tf_text <- hashing_function(new_data[, col_names[i], drop = TRUE],
+    tf_text <- hashing_function(get_tokens(new_data[, col_names[i], drop = TRUE]),
                                 paste0(col_names[i], "_",
                                        names0(object$num_terms, object$prefix)),
                                 object$signed,
                                 object$num_terms)
 
-    new_data <- bind_cols(new_data, tf_text)
-
     new_data <-
       new_data[, !(colnames(new_data) %in% col_names[i]), drop = FALSE]
+    
+    new_data <- vctrs::vec_cbind(tf_text, new_data)
   }
 
   as_tibble(new_data)
-}
-
-hashing_function <- function(data, labels, signed, n) {
-
-  counts <- list_to_hash(data, n, signed)
-
-  colnames(counts) <- labels
-  as_tibble(counts)
-}
-
-# Takes a list of tokens and calculate the hashed token count matrix
-list_to_hash <- function(x, n, signed) {
-  it <- text2vec::itoken(x, progress = FALSE)
-  vectorizer <- text2vec::hash_vectorizer(hash_size = n, signed_hash = signed)
-  as.matrix(text2vec::create_dtm(it, vectorizer))
 }
 
 #' @export
@@ -209,3 +195,20 @@ tidy.step_texthash <- function(x, ...) {
   res$id <- x$id
   res
 }
+
+# Implementation
+hashing_function <- function(data, labels, signed, n) {
+  
+  counts <- list_to_hash(data, n, signed)
+  
+  colnames(counts) <- labels
+  as_tibble(counts)
+}
+
+# Takes a [tokenlist] and calculate the hashed token count matrix
+list_to_hash <- function(x, n, signed) {
+  it <- text2vec::itoken(x, progress = FALSE)
+  vectorizer <- text2vec::hash_vectorizer(hash_size = n, signed_hash = signed)
+  as.matrix(text2vec::create_dtm(it, vectorizer))
+}
+

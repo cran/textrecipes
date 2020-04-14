@@ -7,7 +7,7 @@
 #'  sequence of operations for this recipe.
 #' @param ... One or more selector functions to choose variables.
 #'  For `step_textfeature`, this indicates the variables to be encoded
-#'  into a list column. See [recipes::selections()] for more
+#'  into a [tokenlist]. See [recipes::selections()] for more
 #'  details. For the `tidy` method, these are not currently used.
 #' @param role For model terms created by this step, what analysis
 #'  role should they be assigned?. By default, the function assumes
@@ -17,8 +17,8 @@
 #'  encoding. This is `NULL` until the step is trained by
 #'  [recipes::prep.recipe()].
 #' @param extract_functions A named list of feature extracting functions. 
-#'  default to [count_functions] from the textfeatures package. See 
-#'  details for more information.
+#'  default to \code{\link[textfeatures]{count_functions}} from the textfeatures 
+#'  package. See details for more information.
 #' @param prefix A prefix for generated column names, default to "textfeature".
 #' @param skip A logical. Should the step be skipped when the
 #'  recipe is baked by [recipes::bake.recipe()]? While all
@@ -35,14 +35,14 @@
 #' @examples
 #' if (requireNamespace("textfeatures", quietly = TRUE)) {
 #' library(recipes)
-#' 
+#' library(modeldata)
 #' data(okc_text)
 #' 
 #' okc_rec <- recipe(~ ., data = okc_text) %>%
 #'   step_textfeature(essay0) 
 #'   
 #' okc_obj <- okc_rec %>%
-#'   prep(training = okc_text, retain = TRUE)
+#'   prep()
 #' 
 #' juice(okc_obj) %>%
 #'   slice(1:2)
@@ -59,7 +59,7 @@
 #' recipe(~ ., data = okc_text) %>%
 #'   step_textfeature(essay0, 
 #'                    extract_functions = list(nchar10 = nchar_round_10)) %>%
-#'   prep(training = okc_text) %>%
+#'   prep() %>%
 #'   juice()
 #' }
 #' @export
@@ -72,6 +72,8 @@
 #' All the functions passed to `extract_functions` must take a character vector
 #' as input and return a numeric vector of the same length, otherwise an error 
 #' will be thrown.
+#' 
+#' @family character to numeric steps
 step_textfeature <-
   function(recipe,
            ...,
@@ -153,7 +155,7 @@ bake.step_textfeature <- function(object, new_data, ...) {
     colnames(tf_text) <- paste(object$prefix, col_names[i], colnames(tf_text),
                                sep = "_")
 
-    new_data <- bind_cols(new_data, tf_text)
+    new_data <- vctrs::vec_cbind(new_data, tf_text)
 
     new_data <-
       new_data[, !(colnames(new_data) %in% col_names[i]), drop = FALSE]

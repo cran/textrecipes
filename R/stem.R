@@ -1,13 +1,13 @@
-#' Stemming of list-column variables
+#' Stemming of [tokenlist] variables
 #'
 #' `step_stem` creates a *specification* of a recipe step that
-#'  will convert a list of tokens into a list of stemmed tokens.
+#'  will convert a [tokenlist] to have its tokens stemmed.
 #'
 #' @param recipe A recipe object. The step will be added to the
 #'  sequence of operations for this recipe.
 #' @param ... One or more selector functions to choose variables.
 #'  For `step_stem`, this indicates the variables to be encoded
-#'  into a list column. See [recipes::selections()] for more
+#'  into a [tokenlist]. See [recipes::selections()] for more
 #'  details. For the `tidy` method, these are not currently used.
 #' @param role Not used by this step since no new variables are
 #'  created.
@@ -31,7 +31,7 @@
 #'  to the sequence of existing steps (if any).
 #' @examples
 #' library(recipes)
-#' 
+#' library(modeldata)
 #' data(okc_text)
 #' 
 #' okc_rec <- recipe(~ ., data = okc_text) %>%
@@ -39,7 +39,7 @@
 #'   step_stem(essay0)
 #'   
 #' okc_obj <- okc_rec %>%
-#'   prep(training = okc_text, retain = TRUE)
+#'   prep()
 #' 
 #' juice(okc_obj, essay0) %>% 
 #'   slice(1:2)
@@ -52,7 +52,7 @@
 #' tidy(okc_obj, number = 2)
 #' 
 #' # Using custom stemmer. Here a custom stemmer that removes the last letter
-#' # if it is a s.
+#' # if it is a "s".
 #' remove_s <- function(x) gsub("s$", "", x)
 #' 
 #' okc_rec <- recipe(~ ., data = okc_text) %>%
@@ -60,7 +60,7 @@
 #'   step_stem(essay0, custom_stemmer = remove_s)
 #'   
 #' okc_obj <- okc_rec %>%
-#'   prep(training = okc_text, retain = TRUE)
+#'   prep()
 #' 
 #' juice(okc_obj, essay0) %>% 
 #'   slice(1:2)
@@ -76,10 +76,11 @@
 #' words. Stemming is the act of choping off the end of words using a set
 #'  of heuristics.
 #' 
-#' Note that the steming will only be done at the end of the string and 
+#' Note that the steming will only be done at the end of the word and 
 #' will therefore not work reliably on ngrams or sentences.
 #' 
-#' @seealso [step_stopwords()] [step_tokenfilter()] [step_tokenize()]
+#' @seealso [step_tokenize()] to turn character into tokenlist.
+#' @family tokenlist to tokenlist steps
 step_stem <-
   function(recipe,
            ...,
@@ -148,10 +149,10 @@ bake.step_stem <- function(object, new_data, ...) {
     SnowballC::wordStem
 
   for (i in seq_along(col_names)) {
-    stemmed_text <- map(new_data[, col_names[i], drop = TRUE],
-                        stem_fun)
+    stemmed_tokenlist <- tokenlist_apply(new_data[, col_names[i], drop = TRUE],
+                                         stem_fun, object$options)
 
-    new_data[, col_names[i]] <- tibble(stemmed_text)
+    new_data[, col_names[i]] <- tibble(stemmed_tokenlist)
   }
   new_data <- factor_to_text(new_data, col_names)
   as_tibble(new_data)

@@ -3,7 +3,7 @@
 \name{step_stem}
 \alias{step_stem}
 \alias{tidy.step_stem}
-\title{Stemming of list-column variables}
+\title{Stemming of \link{tokenlist} variables}
 \usage{
 step_stem(
   recipe,
@@ -24,9 +24,9 @@ step_stem(
 sequence of operations for this recipe.}
 
 \item{...}{One or more selector functions to choose variables.
-For `step_stem`, this indicates the variables to be encoded
-into a list column. See [recipes::selections()] for more
-details. For the `tidy` method, these are not currently used.}
+For \code{step_stem}, this indicates the variables to be encoded
+into a \link{tokenlist}. See \code{\link[recipes:selections]{recipes::selections()}} for more
+details. For the \code{tidy} method, these are not currently used.}
 
 \item{role}{Not used by this step since no new variables are
 created.}
@@ -35,8 +35,8 @@ created.}
 baked.}
 
 \item{columns}{A list of tibble results that define the
-encoding. This is `NULL` until the step is trained by
-[recipes::prep.recipe()].}
+encoding. This is \code{NULL} until the step is trained by
+\code{\link[recipes:prep.recipe]{recipes::prep.recipe()}}.}
 
 \item{options}{A list of options passed to the stemmer function.}
 
@@ -44,38 +44,38 @@ encoding. This is `NULL` until the step is trained by
 it will default to "SnowballC".}
 
 \item{skip}{A logical. Should the step be skipped when the
-recipe is baked by [recipes::bake.recipe()]? While all
-operations are baked when [recipes::prep.recipe()] is run, some
+recipe is baked by \code{\link[recipes:bake.recipe]{recipes::bake.recipe()}}? While all
+operations are baked when \code{\link[recipes:prep.recipe]{recipes::prep.recipe()}} is run, some
 operations may not be able to be conducted on new data (e.g.
 processing the outcome variable(s)). Care should be taken when
-using `skip = TRUE` as it may affect the computations for
+using \code{skip = TRUE} as it may affect the computations for
 subsequent operations.}
 
 \item{id}{A character string that is unique to this step to identify it.}
 
-\item{x}{A `step_stem` object.}
+\item{x}{A \code{step_stem} object.}
 }
 \value{
-An updated version of `recipe` with the new step added
- to the sequence of existing steps (if any).
+An updated version of \code{recipe} with the new step added
+to the sequence of existing steps (if any).
 }
 \description{
-`step_stem` creates a *specification* of a recipe step that
- will convert a list of tokens into a list of stemmed tokens.
+\code{step_stem} creates a \emph{specification} of a recipe step that
+will convert a \link{tokenlist} to have its tokens stemmed.
 }
 \details{
 Words tend to have different forms depending on context, such as
 organize, organizes, and organizing. In many situations it is beneficial
-to have these words condensed into one to allow for a smaller pool of 
+to have these words condensed into one to allow for a smaller pool of
 words. Stemming is the act of choping off the end of words using a set
- of heuristics.
+of heuristics.
 
-Note that the steming will only be done at the end of the string and 
+Note that the steming will only be done at the end of the word and
 will therefore not work reliably on ngrams or sentences.
 }
 \examples{
 library(recipes)
-
+library(modeldata)
 data(okc_text)
 
 okc_rec <- recipe(~ ., data = okc_text) \%>\%
@@ -83,7 +83,7 @@ okc_rec <- recipe(~ ., data = okc_text) \%>\%
   step_stem(essay0)
   
 okc_obj <- okc_rec \%>\%
-  prep(training = okc_text, retain = TRUE)
+  prep()
 
 juice(okc_obj, essay0) \%>\% 
   slice(1:2)
@@ -96,7 +96,7 @@ tidy(okc_rec, number = 2)
 tidy(okc_obj, number = 2)
 
 # Using custom stemmer. Here a custom stemmer that removes the last letter
-# if it is a s.
+# if it is a "s".
 remove_s <- function(x) gsub("s$", "", x)
 
 okc_rec <- recipe(~ ., data = okc_text) \%>\%
@@ -104,7 +104,7 @@ okc_rec <- recipe(~ ., data = okc_text) \%>\%
   step_stem(essay0, custom_stemmer = remove_s)
   
 okc_obj <- okc_rec \%>\%
-  prep(training = okc_text, retain = TRUE)
+  prep()
 
 juice(okc_obj, essay0) \%>\% 
   slice(1:2)
@@ -114,5 +114,14 @@ juice(okc_obj) \%>\%
   pull(essay0) 
 }
 \seealso{
-[step_stopwords()] [step_tokenfilter()] [step_tokenize()]
+\code{\link[=step_tokenize]{step_tokenize()}} to turn character into tokenlist.
+
+Other tokenlist to tokenlist steps: 
+\code{\link{step_lemma}()},
+\code{\link{step_ngram}()},
+\code{\link{step_pos_filter}()},
+\code{\link{step_stopwords}()},
+\code{\link{step_tokenfilter}()},
+\code{\link{step_tokenmerge}()}
 }
+\concept{tokenlist to tokenlist steps}

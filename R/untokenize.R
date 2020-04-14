@@ -1,20 +1,20 @@
-#' Untokenization of list-column variables
+#' Untokenization of [tokenlist] variables
 #'
 #' `step_untokenize` creates a *specification* of a recipe step that
-#'  will convert a list of tokens into a character predictor.
+#'  will convert a [tokenlist] into a character predictor.
 #'
 #' @param recipe A recipe object. The step will be added to the
 #'  sequence of operations for this recipe.
 #' @param ... One or more selector functions to choose variables.
 #'  For `step_untokenize`, this indicates the variables to be encoded
-#'  into a list column. See [recipes::selections()] for more
+#'  into a [tokenlist]. See [recipes::selections()] for more
 #'  details. For the `tidy` method, these are not currently used.
 #' @param role Not used by this step since no new variables are
 #'  created.
 #' @param columns A list of tibble results that define the
 #'  encoding. This is `NULL` until the step is trained by
 #'  [recipes::prep.recipe()].
-#' @param sep a character to determine how the tokens should be seperated
+#' @param sep a character to determine how the tokens should be separated
 #'  when pasted together. Defaults to `" "`.
 #' @param skip A logical. Should the step be skipped when the
 #'  recipe is baked by [recipes::bake.recipe()]? While all
@@ -30,7 +30,7 @@
 #'  to the sequence of existing steps (if any).
 #' @examples
 #' library(recipes)
-#'
+#' library(modeldata)
 #' data(okc_text)
 #'
 #' okc_rec <- recipe(~ ., data = okc_text) %>%
@@ -38,7 +38,7 @@
 #'   step_untokenize(essay0)
 #'
 #' okc_obj <- okc_rec %>%
-#'   prep(training = okc_text, retain = TRUE)
+#'   prep()
 #'
 #' juice(okc_obj, essay0) %>%
 #'   slice(1:2)
@@ -51,8 +51,11 @@
 #' tidy(okc_obj, number = 2)
 #' @export
 #' @details
-#' This steps will turn a tokenized list-column back into a character
-#' vector.
+#' This steps will turn a [tokenlist] back into a character vector. This step
+#' is calling `paste` internally to put the tokens back together to a character.
+#' 
+#' @seealso [step_tokenize()] to turn character into tokenlist.
+#' @family tokenlist to character steps
 step_untokenize <-
   function(recipe,
            ...,
@@ -114,7 +117,8 @@ bake.step_untokenize <- function(object, new_data, ...) {
   # for backward compat
 
   for (i in seq_along(col_names)) {
-    new_data[, col_names[i]] <- map_chr(new_data[, col_names[i], drop = TRUE],
+    tokens <- get_tokens(new_data[, col_names[i], drop = TRUE])
+    new_data[, col_names[i]] <- map_chr(tokens,
                                         paste, collapse = object$sep)
   }
 

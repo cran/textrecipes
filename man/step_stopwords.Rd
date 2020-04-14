@@ -3,7 +3,7 @@
 \name{step_stopwords}
 \alias{step_stopwords}
 \alias{tidy.step_stopwords}
-\title{Filtering of stopwords from a list-column variable}
+\title{Filtering of stopwords from a \link{tokenlist} variable}
 \usage{
 step_stopwords(
   recipe,
@@ -26,9 +26,9 @@ step_stopwords(
 sequence of operations for this recipe.}
 
 \item{...}{One or more selector functions to choose variables.
-For `step_stopwords`, this indicates the variables to be encoded
-into a list column. See [recipes::selections()] for more
-details. For the `tidy` method, these are not currently used.}
+For \code{step_stopwords}, this indicates the variables to be encoded
+into a \link{tokenlist}. See \code{\link[recipes:selections]{recipes::selections()}} for more
+details. For the \code{tidy} method, these are not currently used.}
 
 \item{role}{Not used by this step since no new variables are
 created.}
@@ -37,54 +37,54 @@ created.}
 baked.}
 
 \item{columns}{A list of tibble results that define the
-encoding. This is `NULL` until the step is trained by
-[recipes::prep.recipe()].}
+encoding. This is \code{NULL} until the step is trained by
+\code{\link[recipes:prep.recipe]{recipes::prep.recipe()}}.}
 
-\item{language}{A character to indicate the langauge of stopwords 
+\item{language}{A character to indicate the language of stopwords
 by ISO 639-1 coding scheme.}
 
 \item{keep}{A logical. Specifies whether to keep the stopwords or discard
 them.}
 
-\item{stopword_source}{A character to indicate the stopwords source as 
-listed in `stopwords::stopwords_getsources`.}
+\item{stopword_source}{A character to indicate the stopwords source as
+listed in \code{stopwords::stopwords_getsources}.}
 
-\item{custom_stopword_source}{A character vector to indicate a custom 
+\item{custom_stopword_source}{A character vector to indicate a custom
 list of words that cater to the users specific problem.}
 
 \item{skip}{A logical. Should the step be skipped when the
-recipe is baked by [recipes::bake.recipe()]? While all
-operations are baked when [recipes::prep.recipe()] is run, some
+recipe is baked by \code{\link[recipes:bake.recipe]{recipes::bake.recipe()}}? While all
+operations are baked when \code{\link[recipes:prep.recipe]{recipes::prep.recipe()}} is run, some
 operations may not be able to be conducted on new data (e.g.
 processing the outcome variable(s)). Care should be taken when
-using `skip = TRUE` as it may affect the computations for
+using \code{skip = TRUE} as it may affect the computations for
 subsequent operations.}
 
 \item{id}{A character string that is unique to this step to identify it.}
 
-\item{x}{A `step_stopwords` object.}
+\item{x}{A \code{step_stopwords} object.}
 }
 \value{
-An updated version of `recipe` with the new step added
- to the sequence of existing steps (if any).
+An updated version of \code{recipe} with the new step added
+to the sequence of existing steps (if any).
 }
 \description{
-`step_stopwords` creates a *specification* of a recipe step that
- will filter a list of tokens for stopwords(keep or remove).
+\code{step_stopwords} creates a \emph{specification} of a recipe step that
+will filter a \link{tokenlist} for stopwords(keep or remove).
 }
 \details{
 Stop words are words which sometimes are remove before natural language
-processing tasks. While stop words usually refers to the most common 
-words in the laguange there is no universal stop word list. 
+processing tasks. While stop words usually refers to the most common
+words in the language there is no universal stop word list.
 
-The argument `custom_stopword_source` allows you to pass a character vector
-to filter against. With the `keep` argument one can specify to keep the 
-words instead of removing thus allowing you to select words with a 
+The argument \code{custom_stopword_source} allows you to pass a character vector
+to filter against. With the \code{keep} argument one can specify to keep the
+words instead of removing thus allowing you to select words with a
 combination of these two arguments.
 }
 \examples{
 library(recipes)
-
+library(modeldata)
 data(okc_text)
 
 okc_rec <- recipe(~ ., data = okc_text) \%>\%
@@ -92,7 +92,7 @@ okc_rec <- recipe(~ ., data = okc_text) \%>\%
   step_stopwords(essay0) 
   
 okc_obj <- okc_rec \%>\%
-  prep(training = okc_text, retain = TRUE)
+  prep()
 
 juice(okc_obj, essay0) \%>\% 
   slice(1:2)
@@ -109,12 +109,21 @@ okc_rec <- recipe(~ ., data = okc_text) \%>\%
   step_tokenize(essay0) \%>\%
   step_stopwords(essay0, custom_stopword_source = c("twice", "upon"))
 okc_obj <- okc_rec \%>\%
-  prep(traimomg = okc_text, retain = TRUE)
+  prep(traimomg = okc_text)
   
 juice(okc_obj) \%>\%
   slice(2) \%>\%
   pull(essay0) 
 }
 \seealso{
-[step_stem()] [step_tokenfilter()] [step_tokenize()]
+\code{\link[=step_tokenize]{step_tokenize()}} to turn character into tokenlist.
+
+Other tokenlist to tokenlist steps: 
+\code{\link{step_lemma}()},
+\code{\link{step_ngram}()},
+\code{\link{step_pos_filter}()},
+\code{\link{step_stem}()},
+\code{\link{step_tokenfilter}()},
+\code{\link{step_tokenmerge}()}
 }
+\concept{tokenlist to tokenlist steps}

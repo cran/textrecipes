@@ -3,6 +3,8 @@ context("test-lda")
 set.seed(1234)
 library(recipes)
 library(textrecipes)
+library(modeldata)
+data(okc_text)
 
 n_rows <- 100
 rec <- recipe(~ essay0 + essay1, data = okc_text[seq_len(n_rows), ])
@@ -40,5 +42,5 @@ test_that("printing", {
     step_lda(essay0)
   
   expect_output(print(rec))
-  expect_output(prep(rec, training = okc_text, verbose = TRUE))
+  expect_output(prep(rec, verbose = TRUE))
 })

@@ -17,6 +17,9 @@
 #' @importFrom tidyr unnest
 #' 
 #' @importFrom Matrix sparseMatrix
+#' 
+#' @importFrom vctrs vec_assert new_vctr vec_cast vec_ptype_abbr
+#' @importFrom vctrs obj_print_footer vec_restore
 NULL
 
 # nocov start

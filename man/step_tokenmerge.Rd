@@ -23,48 +23,48 @@ step_tokenmerge(
 sequence of operations for this recipe.}
 
 \item{...}{One or more selector functions to choose variables.
-For `step_tokenmerge`, this indicates the variables to be encoded
-into a list column. See [recipes::selections()] for more
-details. For the `tidy` method, these are not currently used.}
+For \code{step_tokenmerge}, this indicates the variables to be encoded
+into a \link{tokenlist}. See \code{\link[recipes:selections]{recipes::selections()}} for more
+details. For the \code{tidy} method, these are not currently used.}
 
 \item{role}{For model terms created by this step, what analysis
 role should they be assigned?. By default, the function assumes
-that the new columns created by the original variables will be 
+that the new columns created by the original variables will be
 used as predictors in a model.}
 
 \item{trained}{A logical to indicate if the recipe has been
 baked.}
 
 \item{columns}{A list of tibble results that define the
-encoding. This is `NULL` until the step is trained by
-[recipes::prep.recipe()].}
+encoding. This is \code{NULL} until the step is trained by
+\code{\link[recipes:prep.recipe]{recipes::prep.recipe()}}.}
 
 \item{prefix}{A prefix for generated column names, default to "tokenmerge".}
 
 \item{skip}{A logical. Should the step be skipped when the
-recipe is baked by [recipes::bake.recipe()]? While all
-operations are baked when [recipes::prep.recipe()] is run, some
+recipe is baked by \code{\link[recipes:bake.recipe]{recipes::bake.recipe()}}? While all
+operations are baked when \code{\link[recipes:prep.recipe]{recipes::prep.recipe()}} is run, some
 operations may not be able to be conducted on new data (e.g.
 processing the outcome variable(s)). Care should be taken when
-using `skip = TRUE` as it may affect the computations for
+using \code{skip = TRUE} as it may affect the computations for
 subsequent operations.}
 
 \item{id}{A character string that is unique to this step to identify it}
 
-\item{x}{A `step_tokenmerge` object.}
+\item{x}{A \code{step_tokenmerge} object.}
 }
 \value{
-An updated version of `recipe` with the new step added
- to the sequence of existing steps (if any).
+An updated version of \code{recipe} with the new step added
+to the sequence of existing steps (if any).
 }
 \description{
-`step_tokenmerge` creates a *specification* of a recipe step that
- will take multiple list-columns of tokens and combine them into one 
- list-column.
+\code{step_tokenmerge} creates a \emph{specification} of a recipe step that
+will take multiple \link{tokenlist}s and combine them into one
+\link{tokenlist}.
 }
 \examples{
 library(recipes)
-
+library(modeldata)
 data(okc_text)
 
 okc_rec <- recipe(~ ., data = okc_text) \%>\%
@@ -72,7 +72,7 @@ okc_rec <- recipe(~ ., data = okc_text) \%>\%
   step_tokenmerge(essay0, essay1) 
   
 okc_obj <- okc_rec \%>\%
-  prep(training = okc_text, retain = TRUE)
+  prep()
 
 juice(okc_obj)
   
@@ -80,3 +80,15 @@ tidy(okc_rec, number = 1)
 tidy(okc_obj, number = 1)
 
 }
+\seealso{
+\code{\link[=step_tokenize]{step_tokenize()}} to turn character into tokenlist.
+
+Other tokenlist to tokenlist steps: 
+\code{\link{step_lemma}()},
+\code{\link{step_ngram}()},
+\code{\link{step_pos_filter}()},
+\code{\link{step_stem}()},
+\code{\link{step_stopwords}()},
+\code{\link{step_tokenfilter}()}
+}
+\concept{tokenlist to tokenlist steps}

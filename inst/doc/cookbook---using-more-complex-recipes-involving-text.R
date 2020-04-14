@@ -8,6 +8,7 @@ knitr::opts_chunk$set(
 library(dplyr)
 library(recipes)
 library(textrecipes)
+library(modeldata)
 data("okc_text")
 
 ## -----------------------------------------------------------------------------
@@ -19,13 +20,12 @@ okc_rec <- recipe(~ ., data = okc_text) %>%
   step_tf(essay0)
 
 okc_obj <- okc_rec %>%
-  prep(training = okc_text)
+  prep()
    
 bake(okc_obj, okc_text) %>%
   select(starts_with("tf_essay0"))
 
 ## -----------------------------------------------------------------------------
-if (requireNamespace("text2vec", quietly = TRUE)) {
 words <- c("sad", "happy")
 
 okc_rec <- recipe(~ ., data = okc_text) %>%
@@ -35,28 +35,24 @@ okc_rec <- recipe(~ ., data = okc_text) %>%
   step_tfidf(essay0)
 
 okc_obj <- okc_rec %>%
-  prep(training = okc_text)
+  prep()
    
 bake(okc_obj, okc_text) %>%
   select(starts_with("tfidf_essay0"))
-}
 
 ## -----------------------------------------------------------------------------
-if (requireNamespace("text2vec", quietly = TRUE)) {
 okc_rec <- recipe(~ ., data = okc_text) %>%
   step_tokenize(essay0, token = "characters") %>%
   step_stopwords(essay0, custom_stopword_source = letters, keep = TRUE) %>%
   step_tf(essay0)
 
 okc_obj <- okc_rec %>%
-  prep(training = okc_text)
+  prep()
    
 bake(okc_obj, okc_text) %>%
   select(starts_with("tf_essay0"))
-}
 
 ## -----------------------------------------------------------------------------
-if (requireNamespace("text2vec", quietly = TRUE)) {
 okc_rec <- recipe(~ ., data = okc_text) %>%
   step_tokenize(essay0, token = "words") %>%
   step_stem(essay0) %>%
@@ -66,9 +62,8 @@ okc_rec <- recipe(~ ., data = okc_text) %>%
   step_tfidf(essay0)
 
 okc_obj <- okc_rec %>%
-  prep(training = okc_text)
+  prep()
    
 bake(okc_obj, okc_text) %>%
   select(starts_with("tfidf_essay0"))
-}
 

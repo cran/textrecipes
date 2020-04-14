@@ -17,7 +17,7 @@ test_that("stemming is done correctly", {
     step_stem(text) 
   
   obj <- rec %>%
-    prep(training = test_data, retain = TRUE)
+    prep()
   
   expect_equal(
     tokenizers::tokenize_words(test_data$text[1])[[1]] %>%
@@ -25,6 +25,7 @@ test_that("stemming is done correctly", {
     juice(obj) %>% 
       slice(1) %>% 
       pull(text) %>%
+      vctrs::field("tokens") %>%
       unlist()
   )
   
@@ -40,7 +41,7 @@ test_that("custom stemmer works", {
     step_stem(text, custom_stemmer = custom_stem_fun) 
   
   obj <- rec %>%
-    prep(training = test_data, retain = TRUE)
+    prep()
   
   expect_equal(
     tokenizers::tokenize_words(test_data$text[1])[[1]] %>%
@@ -48,11 +49,27 @@ test_that("custom stemmer works", {
     juice(obj) %>% 
       slice(1) %>% 
       pull(text) %>%
+      vctrs::field("tokens") %>%
       unlist()
   )
   
   expect_equal(dim(tidy(rec, 2)), c(1, 3))
   expect_equal(dim(tidy(obj, 2)), c(1, 3))
+})
+
+test_that("arguments are passed by options", {
+  data <- tibble(y = 0, text = "коты") 
+
+  expect_equal(
+  recipe(y ~ ., data = data) %>% 
+    step_tokenize(text) %>% 
+    step_stem(text, options = list(language = "russian")) %>% 
+    prep(data) %>% 
+    juice() %>% 
+    pull(text) %>%
+    vctrs::field("tokens"),
+  list("кот")
+  )
 })
 
 
@@ -61,5 +78,6 @@ test_that("printing", {
     step_tokenize(text) %>%
     step_stem(text)
   expect_output(print(rec))
-  expect_output(prep(rec, training = test_data, verbose = TRUE))
+  expect_output(prep(rec, verbose = TRUE))
 })
+

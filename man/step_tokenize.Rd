@@ -13,6 +13,7 @@ step_tokenize(
   columns = NULL,
   options = list(),
   token = "words",
+  engine = "tokenizers",
   custom_token = NULL,
   skip = FALSE,
   id = rand_id("tokenize")
@@ -25,9 +26,9 @@ step_tokenize(
 sequence of operations for this recipe.}
 
 \item{...}{One or more selector functions to choose variables.
-For `step_tokenize`, this indicates the variables to be encoded
-into a list column. See [recipes::selections()] for more
-details. For the `tidy` method, these are not currently used.}
+For \code{\link[=step_tokenize]{step_tokenize()}}, this indicates the variables to be encoded
+into a \link{tokenlist}. See \code{\link[recipes:selections]{recipes::selections()}} for more
+details. For the \code{tidy} method, these are not currently used.}
 
 \item{role}{Not used by this step since no new variables are
 created.}
@@ -36,63 +37,88 @@ created.}
 baked.}
 
 \item{columns}{A list of tibble results that define the
-encoding. This is `NULL` until the step is trained by
-[recipes::prep.recipe()].}
+encoding. This is \code{NULL} until the step is trained by
+\code{\link[recipes:prep.recipe]{recipes::prep.recipe()}}.}
 
 \item{options}{A list of options passed to the tokenizer.}
 
-\item{token}{Unit for tokenizing. Built-in options from the 
-[tokenizers] package are "words" (default), "characters",
-"character_shingles", "ngrams", "skip_ngrams", "sentences", 
-"lines", "paragraphs", "regex", "tweets" (tokenization by 
-word that preserves usernames, hashtags, and URLS ),  "ptb" 
-(Penn Treebank), "skip_ngrams" and  "word_stems".}
+\item{token}{Unit for tokenizing. See details for options. Defaults to
+"words".}
 
-\item{custom_token}{User supplied tokenizer. use of this argument
-will overwrite the token argument. Must take a character vector
+\item{engine}{Package that will be used for tokenization. See details for
+options. Defaults to "tokenizers".}
+
+\item{custom_token}{User supplied tokenizer. Use of this argument
+will overwrite the token and engine arguments. Must take a character vector
 as input and output a list of character vectors.}
 
 \item{skip}{A logical. Should the step be skipped when the
-recipe is baked by [recipes::bake.recipe()]? While all
-operations are baked when [recipes::prep.recipe()] is run, some
+recipe is baked by \code{\link[recipes:bake.recipe]{recipes::bake.recipe()}}? While all
+operations are baked when \code{\link[recipes:prep.recipe]{recipes::prep.recipe()}} is run, some
 operations may not be able to be conducted on new data (e.g.
 processing the outcome variable(s)). Care should be taken when
-using `skip = TRUE` as it may affect the computations for
+using \code{skip = TRUE} as it may affect the computations for
 subsequent operations.}
 
 \item{id}{A character string that is unique to this step to identify it}
 
-\item{x}{A `step_tokenize` object.}
+\item{x}{A \code{step_tokenize} object.}
 }
 \value{
-An updated version of `recipe` with the new step added
- to the sequence of existing steps (if any).
+An updated version of \code{recipe} with the new step added
+to the sequence of existing steps (if any).
 }
 \description{
-`step_tokenize` creates a *specification* of a recipe step that
- will convert a character predictor into a list of tokens.
+\code{\link[=step_tokenize]{step_tokenize()}} creates a \emph{specification} of a recipe step that
+will convert a character predictor into a \link{tokenlist}.
 }
 \details{
 Tokenization is the act of splitting a character string into smaller parts
-to be further analysed. This step uses the `tokenizers` package which 
+to be further analysed. This step uses the \code{tokenizers} package which
 includes heuristics to split the text into paragraphs tokens, word tokens
-amough others. `textrecipes` keeps the tokens in a list-column and other
-steps will do their tasks on those list-columns before transforming them
+amoug others. \code{textrecipes} keeps the tokens in a \link{tokenlist} and other
+steps will do their tasks on those \link{tokenlist}s before transforming them
 back to numeric.
 
-Working will `textrecipes` will always start by calling `step_tokenize`
-followed by modifying and filtering steps.
+The choice of \code{engine} determines the possible choices of \code{token}.
+
+If \code{engine = "tokenizers"}:
+\itemize{
+\item "words" (default)
+\item "characters"
+\item "character_shingles"
+\item "ngrams"
+\item "skip_ngrams"
+\item "sentences"
+\item "lines"
+\item "paragraphs"
+\item "regex"
+\item "tweets"
+\item "ptb" (Penn Treebank)
+\item "skip_ngrams"
+\item "word_stems"
+}
+
+if \code{engine = "spacyr"}
+\itemize{
+\item "words"
+}
+
+Working will \code{textrecipes} will almost always start by calling
+\code{step_tokenize} followed by modifying and filtering steps. This is not always
+the case as you sometimes want to do apply pre-tokenization steps, this can
+be done with \code{\link[recipes:step_mutate]{recipes::step_mutate()}}.
 }
 \examples{
 library(recipes)
-
+library(modeldata)
 data(okc_text)
 
 okc_rec <- recipe(~ ., data = okc_text) \%>\%
   step_tokenize(essay0) 
   
 okc_obj <- okc_rec \%>\%
-  prep(training = okc_text, retain = TRUE)
+  prep()
 
 juice(okc_obj, essay0) \%>\%
   slice(1:2)
@@ -106,12 +132,13 @@ tidy(okc_obj, number = 1)
 
 okc_obj_chars <- recipe(~ ., data = okc_text) \%>\%
   step_tokenize(essay0, token = "characters") \%>\%
-  prep(training = okc_text, retain = TRUE)
+  prep()
 
 juice(okc_obj_chars) \%>\%
   slice(2) \%>\%
   pull(essay0)
 }
 \seealso{
-[step_untokenize()] to untokenize.
+\code{\link[=step_untokenize]{step_untokenize()}} to untokenize.
 }
+\concept{character to tokenlist steps}

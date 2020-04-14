@@ -1,13 +1,13 @@
 #' Tokenization of character variables
 #'
-#' `step_tokenize` creates a *specification* of a recipe step that
-#'  will convert a character predictor into a list of tokens.
+#' [step_tokenize()] creates a *specification* of a recipe step that
+#'  will convert a character predictor into a [tokenlist].
 #'
 #' @param recipe A recipe object. The step will be added to the
 #'  sequence of operations for this recipe.
 #' @param ... One or more selector functions to choose variables.
-#'  For `step_tokenize`, this indicates the variables to be encoded
-#'  into a list column. See [recipes::selections()] for more
+#'  For [step_tokenize()], this indicates the variables to be encoded
+#'  into a [tokenlist]. See [recipes::selections()] for more
 #'  details. For the `tidy` method, these are not currently used.
 #' @param role Not used by this step since no new variables are
 #'  created.
@@ -15,14 +15,12 @@
 #'  encoding. This is `NULL` until the step is trained by
 #'  [recipes::prep.recipe()].
 #' @param options A list of options passed to the tokenizer.
-#' @param token Unit for tokenizing. Built-in options from the 
-#'  [tokenizers] package are "words" (default), "characters",
-#'  "character_shingles", "ngrams", "skip_ngrams", "sentences", 
-#'  "lines", "paragraphs", "regex", "tweets" (tokenization by 
-#'  word that preserves usernames, hashtags, and URLS ),  "ptb" 
-#'  (Penn Treebank), "skip_ngrams" and  "word_stems".
-#' @param custom_token User supplied tokenizer. use of this argument
-#'  will overwrite the token argument. Must take a character vector
+#' @param token Unit for tokenizing. See details for options. Defaults to 
+#' "words".
+#' @param engine Package that will be used for tokenization. See details for 
+#' options. Defaults to "tokenizers".
+#' @param custom_token User supplied tokenizer. Use of this argument
+#'  will overwrite the token and engine arguments. Must take a character vector
 #'  as input and output a list of character vectors. 
 #' @param skip A logical. Should the step be skipped when the
 #'  recipe is baked by [recipes::bake.recipe()]? While all
@@ -38,14 +36,14 @@
 #'  to the sequence of existing steps (if any).
 #' @examples
 #' library(recipes)
-#' 
+#' library(modeldata)
 #' data(okc_text)
 #' 
 #' okc_rec <- recipe(~ ., data = okc_text) %>%
 #'   step_tokenize(essay0) 
 #'   
 #' okc_obj <- okc_rec %>%
-#'   prep(training = okc_text, retain = TRUE)
+#'   prep()
 #' 
 #' juice(okc_obj, essay0) %>%
 #'   slice(1:2)
@@ -59,7 +57,7 @@
 #' 
 #' okc_obj_chars <- recipe(~ ., data = okc_text) %>%
 #'   step_tokenize(essay0, token = "characters") %>%
-#'   prep(training = okc_text, retain = TRUE)
+#'   prep()
 #' 
 #' juice(okc_obj_chars) %>%
 #'   slice(2) %>%
@@ -69,14 +67,37 @@
 #' Tokenization is the act of splitting a character string into smaller parts
 #' to be further analysed. This step uses the `tokenizers` package which 
 #' includes heuristics to split the text into paragraphs tokens, word tokens
-#' amough others. `textrecipes` keeps the tokens in a list-column and other
-#' steps will do their tasks on those list-columns before transforming them
+#' amoug others. `textrecipes` keeps the tokens in a [tokenlist] and other
+#' steps will do their tasks on those [tokenlist]s before transforming them
 #' back to numeric.
 #' 
-#' Working will `textrecipes` will always start by calling `step_tokenize`
-#' followed by modifying and filtering steps.
+#' The choice of `engine` determines the possible choices of `token`.
+#' 
+#' If `engine = "tokenizers"`:
+#' * "words" (default)
+#' * "characters"
+#' * "character_shingles"
+#' * "ngrams"
+#' * "skip_ngrams"
+#' * "sentences"
+#' * "lines"
+#' * "paragraphs"
+#' * "regex"
+#' * "tweets"
+#' * "ptb" (Penn Treebank)
+#' * "skip_ngrams"
+#' * "word_stems"
+#' 
+#' if `engine = "spacyr"`
+#' * "words"
+#' 
+#' Working will `textrecipes` will almost always start by calling 
+#' `step_tokenize` followed by modifying and filtering steps. This is not always
+#' the case as you sometimes want to do apply pre-tokenization steps, this can
+#' be done with [recipes::step_mutate()].
 #'
 #' @seealso [step_untokenize()] to untokenize.
+#' @family character to tokenlist steps
 step_tokenize <-
   function(recipe,
            ...,
@@ -85,6 +106,7 @@ step_tokenize <-
            columns = NULL,
            options = list(),
            token = "words",
+           engine = "tokenizers",
            custom_token = NULL,
            skip = FALSE,
            id = rand_id("tokenize")
@@ -98,6 +120,7 @@ step_tokenize <-
         columns = columns,
         options = options,
         token = token,
+        engine = engine,
         custom_token = custom_token,
         skip = skip,
         id = id
@@ -106,7 +129,7 @@ step_tokenize <-
   }
 
 step_tokenize_new <-
-  function(terms, role, trained, columns, options, token, custom_token,
+  function(terms, role, trained, columns, options, token, engine, custom_token,
            skip, id) {
     step(
       subclass = "tokenize",
@@ -116,6 +139,7 @@ step_tokenize_new <-
       columns = columns,
       options = options,
       token = token,
+      engine = engine,
       custom_token = custom_token,
       skip = skip,
       id = id
@@ -137,6 +161,7 @@ prep.step_tokenize <- function(x, training, info = NULL, ...) {
     columns = col_names,
     options = x$options,
     token = x$token,
+    engine = x$engine,
     custom_token = x$custom_token,
     skip = x$skip,
     id = x$id
@@ -149,7 +174,7 @@ bake.step_tokenize <- function(object, new_data, ...) {
   # for backward compat
 
   tokenizer <- object$custom_token %||%
-                           tokenizers_switch(object$token)
+                           tokenizer_switch(object$token, object$engine)
 
   for (i in seq_along(col_names)) {
     new_data[, col_names[i]] <- tokenizer_fun(new_data[, col_names[i]],
@@ -158,51 +183,6 @@ bake.step_tokenize <- function(object, new_data, ...) {
                                               token = tokenizer)
   }
   as_tibble(new_data)
-}
-
-tokenizer_fun <- function(data, name, options, token, ...) {
-  check_type(data[, name], quant = FALSE)
-
-  data <- factor_to_text(data, name)
-
-  token_expr <- expr(
-    token(
-      x = data[, 1, drop = TRUE]
-    )
-  )
-
-  if (length(options) > 0)
-    token_expr <- mod_call_args(token_expr, args = options)
-
-  out <- tibble::tibble(eval(token_expr))
-  names(out) <- name
-  out
-}
-
-tokenizers_switch <- function(name) {
-  possible_tokenizers <-
-    c("characters", "character_shingle", "lines", "ngrams",
-      "paragraphs", "ptb", "regex", "sentences", "skip_ngrams",
-      "tweets", "words", "word_stems")
-
-  if (!(name %in% possible_tokenizers))
-    rlang::abort(paste0("token should be one of the supported ",
-                        "'", possible_tokenizers, "'", collapse = ", "))
-
-  switch(name,
-         characters = tokenizers::tokenize_characters,
-         character_shingle = tokenizers::tokenize_character_shingles,
-         lines = tokenizers::tokenize_lines,
-         ngrams = tokenizers::tokenize_ngrams,
-         paragraphs = tokenizers::tokenize_paragraphs,
-         ptb = tokenizers::tokenize_ptb,
-         regex = tokenizers::tokenize_regex,
-         sentences = tokenizers::tokenize_sentences,
-         skip_ngrams = tokenizers::tokenize_skip_ngrams,
-         tweets = tokenizers::tokenize_tweets,
-         words = tokenizers::tokenize_words,
-         word_stems = tokenizers::tokenize_word_stems
-  )
 }
 
 #' @export
@@ -227,4 +207,76 @@ tidy.step_tokenize <- function(x, ...) {
   }
   res$id <- x$id
   res
+}
+
+## Implementation
+tokenizer_fun <- function(data, name, options, token, ...) {
+  check_type(data[, name], quant = FALSE)
+  
+  data <- factor_to_text(data, name)
+  
+  token_expr <- expr(
+    token(
+      x = data[, 1, drop = TRUE]
+    )
+  )
+  
+  if (length(options) > 0)
+    token_expr <- mod_call_args(token_expr, args = options)
+
+  token_list <- eval(token_expr)
+  
+  if (is_tokenlist(token_list)) {
+    out <- tibble::tibble(token_list)
+  } else {
+    out <- tibble::tibble(tokenlist(token_list))
+  }
+  names(out) <- name
+  out
+}
+
+tokenizer_switch <- function(name, engine) {
+  if (engine == "tokenizers") {
+    possible_tokenizers <-
+      c("characters", "character_shingle", "lines", "ngrams",
+        "paragraphs", "ptb", "regex", "sentences", "skip_ngrams",
+        "tweets", "words", "word_stems")
+    
+    if (!(name %in% possible_tokenizers))
+      rlang::abort(paste0("token should be one of the supported ",
+                          "'", possible_tokenizers, "'", collapse = ", "))
+    
+    res <- switch(name,
+           characters = tokenizers::tokenize_characters,
+           character_shingle = tokenizers::tokenize_character_shingles,
+           lines = tokenizers::tokenize_lines,
+           ngrams = tokenizers::tokenize_ngrams,
+           paragraphs = tokenizers::tokenize_paragraphs,
+           ptb = tokenizers::tokenize_ptb,
+           regex = tokenizers::tokenize_regex,
+           sentences = tokenizers::tokenize_sentences,
+           skip_ngrams = tokenizers::tokenize_skip_ngrams,
+           tweets = tokenizers::tokenize_tweets,
+           words = tokenizers::tokenize_words,
+           word_stems = tokenizers::tokenize_word_stems
+    )
+    return(res)
+  }
+  
+  if (engine == "spacyr") {
+    recipes::recipes_pkg_check("spacyr")
+    
+    possible_tokenizers <- c("words")
+    
+    if (!(name %in% possible_tokenizers))
+      rlang::abort(paste0("token should be one of the supported ",
+                          "'", possible_tokenizers, "'", collapse = ", "))
+    
+    res <- switch(name,
+                  words = spacyr_tokenizer_words
+    )
+    return(res)
+  }
+  
+  rlang::abort("`engine` argument is not valid.")
 }

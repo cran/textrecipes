@@ -20,7 +20,7 @@ test_that("merging is done correctly", {
     step_tokenmerge(text1, text2)
   
   obj <- rec %>%
-    prep(training = test_data, retain = TRUE)
+    prep()
   
   juiced_data <- juice(obj)
   
@@ -30,19 +30,20 @@ test_that("merging is done correctly", {
     juice()
   
   expect_equal(
-    lengths(juiced_data$tokenmerge),
-    lengths(rec2$text1) + lengths(rec2$text2)
+    lengths(vctrs::field(juiced_data$tokenmerge, "tokens")),
+    lengths(vctrs::field(rec2$text1, "tokens")) + 
+    lengths(vctrs::field(rec2$text2, "tokens"))
   )
 
   expect_equal(dim(recipes:::tidy.recipe(rec, 1)), c(2, 3))
   expect_equal(dim(recipes:::tidy.recipe(obj, 1)), c(2, 3))
 })
 
-test_that("it complains when the selected column isn't a list-column", {
+test_that("it complains when the selected column isn't a tokenlist", {
   rec <- rec %>%
     step_tokenmerge(text1, text2)
   
   expect_error(
-    prep(rec, training = test_data, retain = TRUE)
+    prep(rec)
   )
 })

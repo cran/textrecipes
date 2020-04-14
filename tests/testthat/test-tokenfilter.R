@@ -11,32 +11,19 @@ test_data <- tibble(text = c("I would not eat them here or there.",
 
 rec <- recipe(~ ., data = test_data)
 
-test_that("tokenfilter does nothing if argument are untouched", {
-  rec_ref <- rec %>%
-    step_tokenize(text) %>%
-    prep(training = test_data, retain = TRUE)
-  
-  rec_test <- rec %>%
-    step_tokenize(text) %>%
-    step_tokenfilter(text) %>%
-    prep(training = test_data, retain = TRUE)
-  
-  expect_equal(
-    juice(rec_ref) %>% pull(text),
-    juice(rec_test) %>% pull(text)
-  )
-})
-
 test_that("tokenfilter removes words correctly using min_times and max_times", {
   rec <- rec %>%
     step_tokenize(text) %>%
     step_tokenfilter(text, max_times = 3, min_times = 2)
   
+  expect_warning(
   obj <- rec %>%
-    prep(training = test_data, retain = TRUE)
+    prep(),
+  "only 3 was available and selected."
+  )
   
   expect_equal(
-    juice(obj) %>% pull(text),
+    juice(obj) %>% pull(text) %>% vctrs::field("tokens"),
     list(c("would", "eat", "them"),
          c("would", "eat", "them"),
          c("would", "eat"),
@@ -52,11 +39,14 @@ test_that("removes words correctly with min_times, max_times and procentage", {
     step_tokenize(text) %>%
     step_tokenfilter(text, max_times = 0.04, min_times = 0, percentage = TRUE)
   
+  expect_warning(
   obj <- rec %>%
-    prep(training = test_data, retain = TRUE)
+    prep(),
+  "only 12 was available and selected."
+  )
   
   expect_equal(
-    juice(obj) %>% pull(text),
+    juice(obj) %>% pull(text) %>% vctrs::field("tokens"),
     list(c("here", "or", "there"),
          c("anywhere"),
          c("green", "eggs", "and", "ham"),
@@ -70,10 +60,10 @@ test_that("tokenfilter removes words correctly using max_tokens", {
     step_tokenfilter(text, max_tokens = 10)
   
   obj <- rec %>%
-    prep(training = test_data, retain = TRUE)
+    prep()
   
   expect_equal(
-    juice(obj) %>% pull(text),
+    juice(obj) %>% pull(text) %>% vctrs::field("tokens"),
     list(c("i", "would", "not", "eat", "them"),
          c("i", "would", "not", "eat", "them", "anywhere"),
          c("i", "would", "not", "eat", "eggs", "and"),
@@ -88,7 +78,7 @@ test_that("tokenfilter throws warning when max_tokens > words", {
   
   expect_warning(
     rec %>%
-      prep(training = test_data, retain = TRUE)
+      prep()
   )
 })
 
@@ -97,5 +87,8 @@ test_that("printing", {
     step_tokenize(text) %>%
     step_tokenfilter(text)
   expect_output(print(rec))
-  expect_output(prep(rec, training = test_data, verbose = TRUE))
+  expect_warning(
+    expect_output(prep(rec, verbose = TRUE))
+  )
 })
+

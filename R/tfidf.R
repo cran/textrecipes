@@ -1,14 +1,14 @@
 #'  Term frequency-inverse document frequency of tokens
 #'
 #' `step_tfidf` creates a *specification* of a recipe step that
-#'  will convert a list of tokens into multiple variables containing
-#'  the Term frequency-inverse document frequency of tokens.
+#'  will convert a [tokenlist] into multiple variables containing
+#'  the term frequency-inverse document frequency of tokens.
 #'
 #' @param recipe A recipe object. The step will be added to the
 #'  sequence of operations for this recipe.
 #' @param ... One or more selector functions to choose variables.
 #'  For `step_tfidf`, this indicates the variables to be encoded
-#'  into a list column. See [recipes::selections()] for more
+#'  into a [tokenlist]. See [recipes::selections()] for more
 #'  details. For the `tidy` method, these are not currently used.
 #' @param role For model terms created by this step, what analysis
 #'  role should they be assigned?. By default, the function assumes
@@ -46,7 +46,7 @@
 #' @examples
 #' \donttest{
 #' library(recipes)
-#' 
+#' library(modeldata)
 #' data(okc_text)
 #' 
 #' okc_rec <- recipe(~ ., data = okc_text) %>%
@@ -54,7 +54,7 @@
 #'   step_tfidf(essay0)
 #'   
 #' okc_obj <- okc_rec %>%
-#'   prep(training = okc_text, retain = TRUE)
+#'   prep()
 #'   
 #' bake(okc_obj, okc_text)
 #' 
@@ -64,31 +64,32 @@
 #' @export
 #' @details
 #' It is strongly advised to use [step_tokenfilter] before using [step_tfidf] to 
-#' limit the number of variables created, otherwise you might run into memmory
-#' issues. A good strategy is to start with a low token count and go up 
-#' according to how much RAM you want to use.
+#' limit the number of variables created; otherwise you may run into memory
+#' issues. A good strategy is to start with a low token count and increase 
+#' depending on how much RAM you want to use.
 #' 
-#' Term frequency-inverse document frequency is the product of two statistics.
-#' The term frequency (TF) and the inverse document frequency (IDF). 
+#' Term frequency-inverse document frequency is the product of two statistics:
+#' the term frequency (TF) and the inverse document frequency (IDF). 
 #' 
-#' Term frequency is a weight of how many times each token appear in each 
+#' Term frequency measures how many times each token appears in each 
 #' observation.
 #' 
-#' Inverse document frequency is a measure of how much information a word
-#' gives, in other words, how common or rare is the word across all the 
+#' Inverse document frequency is a measure of how informative a word
+#' is, e.g., how common or rare the word is across all the 
 #' observations. If a word appears in all the observations it might not
-#' give us that much insight, but if it only appear in some it might help
-#' us differentiate the observations. 
+#' give that much insight, but if it only appears in some it might help
+#' differentiate between observations. 
 #' 
 #' The IDF is defined as follows: idf = log(1 + (# documents in the corpus) / 
 #' (# documents where the term appears))
 #' 
 #' The new components will have names that begin with `prefix`, then
-#' the name of the variable, followed by the tokens all seperated by
+#' the name of the variable, followed by the tokens all separated by
 #' `-`. The new variables will be created alphabetically according to
 #' token.
 #' 
-#' @seealso [step_hashing()] [step_tf()] [step_tokenize()]
+#' @seealso [step_tokenize()] to turn character into tokenlist.
+#' @family tokenlist to numeric steps
 step_tfidf <-
   function(recipe,
            ...,
@@ -104,8 +105,6 @@ step_tfidf <-
            skip = FALSE,
            id = rand_id("tfidf")) {
 
-    recipes::recipes_pkg_check("text2vec")
-    
     add_step(
       recipe,
       step_tfidf_new(
@@ -155,7 +154,7 @@ prep.step_tfidf <- function(x, training, info = NULL, ...) {
 
   for (i in seq_along(col_names)) {
     token_list[[i]] <- x$vocabulary %||%
-      sort(unique(unlist(training[, col_names[i], drop = TRUE])))
+      sort(get_unique_tokens(training[, col_names[i], drop = TRUE]))
   }
 
   step_tfidf_new(
@@ -188,20 +187,43 @@ bake.step_tfidf <- function(object, new_data, ...) {
                                  object$norm,
                                  object$sublinear_tf)
 
-    new_data <- bind_cols(new_data, tfidf_text)
-
     new_data <-
       new_data[, !(colnames(new_data) %in% col_names[i]), drop = FALSE]
+
+    new_data <- vctrs::vec_cbind(new_data, tfidf_text)
   }
   as_tibble(new_data)
 }
 
+#' @export
+print.step_tfidf <-
+  function(x, width = max(20, options()$width - 30), ...) {
+    cat("Term frequency-inverse document frequency with ", sep = "")
+    printer(x$columns, x$terms, x$trained, width = width)
+    invisible(x)
+  }
+
+#' @rdname step_tfidf
+#' @param x A `step_tfidf` object.
+#' @export
+tidy.step_tfidf <- function(x, ...) {
+  if (is_trained(x)) {
+    res <- tibble(terms = x$terms)
+  } else {
+    term_names <- sel2char(x$terms)
+    res <- tibble(terms = term_names)
+  }
+  res$id <- x$id
+  res
+}
+
+# Implementation
 tfidf_function <- function(data, names, labels, smooth_idf, norm,
                            sublinear_tf) {
-  counts <- list_to_dtm(data, names)
-
+  counts <- tokenlist_to_dtm(data, names)
+  
   tfidf <- dtm_to_tfidf(counts, smooth_idf, norm, sublinear_tf)
-
+  
   colnames(tfidf) <- paste0(labels, "_", names)
   as_tibble(tfidf)
 }
@@ -232,26 +254,4 @@ normalize = function(dtm, norm = c("l1", "l2", "none")) {
   norm_vec[is.infinite(norm_vec)] = 0
   
   Matrix::Diagonal(x = norm_vec) %*% dtm
-}
-
-#' @export
-print.step_tfidf <-
-  function(x, width = max(20, options()$width - 30), ...) {
-    cat("Term frequency-inverse document frequency with ", sep = "")
-    printer(x$columns, x$terms, x$trained, width = width)
-    invisible(x)
-  }
-
-#' @rdname step_tfidf
-#' @param x A `step_tfidf` object.
-#' @export
-tidy.step_tfidf <- function(x, ...) {
-  if (is_trained(x)) {
-    res <- tibble(terms = x$terms)
-  } else {
-    term_names <- sel2char(x$terms)
-    res <- tibble(terms = term_names)
-  }
-  res$id <- x$id
-  res
 }

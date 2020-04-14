@@ -8,7 +8,7 @@
 #'  sequence of operations for this recipe.
 #' @param ... One or more selector functions to choose variables.
 #'  For `step_lda`, this indicates the variables to be encoded
-#'  into a list column. See [recipes::selections()] for more
+#'  into a [tokenlist]. See [recipes::selections()] for more
 #'  details. For the `tidy` method, these are not currently used.
 #' @param role For model terms created by this step, what analysis
 #'  role should they be assigned?. By default, the function assumes
@@ -39,14 +39,14 @@
 #' if (requireNamespace("text2vec", quietly = TRUE)) {
 #' \donttest{
 #' library(recipes)
-#'
+#' library(modeldata)
 #' data(okc_text)
 #'
 #' okc_rec <- recipe(~ ., data = okc_text) %>%
 #'   step_lda(essay0)
 #'
 #' okc_obj <- okc_rec %>%
-#'   prep(training = okc_text, retain = TRUE)
+#'   prep()
 #'
 #' juice(okc_obj) %>%
 #'   slice(1:2)
@@ -77,6 +77,8 @@
 #' }
 #' }
 #' @export
+#' 
+#' @family character to numeric steps
 step_lda <-
   function(recipe,
            ...,
@@ -173,7 +175,7 @@ bake.step_lda <- function(object, new_data, ...) {
     colnames(tf_text) <- paste(object$prefix, col_names[i], colnames(tf_text),
                                sep = "_")
 
-    new_data <- bind_cols(new_data, tf_text)
+    new_data <- vctrs::vec_cbind(new_data, tf_text)
 
     new_data <-
       new_data[, !(colnames(new_data) %in% col_names[i]), drop = FALSE]

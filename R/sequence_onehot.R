@@ -7,7 +7,7 @@
 #'  sequence of operations for this recipe.
 #' @param ... One or more selector functions to choose variables.
 #'  For `step_sequence_onehot`, this indicates the variables to be encoded
-#'  into a list column. See [recipes::selections()] for more
+#'  into a [tokenlist]. See [recipes::selections()] for more
 #'  details. For the `tidy` method, these are not currently used.
 #' @param role For model terms created by this step, what analysis
 #'  role should they be assigned?. By default, the function assumes
@@ -36,14 +36,14 @@
 #'  to the sequence of existing steps (if any).
 #' @examples
 #' library(recipes)
-#' 
+#' library(modeldata)
 #' data(okc_text)
 #' 
 #' okc_rec <- recipe(~ ., data = okc_text) %>%
 #'   step_sequence_onehot(essay0) 
 #'   
 #' okc_obj <- okc_rec %>%
-#'   prep(training = okc_text, retain = TRUE)
+#'   prep()
 #' 
 #' juice(okc_obj)
 #'   
@@ -58,6 +58,8 @@
 #' Characters not in the integer_key will be encoded as 0.
 #'
 #' @source \url{https://papers.nips.cc/paper/5782-character-level-convolutional-networks-for-text-classification.pdf}
+#' 
+#' @family character to numeric steps
 step_sequence_onehot <-
   function(recipe,
            ...,
@@ -135,17 +137,18 @@ bake.step_sequence_onehot <- function(object, new_data, ...) {
 
   for (i in seq_along(col_names)) {
     out_text <- string2encoded_matrix(new_data[, col_names[i], drop = TRUE],
-                                      integer_key = object$integer_key, string_length = object$string_length)
+                                      integer_key = object$integer_key,
+                                      string_length = object$string_length)
 
     colnames(out_text) <- paste(sep = "_",
                                 object$prefix,
                                 col_names[i],
                                 seq_len(ncol(out_text)))
 
-    new_data <- bind_cols(new_data, as_tibble(out_text))
-
     new_data <-
       new_data[, !(colnames(new_data) %in% col_names[i]), drop = FALSE]
+
+    new_data <- vctrs::vec_cbind(new_data, as_tibble(out_text))
   }
   as_tibble(new_data)
 }
@@ -175,6 +178,7 @@ tidy.step_sequence_onehot <- function(x, ...) {
   res
 }
 
+# Implementation
 pad_string <- function(x, n) {
   len_x <- length(x)
   if (len_x == n) {

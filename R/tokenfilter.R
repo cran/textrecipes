@@ -1,14 +1,13 @@
 #' Filter the tokens based on term frequency
 #'
 #' `step_tokenfilter` creates a *specification* of a recipe step that
-#'  will convert a list of tokens into a list where the tokens are filtered
-#'  based on frequency.
+#'  will convert a [tokenlist] to be filtered based on frequency.
 #'
 #' @param recipe A recipe object. The step will be added to the
 #'  sequence of operations for this recipe.
 #' @param ... One or more selector functions to choose variables.
 #'  For `step_tokenfilter`, this indicates the variables to be encoded
-#'  into a list column. See [recipes::selections()] for more
+#'  into a [tokenlist]. See [recipes::selections()] for more
 #'  details. For the `tidy` method, these are not currently used.
 #' @param role Not used by this step since no new variables are
 #'  created.
@@ -39,7 +38,7 @@
 #'  to the sequence of existing steps (if any).
 #' @examples
 #' library(recipes)
-#' 
+#' library(modeldata)
 #' data(okc_text)
 #' 
 #' okc_rec <- recipe(~ ., data = okc_text) %>%
@@ -47,7 +46,7 @@
 #'   step_tokenfilter(essay0) 
 #'   
 #' okc_obj <- okc_rec %>%
-#'   prep(training = okc_text, retain = TRUE)
+#'   prep()
 #' 
 #' juice(okc_obj, essay0) %>% 
 #'   slice(1:2)
@@ -61,7 +60,7 @@
 #' @export
 #' @details
 #' This step allow you to limit the tokens you are looking at by filtering
-#' on their occurance in the corpus. You are able to exclude tokens if they
+#' on their occurrence in the corpus. You are able to exclude tokens if they
 #' appear too many times or too fews times in the data. It can be specified
 #' as counts using `max_times` and `min_times` or as percentages by setting
 #' `percentage` as `TRUE`. In addition one can filter to only use the top
@@ -73,7 +72,8 @@
 #' It is strongly advised to filter before using [step_tf] or [step_tfidf] to 
 #' limit the number of variables created.
 #' 
-#' @seealso [step_untokenize()]
+#' @seealso [step_tokenize()] to turn character into tokenlist.
+#' @family tokenlist to tokenlist steps
 step_tokenfilter <-
   function(recipe,
            ...,
@@ -143,8 +143,8 @@ prep.step_tokenfilter <- function(x, training, info = NULL, ...) {
 
   for (i in seq_along(col_names)) {
     retain_words[[i]] <- tokenfilter_fun(training[, col_names[i], drop = TRUE],
-                                        x$max_times, x$min_times, x$max_tokens,
-                                        x$percentage)
+                                         x$max_times, x$min_times, x$max_tokens,
+                                         x$percentage)
 
     n_words[[i]] <- length(table(unlist(training[, col_names[i], drop = TRUE])))
   }
@@ -170,36 +170,15 @@ bake.step_tokenfilter <- function(object, new_data, ...) {
   # for backward compat
 
   for (i in seq_along(col_names)) {
-    new_data[, col_names[i]] <-
-      word_tbl_filter(new_data[, col_names[i], drop = TRUE],
-                      object$res[[i]],
-                      TRUE)
+    filtered_text <- tokenlist_filter(new_data[, col_names[i], drop = TRUE], 
+                                      object$res[[i]], 
+                                      TRUE)
+    
+    new_data[, col_names[i]] <- tibble(filtered_text)
   }
   new_data <- factor_to_text(new_data, col_names)
 
   as_tibble(new_data)
-}
-
-tokenfilter_fun <- function(data, max_times, min_times, max_features,
-                            percentage) {
-  tf <- table(unlist(data))
-
-  if (percentage)
-    tf <- tf / sum(tf)
-
-  ids <- tf <= max_times & tf >= min_times
-
-  if (is.infinite(max_features)) {
-    names(sort(tf[ids], decreasing = TRUE))
-  } else {
-    if (max_features > sum(ids)) {
-      rlang::warn(paste0("max_features was set to '", max_features,
-                         "', but only ", sum(ids), 
-                         " was available and selected."))
-      max_features <- sum(ids)
-    }
-    names(sort(tf[ids], decreasing = TRUE)[seq_len(max_features)])
-  }
 }
 
 #' @export
@@ -224,4 +203,27 @@ tidy.step_tokenfilter <- function(x, ...) {
   }
   res$id <- x$id
   res
+}
+
+## Implementation
+tokenfilter_fun <- function(data, max_times, min_times, max_features,
+                            percentage) {
+  tf <- table(unlist(data))
+  
+  if (percentage)
+    tf <- tf / sum(tf)
+  
+  ids <- tf <= max_times & tf >= min_times
+  
+  if (is.infinite(max_features)) {
+    names(sort(tf[ids], decreasing = TRUE))
+  } else {
+    if (max_features > sum(ids)) {
+      rlang::warn(paste0("max_features was set to '", max_features,
+                         "', but only ", sum(ids), 
+                         " was available and selected."))
+      max_features <- sum(ids)
+    }
+    names(sort(tf[ids], decreasing = TRUE)[seq_len(max_features)])
+  }
 }
