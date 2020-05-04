@@ -1,6 +1,6 @@
 Package: textrecipes
 Title: Extra 'Recipes' for Text Processing
-Version: 0.2.0
+Version: 0.2.1
 Authors@R: 
     person(given = "Emil",
            family = "Hvitfeldt",
@@ -27,8 +27,8 @@ RoxygenNote: 7.1.0.9000
 SystemRequirements: GNU make, C++11
 LinkingTo: Rcpp
 NeedsCompilation: yes
-Packaged: 2020-04-14 00:53:55 UTC; emilhvitfeldthansen
+Packaged: 2020-05-04 03:30:05 UTC; emilhvitfeldthansen
 Author: Emil Hvitfeldt [aut, cre] (<https://orcid.org/0000-0002-0679-1945>)
 Maintainer: Emil Hvitfeldt <emilhhvitfeldt@gmail.com>
 Repository: CRAN
-Date/Publication: 2020-04-14 05:00:03 UTC
+Date/Publication: 2020-05-04 05:20:03 UTC
