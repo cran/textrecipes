@@ -1,11 +1,11 @@
-1ff3c9764a1136ade5dff204afed9eac *DESCRIPTION
+1288e950c67d734a16459573326e38d1 *DESCRIPTION
 da5c99df12def62825ca3268c9874a1a *LICENSE
-fb2e8055f7f1c5961301be7462a7185b *NAMESPACE
-d128536c630f07c3666e4e03d898a5eb *NEWS.md
-0278c8ba4655ae35c91dca84d2b27253 *R/0_imports.R
+f77483de989fcaa3a79d2eb0bb7e9d9d *NAMESPACE
+a8c2e3f7270ece15332b71fa9ebcd700 *NEWS.md
+36b3d1b5f1b4c9a4f5513bc0d515f20b *R/0_imports.R
 ff0e3076fb8256ea4056e4c2fa030f55 *R/RcppExports.R
 77a42062846cf9776176eb99b6d36ab4 *R/aaa.R
-fc4a78be237a0a78cbc8e978c7418421 *R/embeddings.R
+49570083a9559e43fb976788e0f8739b *R/embeddings.R
 e66ec2a9ad2da6fe0bc8cfbb7f69d518 *R/hashing.R
 8aade05fe21c2dfd646d4d0ea618fbda *R/lda.R
 7da5e5a8da98feea4da13b01ee0b920d *R/lemma.R
@@ -21,7 +21,7 @@ c57479c211a60e62b1b63ab93fedc0d8 *R/textrecipes-package.R
 ac0d79e91cdeb991b369e3057024ea84 *R/tokenfilter.R
 00906fd64a0da0b56c39ae06438ff0b6 *R/tokenize.R
 41f24b077a77a4d4c54130614dd1cc16 *R/tokenizer-spacyr.R
-4274ca3aa90fbfeb7e6e65e8ec87f7aa *R/tokenlist.R
+184c58fe9ea4f47bf6c37a050b757329 *R/tokenlist.R
 31f9ae469da9db11bc721942ec84f1d2 *R/tokenmerge.R
 f2e1c94952f5a689ce0a04c83af6c753 *R/untokenize.R
 8d2487dbf45064f33b08e5a80830b68e *R/utils-pipe.R
@@ -32,7 +32,7 @@ a77607f7ef4e3d19753356ebf1e030cd *build/vignette.rds
 c577e131d337538157c02072a12e7a80 *inst/doc/Working-with-n-grams.html
 38e71c0fc6905eb46c41a2648aa5cf19 *inst/doc/cookbook---using-more-complex-recipes-involving-text.R
 f92ad7932aa7f1d9349213d0e8377cac *inst/doc/cookbook---using-more-complex-recipes-involving-text.Rmd
-d974851229c01d6974e2b5991271a78b *inst/doc/cookbook---using-more-complex-recipes-involving-text.html
+2a2815182f11d485fa3249603536f204 *inst/doc/cookbook---using-more-complex-recipes-involving-text.html
 20087ee200680315a54ce4f110f7c699 *inst/doc/tokenlist.R
 bbeef1dca0215f80ce459eb48b50fcd0 *inst/doc/tokenlist.Rmd
 81081f1b4b8a82cc4a2b869bdd404107 *inst/doc/tokenlist.html
@@ -62,7 +62,7 @@ f5c065197261aee904ecf51118e4d528 *man/step_tfidf.Rd
 e273b014b0051beecbe07a5583a1ac94 *man/step_tokenize.Rd
 3d4a2e77ae80fc0f9dcb1b27fb7b502e *man/step_tokenmerge.Rd
 ff4bf4d07aab4a83760bc11565b2bd84 *man/step_untokenize.Rd
-93c1517a57cc22cd2de7f59876a14398 *man/step_word_embeddings.Rd
+939ed155cb918848f0a8251bf34b9987 *man/step_word_embeddings.Rd
 86756ed7d8c27681b00b5305eb640ad3 *man/textrecipes-package.Rd
 753d95900a31cb7e361d5fe62959ab21 *man/tokenlist.Rd
 29d36cde40b058ef1701ab69385fb22f *man/tunable.step_ngram.Rd
@@ -70,7 +70,7 @@ ff4bf4d07aab4a83760bc11565b2bd84 *man/step_untokenize.Rd
 8c6d4502c361eff741256c5b905cbb09 *src/ngram.cpp
 ef4d0c353325fc697363e2649f95ab1a *tests/testthat.R
 2ebdb4c552356b76227d76b50d2c8a84 *tests/testthat/helper-functions.R
-e305b1f94d907e5af412ee48e545488b *tests/testthat/test-embeddings.R
+0c3f0df36c083c90ed2a97e0bd7791e1 *tests/testthat/test-embeddings.R
 ae87c9113311d00fd6212809131e586f *tests/testthat/test-hashing.R
 411f2abd1745113d34bb2c6f17dc25a4 *tests/testthat/test-lda.R
 dd2353589683ff92a414b336386df2d4 *tests/testthat/test-lemma.R
@@ -83,7 +83,7 @@ b11f5199dc6033b389b3029fd72e8b29 *tests/testthat/test-textfeature.R
 c13f9b13690b2178ad77394e3c099c2e *tests/testthat/test-tf.R
 72a55e15057a23c4cb32d538987664bf *tests/testthat/test-tfidf.R
 de6fb87621add36c8da237f35d8e34ff *tests/testthat/test-tokenfilter.R
-30dd91d8fe1b047d0a5ded1e92a40cd1 *tests/testthat/test-tokenize.R
+f1b971fb3c180f8899b1aada2c28e095 *tests/testthat/test-tokenize.R
 8465c771daa9b96c6ca54b24e0a1accd *tests/testthat/test-tokenizer-spacyr.R
 859a1e50bf167e81457f9a9c67994091 *tests/testthat/test-tokenlist.R
 3a7c11a83eec97e787807aa9857820dc *tests/testthat/test-tokenmerge.R
