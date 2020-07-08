@@ -26,11 +26,15 @@ bake(okc_obj, okc_text) %>%
   select(starts_with("tf_essay0"))
 
 ## -----------------------------------------------------------------------------
+stopwords_list <- c("was", "she's", "who", "had", "some", "same", "you", "most", 
+                    "it's", "they", "for", "i'll", "which", "shan't", "we're", 
+                    "such", "more", "with", "there's", "each")
+
 words <- c("sad", "happy")
 
 okc_rec <- recipe(~ ., data = okc_text) %>%
   step_tokenize(essay0) %>%
-  step_stopwords(essay0) %>% 
+  step_stopwords(essay0, custom_stopword_source = stopwords_list) %>% 
   step_stopwords(essay0, custom_stopword_source = words) %>% 
   step_tfidf(essay0)
 
