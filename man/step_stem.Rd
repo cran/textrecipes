@@ -67,10 +67,10 @@ will convert a \link{tokenlist} to have its tokens stemmed.
 Words tend to have different forms depending on context, such as
 organize, organizes, and organizing. In many situations it is beneficial
 to have these words condensed into one to allow for a smaller pool of
-words. Stemming is the act of choping off the end of words using a set
+words. Stemming is the act of chopping off the end of words using a set
 of heuristics.
 
-Note that the steming will only be done at the end of the word and
+Note that the stemming will only be done at the end of the word and
 will therefore not work reliably on ngrams or sentences.
 }
 \examples{
@@ -78,20 +78,20 @@ library(recipes)
 library(modeldata)
 data(okc_text)
 
-okc_rec <- recipe(~ ., data = okc_text) \%>\%
+okc_rec <- recipe(~., data = okc_text) \%>\%
   step_tokenize(essay0) \%>\%
   step_stem(essay0)
-  
+
 okc_obj <- okc_rec \%>\%
   prep()
 
-juice(okc_obj, essay0) \%>\% 
+bake(okc_obj, new_data = NULL, essay0) \%>\%
   slice(1:2)
 
-juice(okc_obj) \%>\% 
-  slice(2) \%>\% 
-  pull(essay0) 
-  
+bake(okc_obj, new_data = NULL) \%>\%
+  slice(2) \%>\%
+  pull(essay0)
+
 tidy(okc_rec, number = 2)
 tidy(okc_obj, number = 2)
 
@@ -99,19 +99,19 @@ tidy(okc_obj, number = 2)
 # if it is a "s".
 remove_s <- function(x) gsub("s$", "", x)
 
-okc_rec <- recipe(~ ., data = okc_text) \%>\%
+okc_rec <- recipe(~., data = okc_text) \%>\%
   step_tokenize(essay0) \%>\%
   step_stem(essay0, custom_stemmer = remove_s)
-  
+
 okc_obj <- okc_rec \%>\%
   prep()
 
-juice(okc_obj, essay0) \%>\% 
+bake(okc_obj, new_data = NULL, essay0) \%>\%
   slice(1:2)
 
-juice(okc_obj) \%>\% 
-  slice(2) \%>\% 
-  pull(essay0) 
+bake(okc_obj, new_data = NULL) \%>\%
+  slice(2) \%>\%
+  pull(essay0)
 }
 \seealso{
 \code{\link[=step_tokenize]{step_tokenize()}} to turn character into tokenlist.

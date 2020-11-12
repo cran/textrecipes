@@ -14,8 +14,10 @@ step_sequence_onehot(
   role = "predictor",
   trained = FALSE,
   columns = NULL,
-  string_length = 100,
-  integer_key = letters,
+  sequence_length = 100,
+  padding = "pre",
+  truncating = "pre",
+  vocabulary = NULL,
   prefix = "seq1hot",
   skip = FALSE,
   id = rand_id("sequence_onehot")
@@ -44,11 +46,18 @@ baked.}
 encoding. This is \code{NULL} until the step is trained by
 \code{\link[recipes:prep]{recipes::prep.recipe()}}.}
 
-\item{string_length}{A numeric, number of characters to keep before
+\item{sequence_length}{A numeric, number of characters to keep before
 discarding. Defaults to 100.}
 
-\item{integer_key}{A character vector, characters to be mapped to integers.
-Characters not in the integer_key will be encoded as 0. Defaults to
+\item{padding}{'pre' or 'post', pad either before or after each sequence.
+defaults to 'pre'.}
+
+\item{truncating}{'pre' or 'post', remove values from sequences larger than
+sequence_length either in the beginning or in the end of the sequence.
+Defaults too 'pre'.}
+
+\item{vocabulary}{A character vector, characters to be mapped to integers.
+Characters not in the vocabulary will be encoded as 0. Defaults to
 \code{letters}.}
 
 \item{prefix}{A prefix for generated column names, default to "seq1hot".}
@@ -74,27 +83,28 @@ to the sequence of existing steps (if any).
 will take a string and do one hot encoding for each character by position.
 }
 \details{
-The string will be capped by the string_length argument, strings shorter then
-string_length will be padded with empty characters. The encoding will assign
-a integer to each character in the integer_key, and will encode accordingly.
-Characters not in the integer_key will be encoded as 0.
+The string will be capped by the sequence_length argument, strings shorter then
+sequence_length will be padded with empty characters. The encoding will assign
+a integer to each character in the vocabulary, and will encode accordingly.
+Characters not in the vocabulary will be encoded as 0.
 }
 \examples{
 library(recipes)
 library(modeldata)
 data(okc_text)
 
-okc_rec <- recipe(~ ., data = okc_text) \%>\%
-  step_sequence_onehot(essay0) 
-  
+okc_rec <- recipe(~essay0, data = okc_text) \%>\%
+  step_tokenize(essay0) \%>\%
+  step_tokenfilter(essay0) \%>\%
+  step_sequence_onehot(essay0)
+
 okc_obj <- okc_rec \%>\%
   prep()
 
-juice(okc_obj)
-  
+bake(okc_obj, new_data = NULL)
+
 tidy(okc_rec, number = 1)
 tidy(okc_obj, number = 1)
-
 }
 \seealso{
 Other character to numeric steps: 

@@ -1,3 +1,16 @@
+# textrecipes 0.4.0
+
+## Breaking Changes
+
+* `step_lda()` now takes a tokenlist instead of a character variable. See readme for more detail.
+
+## New Features
+
+* `step_sequence_onehot()` now takes tokenlists as input.
+* added {tokenizers.bpe} engine to `step_tokenize()`.
+* added {udpipe} engine to `step_tokenize()`.
+* added new steps for cleaning variable names or levels with {janitor}, `step_clean_names()` and `step_clean_levels()`. (#101)
+
 # textrecipes 0.3.0
 
 * stopwords package have been moved from Imports to Suggests.

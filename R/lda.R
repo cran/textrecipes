@@ -43,12 +43,13 @@
 #' data(okc_text)
 #'
 #' okc_rec <- recipe(~ ., data = okc_text) %>%
+#'   step_tokenize(essay0) %>%
 #'   step_lda(essay0)
 #'
 #' okc_obj <- okc_rec %>%
 #'   prep()
 #'
-#' juice(okc_obj) %>%
+#' bake(okc_obj, new_data = NULL) %>%
 #'   slice(1:2)
 
 #' tidy(okc_rec, number = 1)
@@ -56,9 +57,10 @@
 #'
 #' # Changing the number of topics.
 #' recipe(~ ., data = okc_text) %>%
+#'   step_tokenize(essay0, essay1) %>%
 #'   step_lda(essay0, essay1, num_topics = 20) %>%
 #'   prep() %>%
-#'   juice() %>%
+#'   bake(new_data = NULL) %>%
 #'   slice(1:2)
 #'
 #' # Supplying A pre-trained LDA model trained using text2vec
@@ -70,9 +72,10 @@
 #' lda_model <- LDA$new(n_topics = 15)
 #'
 #' recipe(~ ., data = okc_text) %>%
+#'   step_tokenize(essay0, essay1) %>%
 #'   step_lda(essay0, essay1, lda_models = lda_model) %>%
 #'   prep() %>%
-#'   juice() %>%
+#'   bake(new_data = NULL) %>%
 #'   slice(1:2)
 #' }
 #' }
@@ -92,7 +95,7 @@ step_lda <-
            id = rand_id("lda")
   ) {
     
-    recipes::recipes_pkg_check("textfeatures")
+    recipes::recipes_pkg_check(required_pkgs.step_lda())
     
     add_step(
       recipe,
@@ -130,19 +133,19 @@ step_lda_new <-
 #' @export
 prep.step_lda <- function(x, training, info = NULL, ...) {
   col_names <- terms_select(x$terms, info = info)
-
-  training <- factor_to_text(training, col_names)
-
-  check_type(training[, col_names], quant = FALSE)
+  
+  check_lda_character(training[, col_names])
+  
+  check_list(training[, col_names])
 
   model_list <- list()
 
   for (i in seq_along(col_names)) {
+    tokens <- get_tokens(training[, col_names[i], drop = TRUE])
+    
     ddd <- utils::capture.output(
       model_list[[i]] <- x$lda_models %||%
-        attr(textfeatures::word_dims(training[, col_names[i], drop = TRUE], 
-                                     n = x$num_topics),
-             "dict")
+        attr(word_dims(tokens, n = x$num_topics), "dict")
     )
   }
 
@@ -164,13 +167,13 @@ bake.step_lda <- function(object, new_data, ...) {
   col_names <- object$columns
   # for backward compat
 
-  new_data <- factor_to_text(new_data, col_names)
-
   for (i in seq_along(col_names)) {
+    tokens <- get_tokens(new_data[, col_names[i], drop = TRUE])
+    
     ddd <- utils::capture.output(
-      tf_text <- textfeatures::word_dims_newtext(object$lda_models[[i]],
-                                   new_data[, col_names[i], drop = TRUE])
+      tf_text <- word_dims_newtext(object$lda_models[[i]], tokens)
     )
+    
     attr(tf_text, "dict") <- NULL
     colnames(tf_text) <- paste(object$prefix, col_names[i], colnames(tf_text),
                                sep = "_")
@@ -207,4 +210,60 @@ tidy.step_lda <- function(x, ...) {
   }
   res$id <- x$id
   res
+}
+
+#' @rdname required_pkgs.step
+#' @export
+required_pkgs.step_lda <- function(x, ...) {
+  c("textfeatures", "textrecipes")
+}
+
+word_dims <- function(tokens, n = 10, n_iter = 20) {
+  it <- text2vec::itoken(tokens, ids = seq_along(tokens))
+  v <- text2vec::create_vocabulary(it)
+  v <- text2vec::prune_vocabulary(
+    v, 
+    term_count_min = 2, 
+    vocab_term_max = n * 50
+  )
+  dtm <- text2vec::create_dtm(it, text2vec::vocab_vectorizer(v))
+  lda_model <- text2vec::LDA$new(n_topics = n)
+  d <- lda_model$fit_transform(dtm, n_iter = n_iter)
+  d <- as.data.frame(d, stringsAsFactors = FALSE)
+  names(d) <- paste0("w", seq_len(ncol(d)))
+  row.names(d) <- NULL
+  attr(d, "dict") <- lda_model
+  d
+}
+
+word_dims_newtext <- function(lda_model, tokens, n_iter = 20) {
+  it <- text2vec::itoken(tokens, ids = seq_along(tokens))
+  v <- text2vec::create_vocabulary(it)
+  v <- text2vec::prune_vocabulary(v, term_count_min = 5, doc_proportion_max = 0.2)
+  dtm <- text2vec::create_dtm(it, text2vec::vocab_vectorizer(v))
+  d <- lda_model$fit_transform(dtm, n_iter = n_iter)
+  d <- as.data.frame(d, stringsAsFactors = FALSE)
+  names(d) <- paste0("w", seq_len(ncol(d)))
+  row.names(d) <- NULL
+  d
+}
+
+check_lda_character <- function (dat) {
+  
+  character_ind <- vapply(dat, is.character, logical(1))
+  factor_ind <- vapply(dat, is.factor, logical(1))
+  
+  all_good <- character_ind | factor_ind
+  
+  if (any(all_good))
+    rlang::abort(
+      paste0(
+        "All columns selected for this step should be tokenlists.",
+        "\n",
+        "See https://github.com/tidymodels/textrecipes#breaking-changes",
+        " for more information."
+      )
+    )
+  
+  invisible(all_good)
 }
