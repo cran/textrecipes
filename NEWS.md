@@ -1,3 +1,9 @@
+# textrecipes 0.4.1
+
+## Bug fixes
+
+* Fixed a bug in `step_tokenfilter()` and `step_sequence_onehot()` that sometimes caused crashes in R 4.1.0.
+
 # textrecipes 0.4.0
 
 ## Breaking Changes

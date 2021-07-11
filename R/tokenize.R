@@ -3,17 +3,11 @@
 #' [step_tokenize()] creates a *specification* of a recipe step that
 #'  will convert a character predictor into a [tokenlist].
 #'
-#' @param recipe A recipe object. The step will be added to the
-#'  sequence of operations for this recipe.
-#' @param ... One or more selector functions to choose variables.
-#'  For [step_tokenize()], this indicates the variables to be encoded
-#'  into a [tokenlist]. See [recipes::selections()] for more
-#'  details. For the `tidy` method, these are not currently used.
-#' @param role Not used by this step since no new variables are
-#'  created.
-#' @param columns A list of tibble results that define the
-#'  encoding. This is `NULL` until the step is trained by
-#'  [recipes::prep.recipe()].
+#' @template args-recipe
+#' @template args-dots
+#' @template args-role_no-new
+#' @template args-trained
+#' @template args-columns
 #' @param training_options A list of options passed to the tokenizer when it is
 #'  being trained. Only applicable for engine == "tokenizers.bpe".
 #' @param options A list of options passed to the tokenizer.
@@ -24,18 +18,161 @@
 #' @param custom_token User supplied tokenizer. Use of this argument
 #'  will overwrite the token and engine arguments. Must take a character vector
 #'  as input and output a list of character vectors.
-#' @param skip A logical. Should the step be skipped when the
-#'  recipe is baked by [recipes::bake.recipe()]? While all
-#'  operations are baked when [recipes::prep.recipe()] is run, some
-#'  operations may not be able to be conducted on new data (e.g.
-#'  processing the outcome variable(s)). Care should be taken when
-#'  using `skip = TRUE` as it may affect the computations for
-#'  subsequent operations.
-#' @param id A character string that is unique to this step to identify it
-#' @param trained A logical to indicate if the recipe has been
-#'  baked.
-#' @return An updated version of `recipe` with the new step added
-#'  to the sequence of existing steps (if any).
+#' @template args-skip
+#' @template args-id
+#' 
+#' @template returns
+#' 
+#' @details
+#' 
+#' ```{r, echo=FALSE}
+#' options(width = 55)
+#' ```
+#' 
+#' Tokenization is the act of splitting a character string into smaller parts
+#' to be further analyzed. This step uses the `tokenizers` package which
+#' includes heuristics to split the text into paragraphs tokens, word tokens
+#' among others. `textrecipes` keeps the tokens in a [tokenlist] and other
+#' steps will do their tasks on those [tokenlist]s before transforming them
+#' back to numeric.
+#'
+#' Working will `textrecipes` will almost always start by calling
+#' `step_tokenize` followed by modifying and filtering steps. This is not always
+#' the case as you sometimes want to do apply pre-tokenization steps, this can
+#' be done with [recipes::step_mutate()].
+#' 
+#' # Engines
+#' 
+#' The choice of `engine` determines the possible choices of `token`.
+#'
+#' The following is some small example data used in the following examples
+#' 
+#' ```{r}
+#' text_tibble <- tibble(
+#'   text = c("This is words", "They are nice!")
+#' )
+#' ```
+#' 
+#' ## tokenizers
+#' 
+#' The tokenizers package is the default `engine` and it comes with the 
+#' following unit of `token`. All of these options correspond to a function in
+#' the tokenizers package.
+#' 
+#' * "words" (default)
+#' * "characters"
+#' * "character_shingles"
+#' * "ngrams"
+#' * "skip_ngrams"
+#' * "sentences"
+#' * "lines"
+#' * "paragraphs"
+#' * "regex"
+#' * "tweets"
+#' * "ptb" (Penn Treebank)
+#' * "skip_ngrams"
+#' * "word_stems"
+#' 
+#' The default tokenizer is `"word"` which splits the text into a series of 
+#' words. By using `step_tokenize()` without setting any arguments you get word
+#' tokens
+#' 
+#' ```{r}
+#' recipe(~ text, data = text_tibble) %>%
+#'   step_tokenize(text) %>%
+#'   show_tokens(text)
+#' ```
+#' 
+#' This tokenizer has arguments that change how the tokenization occurs and can
+#' accessed using the `options` argument by passing a named list. Here we are
+#' telling [tokenizers::tokenize_words] that we don't want to turn the words to
+#' lowercase
+#' 
+#' ```{r}
+#' recipe(~ text, data = text_tibble) %>%
+#'   step_tokenize(text, 
+#'                 options = list(lowercase = FALSE)) %>%
+#'   show_tokens(text)
+#' ```
+#' 
+#' We can also stop removing punctuation.
+#' 
+#' ```{r}
+#' recipe(~ text, data = text_tibble) %>%
+#'   step_tokenize(text, 
+#'                 options = list(strip_punct = FALSE,
+#'                                lowercase = FALSE)) %>%
+#'   show_tokens(text)
+#' ```
+#' 
+#' The tokenizer can be changed by setting a different `token`. Here we change
+#' it to return character tokens.
+#' 
+#' ```{r}
+#' recipe(~ text, data = text_tibble) %>%
+#'   step_tokenize(text, token = "characters") %>%
+#'   show_tokens(text)
+#' ```
+#' 
+#' It is worth noting that not all these token methods are appropriate but are 
+#' included for completeness.
+#'
+#' ## spacyr
+#' 
+#' * "words"
+#'
+#' ## tokenizers.bpe
+#' 
+#' The tokeenizers.bpe engine performs Byte Pair Encoding Text Tokenization.
+#' 
+#' * "words"
+#' 
+#' This tokenizer is trained on the training set and will thus need to be passed
+#' training arguments. These are passed to the `training_options` argument and 
+#' the most important one is `vocab_size`. The determines the number of unique
+#' tokens the tokenizer will produce. It is generally set to a much higher
+#' value, typically in the thousands, but is set to 22 here for demonstration
+#' purposes.
+#' 
+#' ```{r}
+#' recipe(~ text, data = text_tibble) %>%
+#'   step_tokenize(
+#'     text, 
+#'     engine = "tokenizers.bpe", 
+#'     training_options = list(vocab_size = 22)
+#'   ) %>%
+#'   show_tokens(text)
+#' ```
+#' 
+#' ## udpipe
+#' 
+#' * "words"
+#' 
+#' ## custom_token
+#' 
+#' Sometimes you need to perform tokenization that is not covered by the 
+#' supported engines. In that case you can use the `custom_token` argument to
+#' pass a function in that performs the tokenization you want.
+#' 
+#' Below is an example of a very simple space tokenization. This is a very fast
+#' way of tokenizing.
+#' 
+#' ```{r}
+#' space_tokenizer <- function(x) {
+#'   strsplit(x, " +")
+#' }
+#' 
+#' recipe(~ text, data = text_tibble) %>%
+#'   step_tokenize(
+#'     text, 
+#'     custom_token = space_tokenizer
+#'   ) %>%
+#'   show_tokens(text)
+#' ```
+#'
+#' @seealso [step_untokenize()] to untokenize.
+#' @family character to tokenlist steps
+#' 
 #' @examples
 #' library(recipes)
 #' library(modeldata)
@@ -64,42 +201,8 @@
 #' bake(okc_obj, new_data = NULL) %>%
 #'   slice(2) %>%
 #'   pull(essay0)
+#'
 #' @export
-#' @details
-#' Tokenization is the act of splitting a character string into smaller parts
-#' to be further analysed. This step uses the `tokenizers` package which
-#' includes heuristics to split the text into paragraphs tokens, word tokens
-#' amoug others. `textrecipes` keeps the tokens in a [tokenlist] and other
-#' steps will do their tasks on those [tokenlist]s before transforming them
-#' back to numeric.
-#'
-#' The choice of `engine` determines the possible choices of `token`.
-#'
-#' If `engine = "tokenizers"`:
-#' * "words" (default)
-#' * "characters"
-#' * "character_shingles"
-#' * "ngrams"
-#' * "skip_ngrams"
-#' * "sentences"
-#' * "lines"
-#' * "paragraphs"
-#' * "regex"
-#' * "tweets"
-#' * "ptb" (Penn Treebank)
-#' * "skip_ngrams"
-#' * "word_stems"
-#'
-#' if `engine = "spacyr"`
-#' * "words"
-#'
-#' Working will `textrecipes` will almost always start by calling
-#' `step_tokenize` followed by modifying and filtering steps. This is not always
-#' the case as you sometimes want to do apply pre-tokenization steps, this can
-#' be done with [recipes::step_mutate()].
-#'
-#' @seealso [step_untokenize()] to untokenize.
-#' @family character to tokenlist steps
 step_tokenize <-
   function(recipe,
            ...,
