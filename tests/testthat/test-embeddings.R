@@ -63,7 +63,7 @@ sentence_embeddings_sum <- sentence_embeddings_long %>%
   dplyr::summarize_all(sum) %>%
   dplyr::rename_if(
     is.numeric,
-    ~ paste("w_embed", "sum", ., sep = "_")
+    ~ paste("wordembed_text", ., sep = "_")
   )
 sentence_embeddings_sum <- test_data %>%
   dplyr::left_join(sentence_embeddings_sum, by = "text")
@@ -74,7 +74,7 @@ sentence_embeddings_mean <- sentence_embeddings_long %>%
   dplyr::summarize_all(mean) %>%
   dplyr::rename_if(
     is.numeric,
-    ~ paste("w_embed", "mean", ., sep = "_")
+    ~ paste("wordembed_text", ., sep = "_")
   )
 sentence_embeddings_mean <- test_data %>%
   dplyr::left_join(sentence_embeddings_mean, by = "text")
@@ -85,7 +85,7 @@ sentence_embeddings_min <- sentence_embeddings_long %>%
   dplyr::summarize_all(min) %>%
   dplyr::rename_if(
     is.numeric,
-    ~ paste("w_embed", "min", ., sep = "_")
+    ~ paste("wordembed_text", ., sep = "_")
   )
 sentence_embeddings_min <- test_data %>%
   dplyr::left_join(sentence_embeddings_min, by = "text")
@@ -96,7 +96,7 @@ sentence_embeddings_max <- sentence_embeddings_long %>%
   dplyr::summarize_all(max) %>%
   dplyr::rename_if(
     is.numeric,
-    ~ paste("w_embed", "max", ., sep = "_")
+    ~ paste("wordembed_text", ., sep = "_")
   )
 sentence_embeddings_max <- test_data %>%
   dplyr::left_join(sentence_embeddings_max, by = "text")
@@ -113,7 +113,7 @@ juiced <- bake(obj, new_data = NULL)
 test_that("step_word_embeddings adds the appropriate number of columns.", {
   ncol_given <- ncol(embeddings) - 1L
   ncol_juiced <- juiced %>%
-    select(contains("w_embed_")) %>%
+    select(contains("wordembed_")) %>%
     ncol()
   expect_identical(ncol_juiced, ncol_given)
 })
@@ -121,7 +121,7 @@ test_that("step_word_embeddings adds the appropriate number of columns.", {
 test_that("step_word_embeddings gives numeric output.", {
   expect_true(
     juiced %>%
-      select(contains("embedding")) %>%
+      select(contains("wordembed")) %>%
       lapply(is.numeric) %>%
       unlist() %>%
       all()
@@ -230,13 +230,7 @@ test_that("step_word_embeddings deals with missing words appropriately.", {
 })
 
 test_that("printing", {
-  expect_output(
-    print(rec),
-    "Word embeddings aggregated from text"
-  )
-  expect_output(
-    prep(rec, verbose = TRUE)
-  )
+  expect_snapshot(print(rec))
 })
 
 test_that("NA tokens work.", {
@@ -349,4 +343,92 @@ test_that("aggregation_default argument works", {
       as.numeric(),
     rep(3, 5)
   )
+})
+
+test_that("keep_original_cols works", {
+  koc_rec <- recipe(~text, data = test_data) %>%
+    step_tokenize(text) %>%
+    step_word_embeddings(text, embeddings = embeddings, aggregation = "mean", 
+                         keep_original_cols = TRUE)
+  
+  koc_trained <- prep(koc_rec, training = test_data, verbose = FALSE)
+  
+  koc_pred <- bake(koc_trained, new_data = test_data, all_predictors())
+  
+  expect_equal(
+    colnames(koc_pred),
+    c(
+      "text", "wordembed_text_d1", "wordembed_text_d2", "wordembed_text_d3", 
+      "wordembed_text_d4", "wordembed_text_d5"
+    )
+  )
+})
+
+test_that("can prep recipes with no keep_original_cols", {
+  koc_rec <- recipe(~text, data = test_data) %>%
+    step_tokenize(text) %>%
+    step_word_embeddings(text, embeddings = embeddings, aggregation = "mean", 
+                         keep_original_cols = TRUE)
+  
+  koc_rec$steps[[2]]$keep_original_cols <- NULL
+  
+  expect_snapshot(
+    koc_trained <- prep(koc_rec, training = test_data, verbose = FALSE)
+  )
+  
+  expect_error(
+    pca_pred <- bake(koc_trained, new_data = test_data, all_predictors()),
+    NA
+  )
+})
+
+test_that("empty selection prep/bake is a no-op", {
+  rec1 <- recipe(mpg ~ ., mtcars)
+  rec2 <- step_word_embeddings(rec1, embeddings = embeddings)
+
+  rec1 <- prep(rec1, mtcars)
+  rec2 <- prep(rec2, mtcars)
+
+  baked1 <- bake(rec1, mtcars)
+  baked2 <- bake(rec2, mtcars)
+
+  expect_identical(baked1, baked1)
+})
+
+test_that("empty selection tidy method works", {
+  rec <- recipe(mpg ~ ., mtcars)
+  rec <- step_word_embeddings(rec, embeddings = embeddings)
+
+  expect_identical(
+    tidy(rec, number = 1),
+    tibble(
+      terms = character(),
+      embeddings_rows = integer(),
+      aggregation = character(),
+      id = character()
+    )
+  )
+
+  rec <- prep(rec, mtcars)
+
+  expect_identical(
+    tidy(rec, number = 1),
+    tibble(
+      terms = character(),
+      embeddings_rows = integer(),
+      aggregation = character(),
+      id = character()
+    )
+  )
+})
+
+test_that("empty printing", {
+  rec <- recipe(mpg ~ ., mtcars)
+  rec <- step_word_embeddings(rec, embeddings = embeddings)
+
+  expect_snapshot(rec)
+
+  rec <- prep(rec, mtcars)
+
+  expect_snapshot(rec)
 })

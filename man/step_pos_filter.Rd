@@ -2,8 +2,7 @@
 % Please edit documentation in R/pos_filter.R
 \name{step_pos_filter}
 \alias{step_pos_filter}
-\alias{tidy.step_pos_filter}
-\title{Part of speech filtering of \link{tokenlist} variables}
+\title{Part of Speech Filtering of Token Variables}
 \usage{
 step_pos_filter(
   recipe,
@@ -15,8 +14,6 @@ step_pos_filter(
   skip = FALSE,
   id = rand_id("pos_filter")
 )
-
-\method{tidy}{step_pos_filter}(x, ...)
 }
 \arguments{
 \item{recipe}{A \link{recipe} object. The step will be added to the
@@ -46,23 +43,27 @@ conducted on new data (e.g. processing the outcome variable(s)).
 Care should be taken when using \code{skip = FALSE}.}
 
 \item{id}{A character string that is unique to this step to identify it.}
-
-\item{x}{A \code{step_pos_filter} object.}
 }
 \value{
 An updated version of \code{recipe} with the new step added
 to the sequence of existing steps (if any).
 }
 \description{
-\code{step_pos_filter} creates a \emph{specification} of a recipe step that
-will filter a \link{tokenlist} based on part of speech tags.
+\code{step_pos_filter} creates a \emph{specification} of a recipe step that will filter
+a \code{\link[=tokenlist]{token}} variable based on part of speech tags.
 }
 \details{
 Possible part of speech tags for \code{spacyr} engine are: "ADJ", "ADP", "ADV",
 "AUX", "CONJ", "CCONJ", "DET", "INTJ", "NOUN", "NUM", "PART", "PRON",
 "PROPN", "PUNCT", "SCONJ", "SYM", "VERB", "X" and "SPACE". For more
-information look here \url{https://spacy.io/api/annotation#pos-tagging}.
+information look here
+\url{https://github.com/explosion/spaCy/blob/master/spacy/glossary.py}.
 }
+\section{Tidying}{
+When you \code{\link[=tidy.recipe]{tidy()}} this step, a tibble with columns \code{terms}
+(the selectors or variables selected) and \code{num_topics} (number of topics).
+}
+
 \examples{
 \dontrun{
 library(recipes)
@@ -72,21 +73,21 @@ short_data <- data.frame(text = c(
   "With many cats and ladies."
 ))
 
-okc_rec <- recipe(~text, data = short_data) \%>\%
+rec_spec <- recipe(~text, data = short_data) \%>\%
   step_tokenize(text, engine = "spacyr") \%>\%
   step_pos_filter(text, keep_tags = "NOUN") \%>\%
   step_tf(text)
 
-okc_obj <- prep(okc_rec)
+rec_prepped <- prep(rec_spec)
 
-bake(okc_obj, new_data = NULL)
+bake(rec_prepped, new_data = NULL)
 }
 
 }
 \seealso{
-\code{\link[=step_tokenize]{step_tokenize()}} to turn character into tokenlist.
+\code{\link[=step_tokenize]{step_tokenize()}} to turn characters into \code{\link[=tokenlist]{tokens}}
 
-Other tokenlist to tokenlist steps: 
+Other Steps for Token Modification: 
 \code{\link{step_lemma}()},
 \code{\link{step_ngram}()},
 \code{\link{step_stem}()},
@@ -94,4 +95,4 @@ Other tokenlist to tokenlist steps:
 \code{\link{step_tokenfilter}()},
 \code{\link{step_tokenmerge}()}
 }
-\concept{tokenlist to tokenlist steps}
+\concept{Steps for Token Modification}

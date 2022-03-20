@@ -2,7 +2,7 @@
 % Please edit documentation in R/tokenlist.R
 \name{tokenlist}
 \alias{tokenlist}
-\title{Create tokenlist object}
+\title{Create Token Object}
 \usage{
 tokenlist(tokens = list(), lemma = NULL, pos = NULL)
 }
@@ -30,9 +30,8 @@ tibble(text = tokenlist(abc))
 
 library(tokenizers)
 library(modeldata)
-data(okc_text)
-tokens <- tokenize_words(okc_text$essay0)
+data(tate_text)
+tokens <- tokenize_words(as.character(tate_text$medium))
 
 tokenlist(tokens)
-
 }

@@ -49,13 +49,13 @@ test_that("custom extraction functions work works", {
 
   expect_equal(dim(bake(obj, new_data = NULL)), c(nrow(test_data), 3))
 
-  expect_error(
+  expect_snapshot(error = TRUE,
     rec %>%
       step_textfeature(text, extract_functions = list(as.character)) %>%
       prep()
   )
 
-  expect_error(
+  expect_snapshot(error = TRUE,
     rec %>%
       step_textfeature(
         text,
@@ -69,6 +69,79 @@ test_that("printing", {
   skip_if_not_installed("textfeatures")
   rec <- rec %>%
     step_textfeature(text)
-  expect_output(print(rec))
-  expect_output(prep(rec, verbose = TRUE))
+  expect_snapshot(print(rec))
+})
+
+test_that("keep_original_cols works", {
+  koc_rec <- rec %>%
+    step_textfeature(text, extract_functions = list(nchar = nchar),
+                     keep_original_cols = TRUE)
+  
+  koc_trained <- prep(koc_rec, training = test_data, verbose = FALSE)
+  
+  koc_pred <- bake(koc_trained, new_data = test_data, all_predictors())
+  
+  expect_equal(
+    colnames(koc_pred),
+    c(
+      "text", "textfeature_text_nchar"
+    )
+  )
+})
+
+test_that("can prep recipes with no keep_original_cols", {
+  koc_rec <- rec %>%
+    step_textfeature(text, keep_original_cols = TRUE)
+  
+  koc_rec$steps[[1]]$keep_original_cols <- NULL
+  
+  expect_snapshot(
+    koc_trained <- prep(koc_rec, training = test_data, verbose = FALSE)
+  )
+  
+  expect_error(
+    pca_pred <- bake(koc_trained, new_data = test_data, all_predictors()),
+    NA
+  )
+})
+
+test_that("empty selection prep/bake is a no-op", {
+  rec1 <- recipe(mpg ~ ., mtcars)
+  rec2 <- step_textfeature(rec1)
+
+  rec1 <- prep(rec1, mtcars)
+  rec2 <- prep(rec2, mtcars)
+
+  baked1 <- bake(rec1, mtcars)
+  baked2 <- bake(rec2, mtcars)
+
+  expect_identical(baked1, baked1)
+})
+
+test_that("empty selection tidy method works", {
+  rec <- recipe(mpg ~ ., mtcars)
+  rec <- step_textfeature(rec)
+
+  expect_identical(
+    tidy(rec, number = 1),
+    tibble(terms = character(), functions = character(), id = character())
+  )
+
+  rec <- prep(rec, mtcars)
+
+  expect_identical(
+    tidy(rec, number = 1),
+    tibble(terms = character(), functions = character(), id = character())
+  )
+})
+
+test_that("empty printing", {
+  rec <- recipe(mpg ~ ., mtcars)
+  rec <- step_textfeature(rec)
+
+  expect_snapshot(rec)
+
+  rec <- prep(rec, mtcars)
+
+  expect_snapshot(rec)
 })

@@ -62,7 +62,7 @@ text2_out <- list(
 test_that("tokenizer works", {
   skip_if_not_installed("tokenizers.bpe")
 
-  fun1 <- tokenizers_bpe_words(text1)
+  fun1 <- tokenizers_bpe_tokens(text1)
 
   out <- fun1(text1)
 
@@ -73,14 +73,14 @@ test_that("tokenizer works", {
     text1_out
   )
 
-  expect_error(
+  expect_snapshot(error = TRUE,
     vctrs::field(out, "lemma")
   )
-  expect_error(
+  expect_snapshot(error = TRUE,
     vctrs::field(out, "pos")
   )
 
-  fun2 <- tokenizers_bpe_words(text2)
+  fun2 <- tokenizers_bpe_tokens(text2)
 
   out <- fun2(text2)
 
@@ -146,5 +146,16 @@ test_that("arguments are passed to tokenizers.bpe", {
   expect_equal(
     length(textrecipes:::get_unique_tokens(res$text1)),
     80
+  )
+})
+
+test_that("Errors if vocabulary size is set to low.", {
+  expect_snapshot(error = TRUE,
+    recipe(~text, data = tibble(text = "hello")) %>%
+      step_tokenize(text,
+        engine = "tokenizers.bpe",
+        training_options = list(vocab_size = 2)
+      ) %>%
+      prep()
   )
 })

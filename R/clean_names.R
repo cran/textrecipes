@@ -1,27 +1,31 @@
-#' Clean variable names
+#' Clean Variable Names
 #'
-#' `step_clean_names` creates a *specification* of a recipe step that will
-#'  clean variable names so the names consist only of letters, numbers, and the
-#'  underscore.
+#' `step_clean_names` creates a *specification* of a recipe step that will clean
+#' variable names so the names consist only of letters, numbers, and the
+#' underscore.
 #
 #' @template args-recipe
 #' @template args-dots
 #' @template args-role_no-new
 #' @template args-trained
 #' @param clean A named character vector to clean variable names. This is `NULL`
-#'  until computed by [recipes::prep.recipe()].
+#'   until computed by [recipes::prep.recipe()].
 #' @template args-skip
 #' @template args-id
-#' 
+#'
 #' @template returns
-#' 
+#'
 #' @details
-#'  For the `tidy` method, a tibble with columns `terms` (the new clean 
-#'  variable names) and `value` (the original variable names).
+#' 
+#' # Tidying
+#'
+#' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
+#' (the new clean variable names) and `value` (the original variable names).
 #' 
 #' @seealso [step_clean_levels()], [recipes::step_factor2string()],
 #'  [recipes::step_string2factor()], [recipes::step_regex()],
 #'  [recipes::step_unknown()], [recipes::step_novel()], [recipes::step_other()]
+#' @family Steps for Text Cleaning
 #'
 #' @examples
 #' library(recipes)
@@ -41,7 +45,6 @@
 #'   bake(rec, air_tr)
 #'   bake(rec, air_te)
 #' }
-#' 
 #' @export
 step_clean_names <-
   function(recipe,
@@ -54,7 +57,7 @@ step_clean_names <-
     add_step(
       recipe,
       step_clean_names_new(
-        terms = ellipse_check(...),
+        terms = enquos(...),
         role = role,
         trained = trained,
         clean = clean,
@@ -79,7 +82,7 @@ step_clean_names_new <-
 
 #' @export
 prep.step_clean_names <- function(x, training, info = NULL, ...) {
-  col_names <- terms_select(x$terms, info = info)
+  col_names <- recipes_eval_select(x$terms, training, info)
 
   if (length(col_names) > 0) {
     cleaned <- janitor::make_clean_names(col_names)
@@ -111,27 +114,21 @@ bake.step_clean_names <- function(object, new_data, ...) {
 #' @export
 print.step_clean_names <-
   function(x, width = max(20, options()$width - 30), ...) {
-    if (x$trained) {
-      cleaned <- names(x$clean)
-      if (length(cleaned) > 0) {
-        cat("Cleaning variable names for ", sep = "")
-        printer(cleaned, x$terms, x$trained, width = width)
-      } else {
-        cat("No variable names were cleaned\n")
-      }
-    } else {
-      cat("Cleaning variable names for ", sep = "")
-      printer(names(x$objects), x$terms, x$trained, width = width)
-    }
+    title <- "Cleaning variable names for "
+    print_step(names(x$clean), x$terms, x$trained, title, width)
     invisible(x)
   }
 
-#' @rdname step_clean_names
+#' @rdname tidy.recipe
 #' @param x A `step_clean_names` object.
 #' @export
 tidy.step_clean_names <- function(x, ...) {
   if (is_trained(x)) {
-    res <- tibble::tibble(terms = unname(x$clean), value = names(x$clean))
+    if (is.null(x$clean)) {
+      res <- tibble(terms = character())
+    } else {
+      res <- tibble::tibble(terms = unname(x$clean), value = names(x$clean))
+    }
   } else {
     term_names <- sel2char(x$terms)
     res <- tibble(terms = term_names)

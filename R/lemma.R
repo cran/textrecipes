@@ -1,7 +1,7 @@
-#' Lemmatization of [tokenlist] variables
+#' Lemmatization of Token Variables
 #'
-#' `step_lemma` creates a *specification* of a recipe step that
-#'  will extract the lemmatization of a tokenlist.
+#' `step_lemma` creates a *specification* of a recipe step that will extract the
+#' lemmatization of a [`token`][tokenlist()] variable.
 #'
 #' @template args-recipe
 #' @template args-dots
@@ -10,19 +10,25 @@
 #' @template args-columns
 #' @template args-skip
 #' @template args-id
-#' 
+#'
 #' @template returns
-#' 
+#'
 #' @details
+#'
 #' This stem doesn't perform lemmatization by itself, but rather lets you
-#' extract the lemma attribute of the tokenlist. To be able to use `step_lemma`
-#' you need to use a tokenization method that includes lemmatization. Currently
-#' using the `"spacyr"` engine in [step_tokenize()] provides lemmatization and
-#' works well with `step_lemma`.
-#' 
-#' @seealso [step_tokenize()] to turn character into tokenlist.
-#' @family tokenlist to tokenlist steps
-#' 
+#' extract the lemma attribute of the [`token`][tokenlist()] variable. To be
+#' able to use `step_lemma` you need to use a tokenization method that includes
+#' lemmatization. Currently using the `"spacyr"` engine in [step_tokenize()]
+#' provides lemmatization and works well with `step_lemma`.
+#'
+#' # Tidying
+#'
+#' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
+#' (the selectors or variables selected).
+#'
+#' @seealso [step_tokenize()] to turn characters into [`tokens`][tokenlist()]
+#' @family Steps for Token Modification
+#'   
 #' @examples
 #' \dontrun{
 #' library(recipes)
@@ -32,16 +38,16 @@
 #'   "With many cats and ladies."
 #' ))
 #'
-#' okc_rec <- recipe(~text, data = short_data) %>%
+#' rec_spec <- recipe(~text, data = short_data) %>%
 #'   step_tokenize(text, engine = "spacyr") %>%
 #'   step_lemma(text) %>%
 #'   step_tf(text)
 #'
-#' okc_obj <- prep(okc_rec)
+#' rec_prepped <- prep(rec_spec)
 #'
-#' bake(okc_obj, new_data = NULL)
+#' bake(rec_prepped, new_data = NULL)
 #' }
-#' 
+#'
 #' @export
 step_lemma <-
   function(recipe,
@@ -54,7 +60,7 @@ step_lemma <-
     add_step(
       recipe,
       step_lemma_new(
-        terms = ellipse_check(...),
+        terms = enquos(...),
         role = role,
         trained = trained,
         columns = columns,
@@ -79,7 +85,7 @@ step_lemma_new <-
 
 #' @export
 prep.step_lemma <- function(x, training, info = NULL, ...) {
-  col_names <- terms_select(x$terms, info = info)
+  col_names <- recipes_eval_select(x$terms, training, info)
 
   check_list(training[, col_names])
 
@@ -102,12 +108,12 @@ bake.step_lemma <- function(object, new_data, ...) {
     variable <- new_data[, col_names[i], drop = TRUE]
 
     if (is.null(maybe_get_lemma(variable))) {
-      rlang::abort(paste0(
-        "`", col_names[i],
-        "` doesn't have a lemma attribute. ",
-        "Make sure the tokenization step includes ",
-        "lemmatization."
-      ))
+      rlang::abort(
+        glue(
+          "`{col_names[i]}` doesn't have a lemma attribute. ",
+          "Make sure the tokenization step includes lemmatization."
+        )
+      )
     } else {
       lemma_variable <- tokenlist_lemma(variable)
     }
@@ -121,26 +127,20 @@ bake.step_lemma <- function(object, new_data, ...) {
 #' @export
 print.step_lemma <-
   function(x, width = max(20, options()$width - 30), ...) {
-    cat("Lemmatization for ", sep = "")
-    printer(x$columns, x$terms, x$trained, width = width)
+    title <- "Lemmatization for "
+    print_step(x$columns, x$terms, x$trained, title, width)
     invisible(x)
   }
 
-#' @rdname step_lemma
+#' @rdname tidy.recipe
 #' @param x A `step_lemma` object.
 #' @export
 tidy.step_lemma <- function(x, ...) {
   if (is_trained(x)) {
-    res <- tibble(
-      terms = x$terms,
-      is_custom_stemmer = is.null(x$custom_stemmer)
-    )
+    res <- tibble(terms = unname(x$columns))
   } else {
     term_names <- sel2char(x$terms)
-    res <- tibble(
-      terms = term_names,
-      value = na_chr
-    )
+    res <- tibble(terms = term_names)
   }
   res$id <- x$id
   res

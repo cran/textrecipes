@@ -10,7 +10,6 @@ text <- tibble(text = c(
 ))
 
 test_that("lemmatization works", {
-  skip("skip, wait for final smltar render")
   skip_on_cran()
   skip_if_no_python_or_no_spacy()
 
@@ -27,10 +26,10 @@ test_that("lemmatization works", {
   expect_equal(
     vctrs::field(prepped_data$text, "tokens"),
     list(
-      c("-PRON-", "would", "not", "eat", "-PRON-", "here", "or", "there", "."),
-      c("-PRON-", "would", "not", "eat", "-PRON-", "anywhere", "."),
-      c("-PRON-", "would", "not", "eat", "green", "egg", "and", "ham", "."),
-      c("-PRON-", "do", "not", "like", "-PRON-", ",", "sam", "-", "i", "-", "am", ".")
+      c("I", "would", "not", "eat", "they", "here", "or", "there", "."),
+      c("I", "would", "not", "eat", "they", "anywhere", "."),
+      c("I", "would", "not", "eat", "green", "egg", "and", "ham", "."),
+      c("I", "do", "not", "like", "they", ",", "Sam", "-", "I", "-", "am", ".")
     )
   )
 
@@ -44,7 +43,7 @@ test_that("lemmatization errors if lemma attribute doesn't exists", {
     step_tokenize(all_predictors()) %>%
     step_lemma(all_predictors())
 
-  expect_error(
+  expect_snapshot(error = TRUE,
     prep(rec)
   )
 })
@@ -57,6 +56,46 @@ test_that("printing", {
     step_tokenize(all_predictors(), engine = "spacyr") %>%
     step_lemma(all_predictors())
 
-  expect_output(print(rec))
-  expect_output(prep(rec, verbose = TRUE))
+  expect_snapshot(print(rec))
+})
+
+test_that("empty selection prep/bake is a no-op", {
+  rec1 <- recipe(mpg ~ ., mtcars)
+  rec2 <- step_lemma(rec1)
+
+  rec1 <- prep(rec1, mtcars)
+  rec2 <- prep(rec2, mtcars)
+
+  baked1 <- bake(rec1, mtcars)
+  baked2 <- bake(rec2, mtcars)
+
+  expect_identical(baked1, baked1)
+})
+
+test_that("empty selection tidy method works", {
+  rec <- recipe(mpg ~ ., mtcars)
+  rec <- step_lemma(rec)
+
+  expect_identical(
+    tidy(rec, number = 1),
+    tibble(terms = character(), id = character())
+  )
+
+  rec <- prep(rec, mtcars)
+
+  expect_identical(
+    tidy(rec, number = 1),
+    tibble(terms = character(), id = character())
+  )
+})
+
+test_that("empty printing", {
+  rec <- recipe(mpg ~ ., mtcars)
+  rec <- step_lemma(rec)
+
+  expect_snapshot(rec)
+
+  rec <- prep(rec, mtcars)
+
+  expect_snapshot(rec)
 })

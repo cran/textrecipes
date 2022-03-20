@@ -1,33 +1,38 @@
-#' Clean categorical levels
+#' Clean Categorical Levels
 #'
 #' `step_clean_levels` creates a *specification* of a recipe step that will
-#'  clean nominal data (character or factor) so the levels consist only of
-#'  letters, numbers, and the underscore.
-#' 
+#' clean nominal data (character or factor) so the levels consist only of
+#' letters, numbers, and the underscore.
+#'
 #' @template args-recipe
 #' @template args-dots
 #' @template args-role_no-new
 #' @template args-trained
 #' @param clean A named character vector to clean and recode categorical levels.
-#'  This is `NULL` until computed by [recipes::prep.recipe()]. Note that if the
-#'  original variable is a character vector, it will be converted to a factor.
+#'   This is `NULL` until computed by [recipes::prep.recipe()]. Note that if the
+#'   original variable is a character vector, it will be converted to a factor.
 #' @template args-skip
 #' @template args-id
-#' 
+#'
 #' @template returns
 #'
-#' @details The new levels are cleaned and then reset with
-#'  [dplyr::recode_factor()]. When data to be processed contains novel
-#'  levels (i.e., not contained in the training set), they are converted
-#'  to missing.
-#'  
-#'  For the `tidy` method, a tibble with columns `terms` (the new clean 
-#'  variable names) and `value` (the original variable names).
+#' @details
+#'
+#' The new levels are cleaned and then reset with [dplyr::recode_factor()]. When
+#' data to be processed contains novel levels (i.e., not contained in the
+#' training set), they are converted to missing.
+#'
+#' # Tidying
+#'
+#' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
+#' (the selectors or variables selected), `original` (the original levels) and
+#' `value` (the cleaned levels) is returned.
 #'
 #' @seealso [step_clean_names()], [recipes::step_factor2string()],
-#'  [recipes::step_string2factor()], [recipes::step_regex()],
-#'  [recipes::step_unknown()], [recipes::step_novel()], [recipes::step_other()]
-#' 
+#'   [recipes::step_string2factor()], [recipes::step_regex()],
+#'   [recipes::step_unknown()], [recipes::step_novel()], [recipes::step_other()]
+#' @family Steps for Text Cleaning
+#'   
 #' @examples
 #' library(recipes)
 #' library(modeldata)
@@ -50,7 +55,6 @@
 #'   # novel levels are replaced with missing
 #'   bake(rec, smith_te)
 #' }
-#' 
 #' @export
 step_clean_levels <-
   function(recipe,
@@ -63,7 +67,7 @@ step_clean_levels <-
     add_step(
       recipe,
       step_clean_levels_new(
-        terms = ellipse_check(...),
+        terms = enquos(...),
         role = role,
         trained = trained,
         clean = clean,
@@ -88,7 +92,7 @@ step_clean_levels_new <-
 
 #' @export
 prep.step_clean_levels <- function(x, training, info = NULL, ...) {
-  col_names <- terms_select(x$terms, info = info)
+  col_names <- recipes_eval_select(x$terms, training, info)
   check_type(training[, col_names], quant = FALSE)
 
   if (length(col_names) > 0) {
@@ -111,9 +115,14 @@ prep.step_clean_levels <- function(x, training, info = NULL, ...) {
 
 #' @export
 bake.step_clean_levels <- function(object, new_data, ...) {
+  if (length(object$clean) == 0L) {
+    # Empty selection
+    return(new_data)
+  }
+
   if (!is.null(object$clean)) {
     for (i in names(object$clean)) {
-      new_data[[i]] <- recode_factor(new_data[[i]], !!!object$clean[[i]])
+      new_data[[i]] <- dplyr::recode_factor(new_data[[i]], !!!object$clean[[i]])
     }
   }
 
@@ -123,32 +132,26 @@ bake.step_clean_levels <- function(object, new_data, ...) {
 #' @export
 print.step_clean_levels <-
   function(x, width = max(20, options()$width - 30), ...) {
-    if (x$trained) {
-      cleaned <- names(x$clean)
-      if (length(cleaned) > 0) {
-        cat("Cleaning factor levels for ", sep = "")
-        printer(cleaned, x$terms, x$trained, width = width)
-      } else {
-        cat("No factor levels were cleaned\n")
-      }
-    } else {
-      cat("Cleaning factor levels for ", sep = "")
-      printer(names(x$objects), x$terms, x$trained, width = width)
-    }
+    title <- "Cleaning factor levels for "
+    print_step(names(x$clean), x$terms, x$trained, title, width)
     invisible(x)
   }
 
-#' @rdname step_clean_levels
+#' @rdname tidy.recipe
 #' @param x A `step_clean_levels` object.
 #' @export
 tidy.step_clean_levels <- function(x, ...) {
   if (is_trained(x)) {
-    res <- purrr::map_dfr(
-      x$clean, 
-      tibble::enframe,
-      name = "original", 
-      .id = "terms"
-    )
+    if (is.null(x$clean)) {
+      res <- tibble(terms = character())
+    } else {
+      res <- purrr::map_dfr(
+        x$clean,
+        tibble::enframe,
+        name = "original",
+        .id = "terms"
+      )
+    }
   } else {
     term_names <- sel2char(x$terms)
     res <- tibble(terms = term_names)

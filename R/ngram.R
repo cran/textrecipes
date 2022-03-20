@@ -1,7 +1,8 @@
-#' Generate ngrams from tokenlist
+#' Generate n-grams From Token Variables
 #'
-#' `step_ngram` creates a *specification* of a recipe step that
-#'  will convert a [tokenlist] into a list of ngram of tokens.
+#' `step_ngram` creates a *specification* of a recipe step that will convert a
+#' [`token`][tokenlist()] variable into a [`token`][tokenlist()] variable of
+#' ngrams.
 #'
 #' @template args-recipe
 #' @template args-dots
@@ -9,48 +10,53 @@
 #' @template args-trained
 #' @template args-columns
 #' @param num_tokens The number of tokens in the n-gram. This must be an integer
-#'  greater than or equal to 1. Defaults to 3.
-#' @param min_num_tokens The minimum number of tokens in the n-gram.
-#'  This must be an integer greater than or equal to 1 and smaller than `n`.
-#'  Defaults to 3.
+#'   greater than or equal to 1. Defaults to 3.
+#' @param min_num_tokens The minimum number of tokens in the n-gram. This must
+#'   be an integer greater than or equal to 1 and smaller than `n`. Defaults to
+#'   3.
 #' @param delim The separator between words in an n-gram. Defaults to "_".
 #' @template args-skip
 #' @template args-id
 #'
 #' @template returns
-#' 
+#'
 #' @details
-#'  The use of this step will leave the ordering of the tokens meaningless.
-#'  If `min_num_tokens <  num_tokens` then the tokens order in increasing
-#'  fashion with respect to the number of tokens in the n-gram. If
-#'  `min_num_tokens = 1` and `num_tokens = 3` then the output contains all the
-#'  1-grams followed by all the 2-grams followed by all the 3-grams.
-#' 
-#' @seealso [step_tokenize()] to turn character into tokenlist.
-#' @family tokenlist to tokenlist steps
-#' 
+#'
+#' The use of this step will leave the ordering of the tokens meaningless. If
+#' `min_num_tokens <  num_tokens` then the tokens order in increasing fashion
+#' with respect to the number of tokens in the n-gram. If `min_num_tokens = 1`
+#' and `num_tokens = 3` then the output contains all the 1-grams followed by all
+#' the 2-grams followed by all the 3-grams.
+#'
+#' # Tidying
+#'
+#' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
+#' (the selectors or variables selected).
+#'
+#' @seealso [step_tokenize()] to turn characters into [`tokens`][tokenlist()]
+#' @family Steps for Token Modification
+#'   
 #' @examples
 #' library(recipes)
 #' library(modeldata)
-#' data(okc_text)
+#' data(tate_text)
 #'
-#' okc_rec <- recipe(~., data = okc_text) %>%
-#'   step_tokenize(essay0) %>%
-#'   step_ngram(essay0)
+#' tate_rec <- recipe(~., data = tate_text) %>%
+#'   step_tokenize(medium) %>%
+#'   step_ngram(medium)
 #'
-#' okc_obj <- okc_rec %>%
+#' tate_obj <- tate_rec %>%
 #'   prep()
 #'
-#' bake(okc_obj, new_data = NULL, essay0) %>%
+#' bake(tate_obj, new_data = NULL, medium) %>%
 #'   slice(1:2)
 #'
-#' bake(okc_obj, new_data = NULL) %>%
+#' bake(tate_obj, new_data = NULL) %>%
 #'   slice(2) %>%
-#'   pull(essay0)
+#'   pull(medium)
 #'
-#' tidy(okc_rec, number = 2)
-#' tidy(okc_obj, number = 2)
-#' 
+#' tidy(tate_rec, number = 2)
+#' tidy(tate_obj, number = 2)
 #' @export
 step_ngram <-
   function(recipe,
@@ -66,7 +72,7 @@ step_ngram <-
     add_step(
       recipe,
       step_ngram_new(
-        terms = ellipse_check(...),
+        terms = enquos(...),
         role = role,
         trained = trained,
         num_tokens = num_tokens,
@@ -98,7 +104,7 @@ step_ngram_new <-
 
 #' @export
 prep.step_ngram <- function(x, training, info = NULL, ...) {
-  col_names <- terms_select(x$terms, info = info)
+  col_names <- recipes_eval_select(x$terms, training, info)
 
   check_list(training[, col_names])
 
@@ -137,17 +143,17 @@ bake.step_ngram <- function(object, new_data, ...) {
 #' @export
 print.step_ngram <-
   function(x, width = max(20, options()$width - 30), ...) {
-    cat("ngramming for ", sep = "")
-    printer(x$columns, x$terms, x$trained, width = width)
+    title <- "ngramming for "
+    print_step(x$columns, x$terms, x$trained, title, width)
     invisible(x)
   }
 
-#' @rdname step_ngram
+#' @rdname tidy.recipe
 #' @param x A `step_ngram` object.
 #' @export
 tidy.step_ngram <- function(x, ...) {
   if (is_trained(x)) {
-    res <- tibble(terms = x$terms)
+    res <- tibble(terms = unname(x$columns))
   } else {
     term_names <- sel2char(x$terms)
     res <- tibble(

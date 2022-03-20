@@ -2,8 +2,7 @@
 % Please edit documentation in R/lemma.R
 \name{step_lemma}
 \alias{step_lemma}
-\alias{tidy.step_lemma}
-\title{Lemmatization of \link{tokenlist} variables}
+\title{Lemmatization of Token Variables}
 \usage{
 step_lemma(
   recipe,
@@ -14,8 +13,6 @@ step_lemma(
   skip = FALSE,
   id = rand_id("lemma")
 )
-
-\method{tidy}{step_lemma}(x, ...)
 }
 \arguments{
 \item{recipe}{A \link{recipe} object. The step will be added to the
@@ -42,24 +39,27 @@ conducted on new data (e.g. processing the outcome variable(s)).
 Care should be taken when using \code{skip = FALSE}.}
 
 \item{id}{A character string that is unique to this step to identify it.}
-
-\item{x}{A \code{step_lemma} object.}
 }
 \value{
 An updated version of \code{recipe} with the new step added
 to the sequence of existing steps (if any).
 }
 \description{
-\code{step_lemma} creates a \emph{specification} of a recipe step that
-will extract the lemmatization of a tokenlist.
+\code{step_lemma} creates a \emph{specification} of a recipe step that will extract the
+lemmatization of a \code{\link[=tokenlist]{token}} variable.
 }
 \details{
 This stem doesn't perform lemmatization by itself, but rather lets you
-extract the lemma attribute of the tokenlist. To be able to use \code{step_lemma}
-you need to use a tokenization method that includes lemmatization. Currently
-using the \code{"spacyr"} engine in \code{\link[=step_tokenize]{step_tokenize()}} provides lemmatization and
-works well with \code{step_lemma}.
+extract the lemma attribute of the \code{\link[=tokenlist]{token}} variable. To be
+able to use \code{step_lemma} you need to use a tokenization method that includes
+lemmatization. Currently using the \code{"spacyr"} engine in \code{\link[=step_tokenize]{step_tokenize()}}
+provides lemmatization and works well with \code{step_lemma}.
 }
+\section{Tidying}{
+When you \code{\link[=tidy.recipe]{tidy()}} this step, a tibble with columns \code{terms}
+(the selectors or variables selected).
+}
+
 \examples{
 \dontrun{
 library(recipes)
@@ -69,21 +69,21 @@ short_data <- data.frame(text = c(
   "With many cats and ladies."
 ))
 
-okc_rec <- recipe(~text, data = short_data) \%>\%
+rec_spec <- recipe(~text, data = short_data) \%>\%
   step_tokenize(text, engine = "spacyr") \%>\%
   step_lemma(text) \%>\%
   step_tf(text)
 
-okc_obj <- prep(okc_rec)
+rec_prepped <- prep(rec_spec)
 
-bake(okc_obj, new_data = NULL)
+bake(rec_prepped, new_data = NULL)
 }
 
 }
 \seealso{
-\code{\link[=step_tokenize]{step_tokenize()}} to turn character into tokenlist.
+\code{\link[=step_tokenize]{step_tokenize()}} to turn characters into \code{\link[=tokenlist]{tokens}}
 
-Other tokenlist to tokenlist steps: 
+Other Steps for Token Modification: 
 \code{\link{step_ngram}()},
 \code{\link{step_pos_filter}()},
 \code{\link{step_stem}()},
@@ -91,4 +91,4 @@ Other tokenlist to tokenlist steps:
 \code{\link{step_tokenfilter}()},
 \code{\link{step_tokenmerge}()}
 }
-\concept{tokenlist to tokenlist steps}
+\concept{Steps for Token Modification}

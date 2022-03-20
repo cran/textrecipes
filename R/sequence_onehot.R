@@ -1,7 +1,7 @@
-#'  Generate the basic set of text features
+#' Positional One-Hot encoding of Tokens
 #'
-#' `step_sequence_onehot` creates a *specification* of a recipe step that
-#'  will take a string and do one hot encoding for each character by position.
+#' `step_sequence_onehot` creates a *specification* of a recipe step that will
+#' take a string and do one hot encoding for each character by position.
 #'
 #' @template args-recipe
 #' @template args-dots
@@ -9,49 +9,58 @@
 #' @template args-trained
 #' @template args-columns
 #' @param sequence_length A numeric, number of characters to keep before
-#'      discarding. Defaults to 100.
+#'   discarding. Defaults to 100.
 #' @param padding 'pre' or 'post', pad either before or after each sequence.
-#'  defaults to 'pre'.
+#'   defaults to 'pre'.
 #' @param truncating 'pre' or 'post', remove values from sequences larger than
-#'  sequence_length either in the beginning or in the end of the sequence.
-#'  Defaults too 'pre'.
+#'   sequence_length either in the beginning or in the end of the sequence.
+#'   Defaults too 'pre'.
 #' @param vocabulary A character vector, characters to be mapped to integers.
-#'  Characters not in the vocabulary will be encoded as 0. Defaults to
-#'  `letters`.
+#'   Characters not in the vocabulary will be encoded as 0. Defaults to
+#'   `letters`.
 #' @param prefix A prefix for generated column names, default to "seq1hot".
+#' @template args-keep_original_cols
 #' @template args-skip
 #' @template args-id
-#' 
-#' @source \url{https://papers.nips.cc/paper/5782-character-level-convolutional-networks-for-text-classification.pdf}
-#' 
+#'
+#' @source
+#' \url{https://papers.nips.cc/paper/5782-character-level-convolutional-networks-for-text-classification.pdf}
+#'
+#'
 #' @template returns
-#' 
+#'
 #' @details
-#' The string will be capped by the sequence_length argument, strings shorter then
-#' sequence_length will be padded with empty characters. The encoding will assign
-#' a integer to each character in the vocabulary, and will encode accordingly.
-#' Characters not in the vocabulary will be encoded as 0.
-#' 
-#' @family character to numeric steps
-#' 
+#'
+#' The string will be capped by the sequence_length argument, strings shorter
+#' then sequence_length will be padded with empty characters. The encoding will
+#' assign a integer to each character in the vocabulary, and will encode
+#' accordingly. Characters not in the vocabulary will be encoded as 0.
+#'
+#' # Tidying
+#'
+#' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
+#' (the selectors or variables selected), `vocabulary` (index) and `token` (text
+#' correspoding to the index).
+#'
+#' @family Steps for Numeric Variables From Characters
+#'   
 #' @examples
 #' library(recipes)
 #' library(modeldata)
-#' data(okc_text)
+#' data(tate_text)
 #'
-#' okc_rec <- recipe(~essay0, data = okc_text) %>%
-#'   step_tokenize(essay0) %>%
-#'   step_tokenfilter(essay0) %>%
-#'   step_sequence_onehot(essay0)
+#' tate_rec <- recipe(~medium, data = tate_text) %>%
+#'   step_tokenize(medium) %>%
+#'   step_tokenfilter(medium) %>%
+#'   step_sequence_onehot(medium)
 #'
-#' okc_obj <- okc_rec %>%
+#' tate_obj <- tate_rec %>%
 #'   prep()
 #'
-#' bake(okc_obj, new_data = NULL)
+#' bake(tate_obj, new_data = NULL)
 #'
-#' tidy(okc_rec, number = 1)
-#' tidy(okc_obj, number = 1)
-#' 
+#' tidy(tate_rec, number = 3)
+#' tidy(tate_obj, number = 3)
 #' @export
 step_sequence_onehot <-
   function(recipe,
@@ -64,6 +73,7 @@ step_sequence_onehot <-
            truncating = "pre",
            vocabulary = NULL,
            prefix = "seq1hot",
+           keep_original_cols = FALSE,
            skip = FALSE,
            id = rand_id("sequence_onehot")) {
     if (length(padding) != 1 || !(padding %in% c("pre", "post"))) {
@@ -77,7 +87,7 @@ step_sequence_onehot <-
     add_step(
       recipe,
       step_sequence_onehot_new(
-        terms = ellipse_check(...),
+        terms = enquos(...),
         role = role,
         trained = trained,
         columns = columns,
@@ -86,6 +96,7 @@ step_sequence_onehot <-
         truncating = truncating,
         vocabulary = vocabulary,
         prefix = prefix,
+        keep_original_cols = keep_original_cols,
         skip = skip,
         id = id
       )
@@ -94,7 +105,7 @@ step_sequence_onehot <-
 
 step_sequence_onehot_new <-
   function(terms, role, trained, columns, sequence_length, padding, truncating,
-           vocabulary, prefix, skip, id) {
+           vocabulary, prefix, keep_original_cols, skip, id) {
     step(
       subclass = "sequence_onehot",
       terms = terms,
@@ -106,6 +117,7 @@ step_sequence_onehot_new <-
       truncating = truncating,
       vocabulary = vocabulary,
       prefix = prefix,
+      keep_original_cols = keep_original_cols,
       skip = skip,
       id = id
     )
@@ -113,7 +125,7 @@ step_sequence_onehot_new <-
 
 #' @export
 prep.step_sequence_onehot <- function(x, training, info = NULL, ...) {
-  col_names <- terms_select(x$terms, info = info)
+  col_names <- recipes_eval_select(x$terms, training, info)
 
   check_list(training[, col_names])
 
@@ -134,6 +146,7 @@ prep.step_sequence_onehot <- function(x, training, info = NULL, ...) {
     truncating = x$truncating,
     vocabulary = token_list,
     prefix = x$prefix,
+    keep_original_cols = get_keep_original_cols(x),
     skip = x$skip,
     id = x$id
   )
@@ -160,8 +173,11 @@ bake.step_sequence_onehot <- function(object, new_data, ...) {
       seq_len(ncol(out_text))
     )
 
-    new_data <-
-      new_data[, !(colnames(new_data) %in% col_names[i]), drop = FALSE]
+    keep_original_cols <- get_keep_original_cols(object)
+    if (!keep_original_cols) {
+      new_data <- 
+        new_data[, !(colnames(new_data) %in% col_names[i]), drop = FALSE]
+    }
 
     new_data <- vctrs::vec_cbind(new_data, as_tibble(out_text))
   }
@@ -171,22 +187,29 @@ bake.step_sequence_onehot <- function(object, new_data, ...) {
 #' @export
 print.step_sequence_onehot <-
   function(x, width = max(20, options()$width - 30), ...) {
-    cat("Sequence 1 hot encoding for ", sep = "")
-    printer(x$columns, x$terms, x$trained, width = width)
+    title <- "Sequence 1 hot encoding for "
+    print_step(x$columns, x$terms, x$trained, title, width)
     invisible(x)
   }
 
-#' @rdname step_sequence_onehot
+#' @rdname tidy.recipe
 #' @param x A `step_sequence_onehot` object.
 #' @export
 tidy.step_sequence_onehot <- function(x, ...) {
   if (is_trained(x)) {
-    term_names <- sel2char(x$terms)
-    res <- tibble(
-      terms = rep(term_names, each = lengths(x$vocabulary)),
-      vocabulary = unlist(lapply(x$vocabulary, seq_along)),
-      token = unlist(x$vocabulary)
-    )
+    if (length(x$columns) == 0) {
+      res <- tibble(
+        terms = character(),
+        vocabulary = character(),
+        token = integer()
+      )
+    } else {
+      res <- tibble(
+        terms = rep(x$columns, each = lengths(x$vocabulary)),
+        vocabulary = unlist(lapply(x$vocabulary, seq_along)),
+        token = unlist(x$vocabulary)
+      )
+    }
   } else {
     term_names <- sel2char(x$terms)
     res <- tibble(
@@ -238,7 +261,7 @@ string2encoded_matrix <- function(x, vocabulary, sequence_length, padding,
     }
   }
   res <- matrix(
-    vocabulary[match(res, names(vocabulary))], 
+    vocabulary[match(res, names(vocabulary))],
     nrow = length(x), ncol = sequence_length
   )
   res[is.na(res)] <- 0

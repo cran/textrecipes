@@ -1,49 +1,56 @@
-#' Untokenization of [tokenlist] variables
+#' Untokenization of Token Variables
 #'
-#' `step_untokenize` creates a *specification* of a recipe step that
-#'  will convert a [tokenlist] into a character predictor.
+#' `step_untokenize` creates a *specification* of a recipe step that will
+#' convert a [`token`][tokenlist()] variable into a character predictor.
 #'
 #' @template args-recipe
 #' @template args-dots
 #' @template args-role_no-new
 #' @template args-trained
 #' @template args-columns
-#' @param sep a character to determine how the tokens should be separated
-#'  when pasted together. Defaults to `" "`.
+#' @param sep a character to determine how the tokens should be separated when
+#'   pasted together. Defaults to `" "`.
 #' @template args-skip
 #' @template args-id
-#' 
-#' @template returns
-#' 
-#' @details
-#' This steps will turn a [tokenlist] back into a character vector. This step
-#' is calling `paste` internally to put the tokens back together to a character.
 #'
-#' @seealso [step_tokenize()] to turn character into tokenlist.
-#' @family tokenlist to character steps
-#' 
+#' @template returns
+#'
+#' @details
+#'
+#' This steps will turn a [`token`][tokenlist()] vector back into a character
+#' vector. This step is calling `paste` internally to put the tokens back
+#' together to a character.
+#'
+#' # Tidying
+#'
+#' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
+#' (the selectors or variables selected) and `value` (seperator used for
+#' collapsing).
+#'
+#' @seealso [step_tokenize()] to turn characters into [`tokens`][tokenlist()]
+#' @family Steps for Un-Tokenization
+#'   
 #' @examples
 #' library(recipes)
 #' library(modeldata)
-#' data(okc_text)
+#' data(tate_text)
 #'
-#' okc_rec <- recipe(~., data = okc_text) %>%
-#'   step_tokenize(essay0) %>%
-#'   step_untokenize(essay0)
+#' tate_rec <- recipe(~., data = tate_text) %>%
+#'   step_tokenize(medium) %>%
+#'   step_untokenize(medium)
 #'
-#' okc_obj <- okc_rec %>%
+#' tate_obj <- tate_rec %>%
 #'   prep()
 #'
-#' bake(okc_obj, new_data = NULL, essay0) %>%
+#' bake(tate_obj, new_data = NULL, medium) %>%
 #'   slice(1:2)
 #'
-#' bake(okc_obj, new_data = NULL) %>%
+#' bake(tate_obj, new_data = NULL) %>%
 #'   slice(2) %>%
-#'   pull(essay0)
+#'   pull(medium)
 #'
-#' tidy(okc_rec, number = 2)
-#' tidy(okc_obj, number = 2)
-#' 
+#' tidy(tate_rec, number = 2)
+#' tidy(tate_obj, number = 2)
 #' @export
 step_untokenize <-
   function(recipe,
@@ -57,7 +64,7 @@ step_untokenize <-
     add_step(
       recipe,
       step_untokenize_new(
-        terms = ellipse_check(...),
+        terms = enquos(...),
         role = role,
         trained = trained,
         columns = columns,
@@ -84,7 +91,7 @@ step_untokenize_new <-
 
 #' @export
 prep.step_untokenize <- function(x, training, info = NULL, ...) {
-  col_names <- terms_select(x$terms, info = info)
+  col_names <- recipes_eval_select(x$terms, training, info)
 
   check_list(training[, col_names])
 
@@ -121,18 +128,18 @@ bake.step_untokenize <- function(object, new_data, ...) {
 #' @export
 print.step_untokenize <-
   function(x, width = max(20, options()$width - 30), ...) {
-    cat("Untokenization for ", sep = "")
-    printer(x$columns, x$terms, x$trained, width = width)
+    title <- "Untokenization for "
+    print_step(x$columns, x$terms, x$trained, title, width)
     invisible(x)
   }
 
-#' @rdname step_untokenize
+#' @rdname tidy.recipe
 #' @param x A `step_untokenize` object.
 #' @export
 tidy.step_untokenize <- function(x, ...) {
   if (is_trained(x)) {
     res <- tibble(
-      terms = x$terms,
+      terms = unname(x$columns),
       value = x$sep
     )
   } else {

@@ -1,8 +1,8 @@
-#'  Generate the basic set of text features
+#' Combine Multiple Token Variables Into One
 #'
-#' `step_tokenmerge` creates a *specification* of a recipe step that
-#'  will take multiple [tokenlist]s and combine them into one
-#'  [tokenlist].
+#' `step_tokenmerge` creates a *specification* of a recipe step that will take
+#' multiple [`token`][tokenlist()] variables and combine them into one
+#' [`token`][tokenlist()] variable.
 #'
 #' @template args-recipe
 #' @template args-dots
@@ -12,29 +12,35 @@
 #' @param prefix A prefix for generated column names, default to "tokenmerge".
 #' @template args-skip
 #' @template args-id
-#' 
+#'
 #' @template returns
-#' 
-#' @seealso [step_tokenize()] to turn character into tokenlist.
-#' @family tokenlist to tokenlist steps
-#' 
+#'
+#' @details
+#'
+#' # Tidying
+#'
+#' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
+#' (the selectors or variables selected).
+#'
+#' @seealso [step_tokenize()] to turn characters into [`tokens`][tokenlist()]
+#' @family Steps for Token Modification
+#'   
 #' @examples
 #' library(recipes)
 #' library(modeldata)
-#' data(okc_text)
+#' data(tate_text)
 #'
-#' okc_rec <- recipe(~., data = okc_text) %>%
-#'   step_tokenize(essay0, essay1) %>%
-#'   step_tokenmerge(essay0, essay1)
+#' tate_rec <- recipe(~., data = tate_text) %>%
+#'   step_tokenize(medium, artist) %>%
+#'   step_tokenmerge(medium, artist)
 #'
-#' okc_obj <- okc_rec %>%
+#' tate_obj <- tate_rec %>%
 #'   prep()
 #'
-#' bake(okc_obj, new_data = NULL)
+#' bake(tate_obj, new_data = NULL)
 #'
-#' tidy(okc_rec, number = 1)
-#' tidy(okc_obj, number = 1)
-#' 
+#' tidy(tate_rec, number = 2)
+#' tidy(tate_obj, number = 2)
 #' @export
 step_tokenmerge <-
   function(recipe,
@@ -48,7 +54,7 @@ step_tokenmerge <-
     add_step(
       recipe,
       step_tokenmerge_new(
-        terms = ellipse_check(...),
+        terms = enquos(...),
         role = role,
         trained = trained,
         columns = columns,
@@ -76,7 +82,7 @@ step_tokenmerge_new <-
 
 #' @export
 prep.step_tokenmerge <- function(x, training, info = NULL, ...) {
-  col_names <- terms_select(x$terms, info = info)
+  col_names <- recipes_eval_select(x$terms, training, info)
 
   check_list(training[, col_names])
 
@@ -93,10 +99,15 @@ prep.step_tokenmerge <- function(x, training, info = NULL, ...) {
 
 #' @export
 bake.step_tokenmerge <- function(object, new_data, ...) {
+  if (length(object$column) == 0L) {
+    # Empty selection
+    return(new_data)
+  }
+
   col_names <- object$columns
   # for backward compat
 
-  new_col <- as.list(unname(new_data[, col_names, drop = FALSE])) %>%
+  new_col <- as.list(unname(as.data.frame(new_data[, col_names, drop = FALSE]))) %>%
     map(get_tokens) %>%
     pmap(c)
   new_col <- tibble(tokenlist(new_col))
@@ -113,17 +124,17 @@ bake.step_tokenmerge <- function(object, new_data, ...) {
 #' @export
 print.step_tokenmerge <-
   function(x, width = max(20, options()$width - 30), ...) {
-    cat("Merging tokens for ", sep = "")
-    printer(x$columns, x$terms, x$trained, width = width)
+    title <- "Merging tokens for "
+    print_step(x$columns, x$terms, x$trained, title, width)
     invisible(x)
   }
 
-#' @rdname step_tokenmerge
+#' @rdname tidy.recipe
 #' @param x A `step_tokenmerge` object.
 #' @export
 tidy.step_tokenmerge <- function(x, ...) {
   if (is_trained(x)) {
-    term_names <- sel2char(x$terms)
+    term_names <- unname(x$columns)
     res <- tibble(terms = term_names)
   } else {
     term_names <- sel2char(x$terms)

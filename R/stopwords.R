@@ -1,75 +1,81 @@
-#' Filtering of stopwords from a [tokenlist] variable
+#' Filtering of Stop Words for Tokens Variables
 #'
-#' `step_stopwords` creates a *specification* of a recipe step that
-#'  will filter a [tokenlist] for stopwords(keep or remove).
+#' `step_stopwords` creates a *specification* of a recipe step that will filter
+#' a [`token`][tokenlist()] variable for stop words.
 #'
 #' @template args-recipe
 #' @template args-dots
 #' @template args-role_no-new
 #' @template args-trained
 #' @template args-columns
-#' @param language A character to indicate the language of stopwords
-#'  by ISO 639-1 coding scheme.
-#' @param keep A logical. Specifies whether to keep the stopwords or discard
-#'  them.
-#' @param stopword_source A character to indicate the stopwords source as
-#'  listed in `stopwords::stopwords_getsources`.
-#' @param custom_stopword_source A character vector to indicate a custom
-#'  list of words that cater to the users specific problem.
+#' @param language A character to indicate the language of stop words by ISO
+#'   639-1 coding scheme.
+#' @param keep A logical. Specifies whether to keep the stop words or discard
+#'   them.
+#' @param stopword_source A character to indicate the stop words source as
+#'   listed in `stopwords::stopwords_getsources`.
+#' @param custom_stopword_source A character vector to indicate a custom list of
+#'   words that cater to the users specific problem.
 #' @template args-skip
 #' @template args-id
-#' 
+#'
 #' @template returns
-#' 
+#'
 #' @details
+#'
 #' Stop words are words which sometimes are remove before natural language
-#' processing tasks. While stop words usually refers to the most common
-#' words in the language there is no universal stop word list.
+#' processing tasks. While stop words usually refers to the most common words in
+#' the language there is no universal stop word list.
 #'
 #' The argument `custom_stopword_source` allows you to pass a character vector
-#' to filter against. With the `keep` argument one can specify to keep the
-#' words instead of removing thus allowing you to select words with a
-#' combination of these two arguments.
-#' 
-#' @seealso [step_tokenize()] to turn character into tokenlist.
-#' @family tokenlist to tokenlist steps
-#' 
+#' to filter against. With the `keep` argument one can specify to keep the words
+#' instead of removing thus allowing you to select words with a combination of
+#' these two arguments.
+#'
+#' # Tidying
+#'
+#' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
+#' (the selectors or variables selected), `value` (name of stop word list), and
+#' `keep` (whether stop words are removed or kept).
+#'
+#' @seealso [step_tokenize()] to turn characters into [`tokens`][tokenlist()]
+#' @family Steps for Token Modification
+#'   
 #' @examples
 #' library(recipes)
 #' library(modeldata)
-#' data(okc_text)
+#' data(tate_text)
 #'
 #' if (requireNamespace("stopwords", quietly = TRUE)) {
-#'   okc_rec <- recipe(~., data = okc_text) %>%
-#'     step_tokenize(essay0) %>%
-#'     step_stopwords(essay0)
+#'   tate_rec <- recipe(~., data = tate_text) %>%
+#'     step_tokenize(medium) %>%
+#'     step_stopwords(medium)
 #'
-#'   okc_obj <- okc_rec %>%
+#'   tate_obj <- tate_rec %>%
 #'     prep()
 #'
-#'   bake(okc_obj, new_data = NULL, essay0) %>%
+#'   bake(tate_obj, new_data = NULL, medium) %>%
 #'     slice(1:2)
 #'
-#'   bake(okc_obj, new_data = NULL) %>%
+#'   bake(tate_obj, new_data = NULL) %>%
 #'     slice(2) %>%
-#'     pull(essay0)
+#'     pull(medium)
 #'
-#'   tidy(okc_rec, number = 2)
-#'   tidy(okc_obj, number = 2)
+#'   tidy(tate_rec, number = 2)
+#'   tidy(tate_obj, number = 2)
 #' }
 #'
-#' # With a custom stopwords list
+#' # With a custom stop words list
 #'
-#' okc_rec <- recipe(~., data = okc_text) %>%
-#'   step_tokenize(essay0) %>%
-#'   step_stopwords(essay0, custom_stopword_source = c("twice", "upon"))
-#' okc_obj <- okc_rec %>%
-#'   prep(traimomg = okc_text)
+#' tate_rec <- recipe(~., data = tate_text) %>%
+#'   step_tokenize(medium) %>%
+#'   step_stopwords(medium, custom_stopword_source = c("twice", "upon"))
+#' tate_obj <- tate_rec %>%
+#'   prep(traimomg = tate_text)
 #'
-#' bake(okc_obj, new_data = NULL) %>%
+#' bake(tate_obj, new_data = NULL) %>%
 #'   slice(2) %>%
-#'   pull(essay0)
-#'
+#'   pull(medium)
 #' @export
 step_stopwords <-
   function(recipe,
@@ -86,7 +92,7 @@ step_stopwords <-
     add_step(
       recipe,
       step_stopwords_new(
-        terms = ellipse_check(...),
+        terms = enquos(...),
         role = role,
         trained = trained,
         columns = columns,
@@ -120,7 +126,7 @@ step_stopwords_new <-
 
 #' @export
 prep.step_stopwords <- function(x, training, info = NULL, ...) {
-  col_names <- terms_select(x$terms, info = info)
+  col_names <- recipes_eval_select(x$terms, training, info)
 
   check_list(training[, col_names])
 
@@ -165,18 +171,18 @@ bake.step_stopwords <- function(object, new_data, ...) {
 #' @export
 print.step_stopwords <-
   function(x, width = max(20, options()$width - 30), ...) {
-    cat("Stop word removal for ", sep = "")
-    printer(x$columns, x$terms, x$trained, width = width)
+    title <- "Stop word removal for "
+    print_step(x$columns, x$terms, x$trained, title, width)
     invisible(x)
   }
 
-#' @rdname step_stopwords
+#' @rdname tidy.recipe
 #' @param x A `step_stopwords` object.
 #' @export
 tidy.step_stopwords <- function(x, ...) {
   if (is_trained(x)) {
     res <- tibble(
-      terms = x$terms,
+      terms = unname(x$columns),
       value = x$stopword_source,
       keep = x$keep
     )

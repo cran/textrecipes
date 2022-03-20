@@ -2,8 +2,7 @@
 % Please edit documentation in R/tokenmerge.R
 \name{step_tokenmerge}
 \alias{step_tokenmerge}
-\alias{tidy.step_tokenmerge}
-\title{Generate the basic set of text features}
+\title{Combine Multiple Token Variables Into One}
 \usage{
 step_tokenmerge(
   recipe,
@@ -15,8 +14,6 @@ step_tokenmerge(
   skip = FALSE,
   id = rand_id("tokenmerge")
 )
-
-\method{tidy}{step_tokenmerge}(x, ...)
 }
 \arguments{
 \item{recipe}{A \link{recipe} object. The step will be added to the
@@ -47,40 +44,42 @@ conducted on new data (e.g. processing the outcome variable(s)).
 Care should be taken when using \code{skip = FALSE}.}
 
 \item{id}{A character string that is unique to this step to identify it.}
-
-\item{x}{A \code{step_tokenmerge} object.}
 }
 \value{
 An updated version of \code{recipe} with the new step added
 to the sequence of existing steps (if any).
 }
 \description{
-\code{step_tokenmerge} creates a \emph{specification} of a recipe step that
-will take multiple \link{tokenlist}s and combine them into one
-\link{tokenlist}.
+\code{step_tokenmerge} creates a \emph{specification} of a recipe step that will take
+multiple \code{\link[=tokenlist]{token}} variables and combine them into one
+\code{\link[=tokenlist]{token}} variable.
 }
+\section{Tidying}{
+When you \code{\link[=tidy.recipe]{tidy()}} this step, a tibble with columns \code{terms}
+(the selectors or variables selected).
+}
+
 \examples{
 library(recipes)
 library(modeldata)
-data(okc_text)
+data(tate_text)
 
-okc_rec <- recipe(~., data = okc_text) \%>\%
-  step_tokenize(essay0, essay1) \%>\%
-  step_tokenmerge(essay0, essay1)
+tate_rec <- recipe(~., data = tate_text) \%>\%
+  step_tokenize(medium, artist) \%>\%
+  step_tokenmerge(medium, artist)
 
-okc_obj <- okc_rec \%>\%
+tate_obj <- tate_rec \%>\%
   prep()
 
-bake(okc_obj, new_data = NULL)
+bake(tate_obj, new_data = NULL)
 
-tidy(okc_rec, number = 1)
-tidy(okc_obj, number = 1)
-
+tidy(tate_rec, number = 2)
+tidy(tate_obj, number = 2)
 }
 \seealso{
-\code{\link[=step_tokenize]{step_tokenize()}} to turn character into tokenlist.
+\code{\link[=step_tokenize]{step_tokenize()}} to turn characters into \code{\link[=tokenlist]{tokens}}
 
-Other tokenlist to tokenlist steps: 
+Other Steps for Token Modification: 
 \code{\link{step_lemma}()},
 \code{\link{step_ngram}()},
 \code{\link{step_pos_filter}()},
@@ -88,4 +87,4 @@ Other tokenlist to tokenlist steps:
 \code{\link{step_stopwords}()},
 \code{\link{step_tokenfilter}()}
 }
-\concept{tokenlist to tokenlist steps}
+\concept{Steps for Token Modification}

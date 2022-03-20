@@ -1,4 +1,4 @@
-#' Create tokenlist object
+#' Create Token Object
 #'
 #' A [tokenlist] object is a thin wrapper around a list of character vectors,
 #' with a few attributes.
@@ -8,7 +8,7 @@
 #' @param pos List of character vectors, must be same size and shape as `x`.
 #'
 #' @return a [tokenlist] object.
-#'
+#'   
 #' @examples
 #' abc <- list(letters, LETTERS)
 #' tokenlist(abc)
@@ -19,11 +19,10 @@
 #'
 #' library(tokenizers)
 #' library(modeldata)
-#' data(okc_text)
-#' tokens <- tokenize_words(okc_text$essay0)
+#' data(tate_text)
+#' tokens <- tokenize_words(as.character(tate_text$medium))
 #'
 #' tokenlist(tokens)
-#' 
 #' @export
 tokenlist <- function(tokens = list(), lemma = NULL, pos = NULL) {
   tokens <- vec_cast(tokens, list())
@@ -68,8 +67,8 @@ new_tokenlist <- function(tokens = list(), lemma = NULL, pos = NULL,
         pos = pos
       )
     ),
-  unique_tokens = unique_tokens,
-  class = "textrecipes_tokenlist"
+    unique_tokens = unique_tokens,
+    class = "textrecipes_tokenlist"
   )
 }
 
@@ -120,7 +119,7 @@ vec_restore.textrecipes_tokenlist <- function(x, to, ...,
 #' @export
 format.textrecipes_tokenlist <- function(x, ...) {
   out <- formatC(lengths(vctrs::field(x, "tokens")))
-  paste0("[", out, " tokens]")
+  glue("[{out} tokens]")
 }
 
 #' @export
@@ -179,6 +178,37 @@ tokenlist_filter <- function(x, dict, keep = FALSE) {
 
   new_tokenlist(out, lemma = lemma, pos = pos, unique_tokens = dict)
 }
+
+tokenlist_filter_function <- function(x, fn) {
+  if (!is_tokenlist(x)) {
+    rlang::abort("Input must be a tokenlist.")
+  }
+
+  tokens <- get_tokens(x)
+
+  keeps <- lapply(tokens, fn)
+
+  out <- purrr::map2(tokens, keeps, ~ .x[.y])
+
+  lemma <- maybe_get_lemma(x)
+  if (!is.null(lemma)) {
+    lemma <- purrr::map2(lemma, keeps, ~ .x[.y])
+    names(lemma) <- NULL
+  } else {
+    lemma <- NULL
+  }
+
+  pos <- maybe_get_pos(x)
+  if (!is.null(pos)) {
+    pos <- purrr::map2(pos, keeps, ~ .x[.y])
+    names(pos) <- NULL
+  } else {
+    pos <- NULL
+  }
+
+  tokenlist(out, lemma = lemma, pos = pos)
+}
+
 
 tokenlist_apply <- function(x, fun, arguments = NULL) {
   if (!is_tokenlist(x)) {

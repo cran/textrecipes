@@ -2,8 +2,7 @@
 % Please edit documentation in R/ngram.R
 \name{step_ngram}
 \alias{step_ngram}
-\alias{tidy.step_ngram}
-\title{Generate ngrams from tokenlist}
+\title{Generate n-grams From Token Variables}
 \usage{
 step_ngram(
   recipe,
@@ -17,8 +16,6 @@ step_ngram(
   skip = FALSE,
   id = rand_id("ngram")
 )
-
-\method{tidy}{step_ngram}(x, ...)
 }
 \arguments{
 \item{recipe}{A \link{recipe} object. The step will be added to the
@@ -41,9 +38,9 @@ until the step is trained by \code{\link[recipes:prep]{recipes::prep.recipe()}}.
 \item{num_tokens}{The number of tokens in the n-gram. This must be an integer
 greater than or equal to 1. Defaults to 3.}
 
-\item{min_num_tokens}{The minimum number of tokens in the n-gram.
-This must be an integer greater than or equal to 1 and smaller than \code{n}.
-Defaults to 3.}
+\item{min_num_tokens}{The minimum number of tokens in the n-gram. This must
+be an integer greater than or equal to 1 and smaller than \code{n}. Defaults to
+3.}
 
 \item{delim}{The separator between words in an n-gram. Defaults to "_".}
 
@@ -54,51 +51,54 @@ conducted on new data (e.g. processing the outcome variable(s)).
 Care should be taken when using \code{skip = FALSE}.}
 
 \item{id}{A character string that is unique to this step to identify it.}
-
-\item{x}{A \code{step_ngram} object.}
 }
 \value{
 An updated version of \code{recipe} with the new step added
 to the sequence of existing steps (if any).
 }
 \description{
-\code{step_ngram} creates a \emph{specification} of a recipe step that
-will convert a \link{tokenlist} into a list of ngram of tokens.
+\code{step_ngram} creates a \emph{specification} of a recipe step that will convert a
+\code{\link[=tokenlist]{token}} variable into a \code{\link[=tokenlist]{token}} variable of
+ngrams.
 }
 \details{
-The use of this step will leave the ordering of the tokens meaningless.
-If \code{min_num_tokens <  num_tokens} then the tokens order in increasing
-fashion with respect to the number of tokens in the n-gram. If
-\code{min_num_tokens = 1} and \code{num_tokens = 3} then the output contains all the
-1-grams followed by all the 2-grams followed by all the 3-grams.
+The use of this step will leave the ordering of the tokens meaningless. If
+\code{min_num_tokens <  num_tokens} then the tokens order in increasing fashion
+with respect to the number of tokens in the n-gram. If \code{min_num_tokens = 1}
+and \code{num_tokens = 3} then the output contains all the 1-grams followed by all
+the 2-grams followed by all the 3-grams.
 }
+\section{Tidying}{
+When you \code{\link[=tidy.recipe]{tidy()}} this step, a tibble with columns \code{terms}
+(the selectors or variables selected).
+}
+
 \examples{
 library(recipes)
 library(modeldata)
-data(okc_text)
+data(tate_text)
 
-okc_rec <- recipe(~., data = okc_text) \%>\%
-  step_tokenize(essay0) \%>\%
-  step_ngram(essay0)
+tate_rec <- recipe(~., data = tate_text) \%>\%
+  step_tokenize(medium) \%>\%
+  step_ngram(medium)
 
-okc_obj <- okc_rec \%>\%
+tate_obj <- tate_rec \%>\%
   prep()
 
-bake(okc_obj, new_data = NULL, essay0) \%>\%
+bake(tate_obj, new_data = NULL, medium) \%>\%
   slice(1:2)
 
-bake(okc_obj, new_data = NULL) \%>\%
+bake(tate_obj, new_data = NULL) \%>\%
   slice(2) \%>\%
-  pull(essay0)
+  pull(medium)
 
-tidy(okc_rec, number = 2)
-tidy(okc_obj, number = 2)
-
+tidy(tate_rec, number = 2)
+tidy(tate_obj, number = 2)
 }
 \seealso{
-\code{\link[=step_tokenize]{step_tokenize()}} to turn character into tokenlist.
+\code{\link[=step_tokenize]{step_tokenize()}} to turn characters into \code{\link[=tokenlist]{tokens}}
 
-Other tokenlist to tokenlist steps: 
+Other Steps for Token Modification: 
 \code{\link{step_lemma}()},
 \code{\link{step_pos_filter}()},
 \code{\link{step_stem}()},
@@ -106,4 +106,4 @@ Other tokenlist to tokenlist steps:
 \code{\link{step_tokenfilter}()},
 \code{\link{step_tokenmerge}()}
 }
-\concept{tokenlist to tokenlist steps}
+\concept{Steps for Token Modification}

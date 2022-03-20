@@ -2,8 +2,7 @@
 % Please edit documentation in R/sequence_onehot.R
 \name{step_sequence_onehot}
 \alias{step_sequence_onehot}
-\alias{tidy.step_sequence_onehot}
-\title{Generate the basic set of text features}
+\title{Positional One-Hot encoding of Tokens}
 \source{
 \url{https://papers.nips.cc/paper/5782-character-level-convolutional-networks-for-text-classification.pdf}
 }
@@ -19,11 +18,10 @@ step_sequence_onehot(
   truncating = "pre",
   vocabulary = NULL,
   prefix = "seq1hot",
+  keep_original_cols = FALSE,
   skip = FALSE,
   id = rand_id("sequence_onehot")
 )
-
-\method{tidy}{step_sequence_onehot}(x, ...)
 }
 \arguments{
 \item{recipe}{A \link{recipe} object. The step will be added to the
@@ -61,6 +59,9 @@ Characters not in the vocabulary will be encoded as 0. Defaults to
 
 \item{prefix}{A prefix for generated column names, default to "seq1hot".}
 
+\item{keep_original_cols}{A logical to keep the original variables in the
+output. Defaults to \code{FALSE}.}
+
 \item{skip}{A logical. Should the step be skipped when the
 recipe is baked by \code{\link[recipes:bake]{recipes::bake.recipe()}}? While all operations are baked
 when \code{\link[recipes:prep]{recipes::prep.recipe()}} is run, some operations may not be able to be
@@ -68,45 +69,48 @@ conducted on new data (e.g. processing the outcome variable(s)).
 Care should be taken when using \code{skip = FALSE}.}
 
 \item{id}{A character string that is unique to this step to identify it.}
-
-\item{x}{A \code{step_sequence_onehot} object.}
 }
 \value{
 An updated version of \code{recipe} with the new step added
 to the sequence of existing steps (if any).
 }
 \description{
-\code{step_sequence_onehot} creates a \emph{specification} of a recipe step that
-will take a string and do one hot encoding for each character by position.
+\code{step_sequence_onehot} creates a \emph{specification} of a recipe step that will
+take a string and do one hot encoding for each character by position.
 }
 \details{
-The string will be capped by the sequence_length argument, strings shorter then
-sequence_length will be padded with empty characters. The encoding will assign
-a integer to each character in the vocabulary, and will encode accordingly.
-Characters not in the vocabulary will be encoded as 0.
+The string will be capped by the sequence_length argument, strings shorter
+then sequence_length will be padded with empty characters. The encoding will
+assign a integer to each character in the vocabulary, and will encode
+accordingly. Characters not in the vocabulary will be encoded as 0.
 }
+\section{Tidying}{
+When you \code{\link[=tidy.recipe]{tidy()}} this step, a tibble with columns \code{terms}
+(the selectors or variables selected), \code{vocabulary} (index) and \code{token} (text
+correspoding to the index).
+}
+
 \examples{
 library(recipes)
 library(modeldata)
-data(okc_text)
+data(tate_text)
 
-okc_rec <- recipe(~essay0, data = okc_text) \%>\%
-  step_tokenize(essay0) \%>\%
-  step_tokenfilter(essay0) \%>\%
-  step_sequence_onehot(essay0)
+tate_rec <- recipe(~medium, data = tate_text) \%>\%
+  step_tokenize(medium) \%>\%
+  step_tokenfilter(medium) \%>\%
+  step_sequence_onehot(medium)
 
-okc_obj <- okc_rec \%>\%
+tate_obj <- tate_rec \%>\%
   prep()
 
-bake(okc_obj, new_data = NULL)
+bake(tate_obj, new_data = NULL)
 
-tidy(okc_rec, number = 1)
-tidy(okc_obj, number = 1)
-
+tidy(tate_rec, number = 3)
+tidy(tate_obj, number = 3)
 }
 \seealso{
-Other character to numeric steps: 
-\code{\link{step_lda}()},
+Other Steps for Numeric Variables From Characters: 
+\code{\link{step_dummy_hash}()},
 \code{\link{step_textfeature}()}
 }
-\concept{character to numeric steps}
+\concept{Steps for Numeric Variables From Characters}

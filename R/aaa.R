@@ -1,6 +1,6 @@
-# Takes a data.frame (data) and replaces the columns with the names (names)
-# and converts them from factor variable to character variables. Keeps
-# characters variables unchanged.
+# Takes a data.frame (data) and replaces the columns with the names (names) and
+# converts them from factor variable to character variables. Keeps characters
+# variables unchanged.
 factor_to_text <- function(data, names) {
   for (i in seq_along(names)) {
     if (is.factor(data[, names[i], drop = TRUE])) {
@@ -10,9 +10,8 @@ factor_to_text <- function(data, names) {
   data
 }
 
-## This function takes the default arguments of `cl` (call object) and
-## replaces them with the matching ones in `options` and
-## remove any in `removals`
+## This function takes the default arguments of `cl` (call object) and replaces
+## them with the matching ones in `options` and remove any in `removals`
 mod_call_args <- function(cl, args, removals = NULL) {
   if (!is.null(removals)) {
     for (i in removals) {
@@ -36,8 +35,21 @@ check_list <- function(dat) {
   invisible(all_good)
 }
 
+check_possible_tokenizers <- function(x, dict) {
+  if (!(x %in% dict)) {
+    possible_tokenizers <- glue::glue_collapse(
+      dict, sep = ", ", last = ", or "
+    )
+    rlang::abort(
+      glue(
+        "token should be one of the supported: {possible_tokenizers}"
+      )
+    )
+  }
+}
+
 # same as tokenlist_filter but takes an list as input and returns a tibble with
-# [tokenlist].
+# [`token`][tokenlist()].
 word_tbl_filter <- function(x, words, keep) {
   tibble(
     map(x, tokenlist_filter, words, keep)
@@ -46,6 +58,6 @@ word_tbl_filter <- function(x, words, keep) {
 
 table0 <- function(x) {
   res <- dplyr::count(tibble(tokens = x), tokens)
-  
+
   purrr::set_names(res$n, res$tokens)
 }

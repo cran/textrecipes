@@ -2,8 +2,7 @@
 % Please edit documentation in R/text_normalization.R
 \name{step_text_normalization}
 \alias{step_text_normalization}
-\alias{tidy.step_text_normalization}
-\title{Normalization of \link{tokenlist} variables}
+\title{Normalization of Character Variables}
 \usage{
 step_text_normalization(
   recipe,
@@ -15,8 +14,6 @@ step_text_normalization(
   skip = FALSE,
   id = rand_id("text_normalization")
 )
-
-\method{tidy}{step_text_normalization}(x, ...)
 }
 \arguments{
 \item{recipe}{A \link{recipe} object. The step will be added to the
@@ -38,8 +35,8 @@ until the step is trained by \code{\link[recipes:prep]{recipes::prep.recipe()}}.
 
 \item{normalization_form}{A single character string determining the Unicode
 Normalization. Must be one of "nfc", "nfd", "nfkd", "nfkc", or
-"nfkc_casefold". Defaults to "nfc".
-See \code{\link[stringi:stri_trans_nf]{stringi::stri_trans_nfc()}} for more details.}
+"nfkc_casefold". Defaults to "nfc". See \code{\link[stringi:stri_trans_nf]{stringi::stri_trans_nfc()}} for
+more details.}
 
 \item{skip}{A logical. Should the step be skipped when the
 recipe is baked by \code{\link[recipes:bake]{recipes::bake.recipe()}}? While all operations are baked
@@ -48,8 +45,6 @@ conducted on new data (e.g. processing the outcome variable(s)).
 Care should be taken when using \code{skip = FALSE}.}
 
 \item{id}{A character string that is unique to this step to identify it.}
-
-\item{x}{A \code{step_text_normalization} object.}
 }
 \value{
 An updated version of \code{recipe} with the new step added
@@ -57,8 +52,14 @@ to the sequence of existing steps (if any).
 }
 \description{
 \code{step_text_normalization} creates a \emph{specification} of a recipe step that
-will perform Unicode Normalization
+will perform Unicode Normalization on chracter variables.
 }
+\section{Tidying}{
+When you \code{\link[=tidy.recipe]{tidy()}} this step, a tibble with columns \code{terms}
+(the selectors or variables selected) and \code{normalization_form} (type of
+normalization).
+}
+
 \examples{
 if (requireNamespace("stringi", quietly = TRUE)) {
   library(recipes)
@@ -81,9 +82,8 @@ if (requireNamespace("stringi", quietly = TRUE)) {
   tidy(rec, number = 1)
   tidy(prepped, number = 1)
 }
-
 }
 \seealso{
 \code{\link[=step_texthash]{step_texthash()}} for feature hashing.
 }
-\concept{character to character steps}
+\concept{Steps for Text Normalization}

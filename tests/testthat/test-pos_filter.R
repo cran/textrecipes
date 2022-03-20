@@ -10,7 +10,6 @@ text <- tibble(text = c(
 ))
 
 test_that("part of speech filtering works", {
-  skip("skip, wait for final smltar render")
   skip_on_cran()
   skip_if_no_python_or_no_spacy()
 
@@ -30,13 +29,12 @@ test_that("part of speech filtering works", {
       character(),
       character(),
       c("eggs", "ham"),
-      c("am")
+      character()
     )
   )
 })
 
 test_that("part of speech filtering removes everything", {
-  skip("skip, wait for final smltar render")
   skip_on_cran()
   skip_if_no_python_or_no_spacy()
 
@@ -62,7 +60,6 @@ test_that("part of speech filtering removes everything", {
 })
 
 test_that("part of speech filtering works with multiple tags", {
-  skip("skip, wait for final smltar render")
   skip_on_cran()
   skip_if_no_python_or_no_spacy()
 
@@ -79,10 +76,10 @@ test_that("part of speech filtering works with multiple tags", {
   expect_equal(
     vctrs::field(prepped_data$text, "tokens"),
     list(
-      c("would", "eat"),
-      c("would", "eat"),
-      c("would", "eat", "eggs", "ham"),
-      c("do", "like", "am")
+      c("eat"),
+      c("eat"),
+      c("eat", "eggs", "ham"),
+      c("like")
     )
   )
 })
@@ -92,7 +89,7 @@ test_that("lemmatization errors if lemma attribute doesn't exists", {
     step_tokenize(all_predictors()) %>%
     step_pos_filter(all_predictors())
 
-  expect_error(
+  expect_snapshot(error = TRUE,
     prep(rec)
   )
 })
@@ -104,6 +101,46 @@ test_that("printing", {
     step_tokenize(all_predictors(), engine = "spacyr") %>%
     step_pos_filter(all_predictors())
 
-  expect_output(print(rec))
-  expect_output(prep(rec, verbose = TRUE))
+  expect_snapshot(print(rec))
+})
+
+test_that("empty selection prep/bake is a no-op", {
+  rec1 <- recipe(mpg ~ ., mtcars)
+  rec2 <- step_pos_filter(rec1)
+
+  rec1 <- prep(rec1, mtcars)
+  rec2 <- prep(rec2, mtcars)
+
+  baked1 <- bake(rec1, mtcars)
+  baked2 <- bake(rec2, mtcars)
+
+  expect_identical(baked1, baked1)
+})
+
+test_that("empty selection tidy method works", {
+  rec <- recipe(mpg ~ ., mtcars)
+  rec <- step_pos_filter(rec)
+
+  expect_identical(
+    tidy(rec, number = 1),
+    tibble(terms = character(), value = character(), id = character())
+  )
+
+  rec <- prep(rec, mtcars)
+
+  expect_identical(
+    tidy(rec, number = 1),
+    tibble(terms = character(), id = character())
+  )
+})
+
+test_that("empty printing", {
+  rec <- recipe(mpg ~ ., mtcars)
+  rec <- step_pos_filter(rec)
+
+  expect_snapshot(rec)
+
+  rec <- prep(rec, mtcars)
+
+  expect_snapshot(rec)
 })

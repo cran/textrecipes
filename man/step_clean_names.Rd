@@ -2,8 +2,7 @@
 % Please edit documentation in R/clean_names.R
 \name{step_clean_names}
 \alias{step_clean_names}
-\alias{tidy.step_clean_names}
-\title{Clean variable names}
+\title{Clean Variable Names}
 \usage{
 step_clean_names(
   recipe,
@@ -14,8 +13,6 @@ step_clean_names(
   skip = FALSE,
   id = rand_id("clean_names")
 )
-
-\method{tidy}{step_clean_names}(x, ...)
 }
 \arguments{
 \item{recipe}{A \link{recipe} object. The step will be added to the
@@ -41,22 +38,21 @@ conducted on new data (e.g. processing the outcome variable(s)).
 Care should be taken when using \code{skip = FALSE}.}
 
 \item{id}{A character string that is unique to this step to identify it.}
-
-\item{x}{A \code{step_clean_names} object.}
 }
 \value{
 An updated version of \code{recipe} with the new step added
 to the sequence of existing steps (if any).
 }
 \description{
-\code{step_clean_names} creates a \emph{specification} of a recipe step that will
-clean variable names so the names consist only of letters, numbers, and the
+\code{step_clean_names} creates a \emph{specification} of a recipe step that will clean
+variable names so the names consist only of letters, numbers, and the
 underscore.
 }
-\details{
-For the \code{tidy} method, a tibble with columns \code{terms} (the new clean
-variable names) and \code{value} (the original variable names).
+\section{Tidying}{
+When you \code{\link[=tidy.recipe]{tidy()}} this step, a tibble with columns \code{terms}
+(the new clean variable names) and \code{value} (the original variable names).
 }
+
 \examples{
 library(recipes)
 data(airquality)
@@ -75,10 +71,13 @@ if (requireNamespace("janitor", quietly = TRUE)) {
   bake(rec, air_tr)
   bake(rec, air_te)
 }
-
 }
 \seealso{
 \code{\link[=step_clean_levels]{step_clean_levels()}}, \code{\link[recipes:step_factor2string]{recipes::step_factor2string()}},
 \code{\link[recipes:step_string2factor]{recipes::step_string2factor()}}, \code{\link[recipes:step_regex]{recipes::step_regex()}},
 \code{\link[recipes:step_unknown]{recipes::step_unknown()}}, \code{\link[recipes:step_novel]{recipes::step_novel()}}, \code{\link[recipes:step_other]{recipes::step_other()}}
+
+Other Steps for Text Cleaning: 
+\code{\link{step_clean_levels}()}
 }
+\concept{Steps for Text Cleaning}

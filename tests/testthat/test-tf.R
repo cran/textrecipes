@@ -1,5 +1,3 @@
-context("test-tf")
-
 library(recipes)
 library(textrecipes)
 
@@ -20,8 +18,8 @@ test_that("step_tf works as intended", {
   obj <- rec %>%
     prep()
 
-  rec_answer <- unname(bake(obj, new_data = NULL))
-  manual_answer <- unname(tibble(
+  rec_answer <- unname(as.data.frame(bake(obj, new_data = NULL)))
+  manual_answer <- unname(data.frame(
     am = c(0, 0, 0, 1),
     and = c(0, 0, 1, 0),
     anywhere = c(0, 1, 0, 0),
@@ -73,8 +71,8 @@ test_that("step_tf works with other weighting schemes", {
   obj <- rec %>%
     prep()
 
-  rec_answer <- unname(bake(obj, new_data = NULL))
-  manual_answer <- unname(tibble(
+  rec_answer <- unname(as.data.frame(bake(obj, new_data = NULL)))
+  manual_answer <- unname(data.frame(
     am = c(0 / 8, 0 / 6, 0 / 8, 1 / 8),
     and = c(0 / 8, 0 / 6, 1 / 8, 0 / 8),
     anywhere = c(0 / 8, 1 / 6, 0 / 8, 0 / 8),
@@ -100,10 +98,105 @@ test_that("step_tf works with other weighting schemes", {
   )
 })
 
+test_that("step_tf term frequency returns 0 with no tokens", {
+  d <- tibble(text = c("a b a d", ""))
+
+  res <- recipe(~text, data = d) %>%
+    step_tokenize(text) %>%
+    step_tf(text, weight_scheme = "term frequency") %>%
+    prep() %>%
+    bake(new_data = NULL)
+
+  exp_res <- tibble(
+    tf_text_a = c(0.5, 0),
+    tf_text_b = c(0.25, 0),
+    tf_text_d = c(0.25, 0)
+  )
+  expect_identical(res, exp_res)
+})
+
+
 test_that("printing", {
   rec <- rec %>%
     step_tokenize(text) %>%
     step_tf(text)
-  expect_output(print(rec))
-  expect_output(prep(rec, verbose = TRUE))
+  expect_snapshot(print(rec))
+})
+
+test_that("keep_original_cols works", {
+  koc_rec <- rec %>%
+    step_tokenize(text) %>%
+    step_tf(text, keep_original_cols = TRUE)
+  
+  koc_trained <- prep(koc_rec, training = test_data, verbose = FALSE)
+  
+  koc_pred <- bake(koc_trained, new_data = test_data, all_predictors())
+  
+  expect_equal(
+    colnames(koc_pred),
+    c("text", "tf_text_am", "tf_text_and", "tf_text_anywhere", "tf_text_do", 
+      "tf_text_eat", "tf_text_eggs", "tf_text_green", "tf_text_ham", 
+      "tf_text_here", "tf_text_i", "tf_text_like", "tf_text_not", "tf_text_or", 
+      "tf_text_sam", "tf_text_them", "tf_text_there", "tf_text_would"
+    )
+  )
+})
+
+test_that("can prep recipes with no keep_original_cols", {
+  koc_rec <- rec %>%
+    step_tokenize(text) %>%
+    step_tf(text, keep_original_cols = TRUE)
+  
+  koc_rec$steps[[2]]$keep_original_cols <- NULL
+  
+  expect_snapshot(
+    koc_trained <- prep(koc_rec, training = test_data, verbose = FALSE)
+  )
+  
+  expect_error(
+    pca_pred <- bake(koc_trained, new_data = test_data, all_predictors()),
+    NA
+  )
+})
+
+
+test_that("empty selection prep/bake is a no-op", {
+  rec1 <- recipe(mpg ~ ., mtcars)
+  rec2 <- step_tf(rec1)
+
+  rec1 <- prep(rec1, mtcars)
+  rec2 <- prep(rec2, mtcars)
+
+  baked1 <- bake(rec1, mtcars)
+  baked2 <- bake(rec2, mtcars)
+
+  expect_identical(baked1, baked1)
+})
+
+test_that("empty selection tidy method works", {
+  rec <- recipe(mpg ~ ., mtcars)
+  rec <- step_tf(rec)
+
+  expect_identical(
+    tidy(rec, number = 1),
+    tibble(terms = character(), value = character(), id = character())
+  )
+
+  rec <- prep(rec, mtcars)
+
+  expect_identical(
+    tidy(rec, number = 1),
+    tibble(terms = character(), value = character(), id = character())
+  )
+})
+
+test_that("empty printing", {
+  rec <- recipe(mpg ~ ., mtcars)
+  rec <- step_tf(rec)
+
+  expect_snapshot(rec)
+
+  rec <- prep(rec, mtcars)
+
+  expect_snapshot(rec)
 })

@@ -2,8 +2,7 @@
 % Please edit documentation in R/lda.R
 \name{step_lda}
 \alias{step_lda}
-\alias{tidy.step_lda}
-\title{Calculates lda dimension estimates}
+\title{Calculate LDA Dimension Estimates of Tokens}
 \source{
 \url{https://arxiv.org/abs/1301.3781}
 }
@@ -15,13 +14,12 @@ step_lda(
   trained = FALSE,
   columns = NULL,
   lda_models = NULL,
-  num_topics = 10,
+  num_topics = 10L,
   prefix = "lda",
+  keep_original_cols = FALSE,
   skip = FALSE,
   id = rand_id("lda")
 )
-
-\method{tidy}{step_lda}(x, ...)
 }
 \arguments{
 \item{recipe}{A \link{recipe} object. The step will be added to the
@@ -51,6 +49,9 @@ Look at the examples for how to fit a WarpLDA model.}
 
 \item{prefix}{A prefix for generated column names, default to "lda".}
 
+\item{keep_original_cols}{A logical to keep the original variables in the
+output. Defaults to \code{FALSE}.}
+
 \item{skip}{A logical. Should the step be skipped when the
 recipe is baked by \code{\link[recipes:bake]{recipes::bake.recipe()}}? While all operations are baked
 when \code{\link[recipes:prep]{recipes::prep.recipe()}} is run, some operations may not be able to be
@@ -58,65 +59,69 @@ conducted on new data (e.g. processing the outcome variable(s)).
 Care should be taken when using \code{skip = FALSE}.}
 
 \item{id}{A character string that is unique to this step to identify it.}
-
-\item{x}{A \code{step_lda} object.}
 }
 \value{
 An updated version of \code{recipe} with the new step added
 to the sequence of existing steps (if any).
 }
 \description{
-\code{step_lda} creates a \emph{specification} of a recipe step that
-will return the lda dimension estimates of a text variable.
+\code{step_lda} creates a \emph{specification} of a recipe step that will
+return the lda dimension estimates of a text variable.
 }
+\section{Tidying}{
+When you \code{\link[=tidy.recipe]{tidy()}} this step, a tibble with columns \code{terms}
+(the selectors or variables selected) and \code{num_topics} (number of topics).
+}
+
 \examples{
 if (requireNamespace("text2vec", quietly = TRUE)) {
 \donttest{
 library(recipes)
 library(modeldata)
-data(okc_text)
+data(tate_text)
 
-okc_rec <- recipe(~ ., data = okc_text) \%>\%
-  step_tokenize(essay0) \%>\%
-  step_lda(essay0)
+tate_rec <- recipe(~., data = tate_text) \%>\%
+  step_tokenize(medium) \%>\%
+  step_lda(medium)
 
-okc_obj <- okc_rec \%>\%
+tate_obj <- tate_rec \%>\%
   prep()
 
-bake(okc_obj, new_data = NULL) \%>\%
+bake(tate_obj, new_data = NULL) \%>\%
   slice(1:2)
-tidy(okc_rec, number = 1)
-tidy(okc_obj, number = 1)
+tidy(tate_rec, number = 2)
+tidy(tate_obj, number = 2)
 
 # Changing the number of topics.
-recipe(~ ., data = okc_text) \%>\%
-  step_tokenize(essay0, essay1) \%>\%
-  step_lda(essay0, essay1, num_topics = 20) \%>\%
+recipe(~., data = tate_text) \%>\%
+  step_tokenize(medium, artist) \%>\%
+  step_lda(medium, artist, num_topics = 20) \%>\%
   prep() \%>\%
   bake(new_data = NULL) \%>\%
   slice(1:2)
 
 # Supplying A pre-trained LDA model trained using text2vec
 library(text2vec)
-tokens <- word_tokenizer(tolower(okc_text$essay5))
-it <- itoken(tokens, ids = seq_along(okc_text$essay5))
+tokens <- word_tokenizer(tolower(tate_text$medium))
+it <- itoken(tokens, ids = seq_along(tate_text$medium))
 v <- create_vocabulary(it)
 dtm <- create_dtm(it, vocab_vectorizer(v))
 lda_model <- LDA$new(n_topics = 15)
 
-recipe(~ ., data = okc_text) \%>\%
-  step_tokenize(essay0, essay1) \%>\%
-  step_lda(essay0, essay1, lda_models = lda_model) \%>\%
+recipe(~., data = tate_text) \%>\%
+  step_tokenize(medium, artist) \%>\%
+  step_lda(medium, artist, lda_models = lda_model) \%>\%
   prep() \%>\%
   bake(new_data = NULL) \%>\%
   slice(1:2)
 }
 }
-
 }
 \seealso{
-Other character to numeric steps: 
-\code{\link{step_sequence_onehot}()},
-\code{\link{step_textfeature}()}
+Other Steps for Numeric Variables From Tokens: 
+\code{\link{step_texthash}()},
+\code{\link{step_tfidf}()},
+\code{\link{step_tf}()},
+\code{\link{step_word_embeddings}()}
 }
-\concept{character to numeric steps}
+\concept{Steps for Numeric Variables From Tokens}

@@ -1,7 +1,7 @@
-#' Normalization of [tokenlist] variables
+#' Normalization of Character Variables
 #'
 #' `step_text_normalization` creates a *specification* of a recipe step that
-#'  will perform Unicode Normalization
+#' will perform Unicode Normalization on chracter variables.
 #'
 #' @template args-recipe
 #' @template args-dots
@@ -9,17 +9,25 @@
 #' @template args-trained
 #' @template args-columns
 #' @param normalization_form A single character string determining the Unicode
-#'  Normalization. Must be one of "nfc", "nfd", "nfkd", "nfkc", or
-#'  "nfkc_casefold". Defaults to "nfc".
-#'  See [stringi::stri_trans_nfc()] for more details.
+#'   Normalization. Must be one of "nfc", "nfd", "nfkd", "nfkc", or
+#'   "nfkc_casefold". Defaults to "nfc". See [stringi::stri_trans_nfc()] for
+#'   more details.
 #' @template args-skip
 #' @template args-id
-#' 
+#'
 #' @template returns
-#' 
+#'
+#' @details
+#'
+#' # Tidying
+#'
+#' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
+#' (the selectors or variables selected) and `normalization_form` (type of
+#' normalization).
+#'
 #' @seealso [step_texthash()] for feature hashing.
-#' @family character to character steps
-#' 
+#' @family Steps for Text Normalization
+#'   
 #' @examples
 #' if (requireNamespace("stringi", quietly = TRUE)) {
 #'   library(recipes)
@@ -42,7 +50,6 @@
 #'   tidy(rec, number = 1)
 #'   tidy(prepped, number = 1)
 #' }
-#' 
 #' @export
 step_text_normalization <-
   function(recipe,
@@ -58,7 +65,7 @@ step_text_normalization <-
     add_step(
       recipe,
       step_text_normalization_new(
-        terms = ellipse_check(...),
+        terms = enquos(...),
         role = role,
         trained = trained,
         normalization_form = normalization_form,
@@ -85,7 +92,7 @@ step_text_normalization_new <-
 
 #' @export
 prep.step_text_normalization <- function(x, training, info = NULL, ...) {
-  col_names <- terms_select(x$terms, info = info)
+  col_names <- recipes_eval_select(x$terms, training, info)
 
   training <- factor_to_text(training, col_names)
 
@@ -109,18 +116,19 @@ bake.step_text_normalization <- function(object, new_data, ...) {
 
   new_data <- factor_to_text(new_data, col_names)
 
-  normalization_fun <- switch(
-    object$normalization_form,
+  normalization_fun <- switch(object$normalization_form,
     nfc = stringi::stri_trans_nfc,
     nfd = stringi::stri_trans_nfd,
     nfkd = stringi::stri_trans_nfkd,
     nfkc = stringi::stri_trans_nfkc,
     nfkc_casefold = stringi::stri_trans_nfkc_casefold,
-    rlang::abort(paste(
-      "'normalization_form' must be one of",
-      "'nfc', 'nfd', 'nfkd', 'nfkc', or 'nfkc_casefold'",
-      "but was ", object$normalization_form
-    ))
+    rlang::abort(
+      glue(
+        "'normalization_form' must be one of",
+        "'nfc', 'nfd', 'nfkd', 'nfkc', or 'nfkc_casefold'",
+        "but was {object$normalization_form}."
+      )
+    )
   )
 
   for (i in seq_along(col_names)) {
@@ -135,25 +143,25 @@ bake.step_text_normalization <- function(object, new_data, ...) {
 #' @export
 print.step_text_normalization <-
   function(x, width = max(20, options()$width - 30), ...) {
-    cat("text_normalizationming for ", sep = "")
-    printer(x$columns, x$terms, x$trained, width = width)
+    title <- "Text Normalization for "
+    print_step(x$columns, x$terms, x$trained, title, width)
     invisible(x)
   }
 
-#' @rdname step_text_normalization
+#' @rdname tidy.recipe
 #' @param x A `step_text_normalization` object.
 #' @export
 tidy.step_text_normalization <- function(x, ...) {
   if (is_trained(x)) {
     res <- tibble(
-      terms = x$terms,
+      terms = unname(x$columns),
       normalization_form = x$normalization_form
     )
   } else {
     term_names <- sel2char(x$terms)
     res <- tibble(
       terms = term_names,
-      value = na_chr
+      normalization_form = na_chr
     )
   }
   res$id <- x$id

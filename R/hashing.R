@@ -1,65 +1,71 @@
-#' Term frequency of tokens
+#' Feature Hashing of Tokens
 #'
-#' `step_texthash` creates a *specification* of a recipe step that
-#'  will convert a [tokenlist] into multiple variables using the
-#'  hashing trick.
+#' `step_texthash` creates a *specification* of a recipe step that will convert
+#' a [`token`][tokenlist()] variable into multiple numeric variables using the
+#' hashing trick.
 #'
 #' @template args-recipe
 #' @template args-dots
 #' @template args-role_predictors
 #' @template args-trained
 #' @template args-columns
-#' @param signed A logical, indicating whether to use a signed
-#' hash-function to reduce collisions when hashing. Defaults to TRUE.
-#' @param num_terms An integer, the number of variables to output.
-#'  Defaults to 1024.
+#' @param signed A logical, indicating whether to use a signed hash-function to
+#'   reduce collisions when hashing. Defaults to TRUE.
+#' @param num_terms An integer, the number of variables to output. Defaults to
+#'   1024.
 #' @template args-prefix
+#' @template args-keep_original_cols
 #' @template args-skip
 #' @template args-id
-#' 
+#'
 #' @template returns
-#' 
+#'
 #' @details
-#'  Feature hashing, or the hashing trick, is a transformation of a
-#'  text variable into a new set of numerical variables. This is done by
-#'  applying a hashing function over the tokens and using the hash values
-#'  as feature indices. This allows for a low memory representation of the
-#'  text. This implementation is done using the MurmurHash3 method.
-#' 
-#'  The argument `num_terms` controls the number of indices that the hashing
-#'  function will map to. This is the tuning parameter for this
-#'  transformation. Since the hashing function can map two different tokens
-#'  to the same index, will a higher value of `num_terms` result in a lower
-#'  chance of collision.
-#'  
+#'
+#' Feature hashing, or the hashing trick, is a transformation of a text variable
+#' into a new set of numerical variables. This is done by applying a hashing
+#' function over the tokens and using the hash values as feature indices. This
+#' allows for a low memory representation of the text. This implementation is
+#' done using the MurmurHash3 method.
+#'
+#' The argument `num_terms` controls the number of indices that the hashing
+#' function will map to. This is the tuning parameter for this transformation.
+#' Since the hashing function can map two different tokens to the same index,
+#' will a higher value of `num_terms` result in a lower chance of collision.
+#'
 #' @template details-prefix
-#' 
-#' @references Kilian Weinberger; Anirban Dasgupta; John Langford;
-#'  Alex Smola; Josh Attenberg (2009).
-#'  
-#' @seealso [step_tokenize()] to turn character into tokenlist.
-#' @family tokenlist to numeric steps
-#' 
+#'
+#' @details # Tidying
+#'
+#'   When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
+#'   (the selectors or variables selected) and `value` (number of terms).
+#'   
+#' @references Kilian Weinberger; Anirban Dasgupta; John Langford; Alex Smola;
+#'   Josh Attenberg (2009).
+#'
+#' @seealso [step_tokenize()] to turn characters into [`tokens`][tokenlist()]
+#'   [step_text_normalization()] to perform text normalization.
+#' @family Steps for Numeric Variables From Tokens
+#'   
 #' @examples
 #' if (requireNamespace("text2vec", quietly = TRUE)) {
 #'   library(recipes)
 #'   library(modeldata)
-#'   data(okc_text)
+#'   data(tate_text)
 #'
-#'   okc_rec <- recipe(~., data = okc_text) %>%
-#'     step_tokenize(essay0) %>%
-#'     step_tokenfilter(essay0, max_tokens = 10) %>%
-#'     step_texthash(essay0)
+#'   tate_rec <- recipe(~., data = tate_text) %>%
+#'     step_tokenize(medium) %>%
+#'     step_tokenfilter(medium, max_tokens = 10) %>%
+#'     step_texthash(medium)
 #'
-#'   okc_obj <- okc_rec %>%
+#'   tate_obj <- tate_rec %>%
 #'     prep()
 #'
-#'   bake(okc_obj, okc_text)
+#'   bake(tate_obj, tate_text)
 #'
-#'   tidy(okc_rec, number = 2)
-#'   tidy(okc_obj, number = 2)
+#'   tidy(tate_rec, number = 3)
+#'   tidy(tate_obj, number = 3)
 #' }
-#' 
 #' @export
 step_texthash <-
   function(recipe,
@@ -68,8 +74,9 @@ step_texthash <-
            trained = FALSE,
            columns = NULL,
            signed = TRUE,
-           num_terms = 1024,
-           prefix = "hash",
+           num_terms = 1024L,
+           prefix = "texthash",
+           keep_original_cols = FALSE,
            skip = FALSE,
            id = rand_id("texthash")) {
     recipes::recipes_pkg_check(required_pkgs.step_texthash())
@@ -77,13 +84,14 @@ step_texthash <-
     add_step(
       recipe,
       step_texthash_new(
-        terms = ellipse_check(...),
+        terms = enquos(...),
         role = role,
         trained = trained,
         columns = columns,
         signed = signed,
         num_terms = num_terms,
         prefix = prefix,
+        keep_original_cols = keep_original_cols,
         skip = skip,
         id = id
       )
@@ -96,8 +104,8 @@ hash_funs <- c(
 )
 
 step_texthash_new <-
-  function(terms, role, trained, columns, signed, num_terms, prefix, skip,
-           id) {
+  function(terms, role, trained, columns, signed, num_terms, prefix, 
+           keep_original_cols, skip, id) {
     step(
       subclass = "texthash",
       terms = terms,
@@ -107,6 +115,7 @@ step_texthash_new <-
       signed = signed,
       num_terms = num_terms,
       prefix = prefix,
+      keep_original_cols = keep_original_cols,
       skip = skip,
       id = id
     )
@@ -114,7 +123,7 @@ step_texthash_new <-
 
 #' @export
 prep.step_texthash <- function(x, training, info = NULL, ...) {
-  col_names <- terms_select(x$terms, info = info)
+  col_names <- recipes_eval_select(x$terms, training, info)
 
   check_list(training[, col_names])
 
@@ -126,6 +135,7 @@ prep.step_texthash <- function(x, training, info = NULL, ...) {
     signed = x$signed,
     num_terms = x$num_terms,
     prefix = x$prefix,
+    keep_original_cols = get_keep_original_cols(x),
     skip = x$skip,
     id = x$id
   )
@@ -140,15 +150,19 @@ bake.step_texthash <- function(object, new_data, ...) {
     tf_text <- hashing_function(
       get_tokens(new_data[, col_names[i], drop = TRUE]),
       paste0(
+        object$prefix, "_",
         col_names[i], "_",
-        names0(object$num_terms, object$prefix)
+        names0(object$num_terms, "")
       ),
       object$signed,
       object$num_terms
     )
 
-    new_data <-
-      new_data[, !(colnames(new_data) %in% col_names[i]), drop = FALSE]
+    keep_original_cols <- get_keep_original_cols(object)
+    if (!keep_original_cols) {
+      new_data <- 
+        new_data[, !(colnames(new_data) %in% col_names[i]), drop = FALSE]
+    }
 
     new_data <- vctrs::vec_cbind(tf_text, new_data)
   }
@@ -159,18 +173,18 @@ bake.step_texthash <- function(object, new_data, ...) {
 #' @export
 print.step_texthash <-
   function(x, width = max(20, options()$width - 30), ...) {
-    cat("Feature hashing with ", sep = "")
-    printer(x$columns, x$terms, x$trained, width = width)
+    title <- "Feature hashing with "
+    print_step(x$columns, x$terms, x$trained, title, width)
     invisible(x)
   }
 
-#' @rdname step_texthash
+#' @rdname tidy.recipe
 #' @param x A `step_texthash` object.
 #' @export
 tidy.step_texthash <- function(x, ...) {
   if (is_trained(x)) {
     res <- tibble(
-      terms = x$terms,
+      terms = unname(x$columns),
       value = x$signed,
       length = x$num_terms
     )

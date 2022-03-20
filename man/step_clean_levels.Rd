@@ -2,8 +2,7 @@
 % Please edit documentation in R/clean_levels.R
 \name{step_clean_levels}
 \alias{step_clean_levels}
-\alias{tidy.step_clean_levels}
-\title{Clean categorical levels}
+\title{Clean Categorical Levels}
 \usage{
 step_clean_levels(
   recipe,
@@ -14,8 +13,6 @@ step_clean_levels(
   skip = FALSE,
   id = rand_id("clean_levels")
 )
-
-\method{tidy}{step_clean_levels}(x, ...)
 }
 \arguments{
 \item{recipe}{A \link{recipe} object. The step will be added to the
@@ -42,8 +39,6 @@ conducted on new data (e.g. processing the outcome variable(s)).
 Care should be taken when using \code{skip = FALSE}.}
 
 \item{id}{A character string that is unique to this step to identify it.}
-
-\item{x}{A \code{step_clean_levels} object.}
 }
 \value{
 An updated version of \code{recipe} with the new step added
@@ -55,14 +50,16 @@ clean nominal data (character or factor) so the levels consist only of
 letters, numbers, and the underscore.
 }
 \details{
-The new levels are cleaned and then reset with
-\code{\link[dplyr:recode]{dplyr::recode_factor()}}. When data to be processed contains novel
-levels (i.e., not contained in the training set), they are converted
-to missing.
-
-For the \code{tidy} method, a tibble with columns \code{terms} (the new clean
-variable names) and \code{value} (the original variable names).
+The new levels are cleaned and then reset with \code{\link[dplyr:recode]{dplyr::recode_factor()}}. When
+data to be processed contains novel levels (i.e., not contained in the
+training set), they are converted to missing.
 }
+\section{Tidying}{
+When you \code{\link[=tidy.recipe]{tidy()}} this step, a tibble with columns \code{terms}
+(the selectors or variables selected), \code{original} (the original levels) and
+\code{value} (the cleaned levels) is returned.
+}
+
 \examples{
 library(recipes)
 library(modeldata)
@@ -85,10 +82,13 @@ if (requireNamespace("janitor", quietly = TRUE)) {
   # novel levels are replaced with missing
   bake(rec, smith_te)
 }
-
 }
 \seealso{
 \code{\link[=step_clean_names]{step_clean_names()}}, \code{\link[recipes:step_factor2string]{recipes::step_factor2string()}},
 \code{\link[recipes:step_string2factor]{recipes::step_string2factor()}}, \code{\link[recipes:step_regex]{recipes::step_regex()}},
 \code{\link[recipes:step_unknown]{recipes::step_unknown()}}, \code{\link[recipes:step_novel]{recipes::step_novel()}}, \code{\link[recipes:step_other]{recipes::step_other()}}
+
+Other Steps for Text Cleaning: 
+\code{\link{step_clean_names}()}
 }
+\concept{Steps for Text Cleaning}

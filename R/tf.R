@@ -1,75 +1,84 @@
-#' Term frequency of tokens
+#' Term frequency of Tokens
 #'
-#' `step_tf` creates a *specification* of a recipe step that
-#'  will convert a [tokenlist] into multiple variables containing
-#'  the token counts.
+#' `step_tf` creates a *specification* of a recipe step that will convert a
+#' [`token`][tokenlist()] variable into multiple variables containing the token
+#' counts.
 #'
 #' @template args-recipe
 #' @template args-dots
 #' @template args-role_predictors
 #' @template args-trained
 #' @template args-columns
-#' @param weight_scheme A character determining the weighting scheme for
-#'  the term frequency calculations. Must be one of "binary",
-#'  "raw count", "term frequency", "log normalization" or
-#'  "double normalization". Defaults to "raw count".
-#' @param weight A numeric weight used if `weight_scheme` is set to
-#'  "double normalization". Defaults to 0.5.
+#' @param weight_scheme A character determining the weighting scheme for the
+#'   term frequency calculations. Must be one of "binary", "raw count", "term
+#'   frequency", "log normalization" or "double normalization". Defaults to "raw
+#'   count".
+#' @param weight A numeric weight used if `weight_scheme` is set to "double
+#'   normalization". Defaults to 0.5.
 #' @param vocabulary A character vector of strings to be considered.
-#' @param res The words that will be used to calculate the term
-#'  frequency will be stored here once this preprocessing step has
-#'  be trained by [prep.recipe()].
+#' @param res The words that will be used to calculate the term frequency will
+#'   be stored here once this preprocessing step has be trained by
+#'   [prep.recipe()].
 #' @template args-prefix
+#' @template args-keep_original_cols
 #' @template args-skip
 #' @template args-id
-#' 
+#'
 #' @template returns
-#' 
+#'
 #' @details
+#'
 #' It is strongly advised to use [step_tokenfilter] before using [step_tf] to
 #' limit the number of variables created, otherwise you might run into memory
 #' issues. A good strategy is to start with a low token count and go up
 #' according to how much RAM you want to use.
 #'
 #' Term frequency is a weight of how many times each token appear in each
-#' observation. There are different ways to calculate the weight and this
-#' step can do it in a couple of ways. Setting the argument `weight_scheme` to
-#' "binary" will result in a set of binary variables denoting if a token
-#' is present in the observation. "raw count" will count the times a token
-#' is present in the observation. "term frequency" will divide the count
-#' with the total number of words in the document to limit the effect
-#' of the document length as longer documents tends to have the word present
-#' more times but not necessarily at a higher percentage. "log normalization"
-#' takes the log of 1 plus the count, adding 1 is done to avoid taking log of
-#' 0. Finally "double normalization" is the raw frequency divided by the raw
-#' frequency of the most occurring term in the document. This is then
-#' multiplied by `weight` and `weight` is added to the result. This is again
-#' done to prevent a bias towards longer documents.
+#' observation. There are different ways to calculate the weight and this step
+#' can do it in a couple of ways. Setting the argument `weight_scheme` to
+#' "binary" will result in a set of binary variables denoting if a token is
+#' present in the observation. "raw count" will count the times a token is
+#' present in the observation. "term frequency" will divide the count with the
+#' total number of words in the document to limit the effect of the document
+#' length as longer documents tends to have the word present more times but not
+#' necessarily at a higher percentage. "log normalization" takes the log of 1
+#' plus the count, adding 1 is done to avoid taking log of 0. Finally "double
+#' normalization" is the raw frequency divided by the raw frequency of the most
+#' occurring term in the document. This is then multiplied by `weight` and
+#' `weight` is added to the result. This is again done to prevent a bias towards
+#' longer documents.
 #'
 #' @template details-prefix
-#' 
-#' @seealso [step_tokenize()] to turn character into tokenlist.
-#' @family tokenlist to numeric steps
-#'  
+#'
+#' @details
+#'
+#' # Tidying
+#'
+#' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
+#' (the selectors or variables selected) and `value` (the weighting scheme).
+#'
+#' @seealso [step_tokenize()] to turn characters into [`tokens`][tokenlist()]
+#' @family Steps for Numeric Variables From Tokens
+#'   
 #' @examples
 #' \donttest{
 #' library(recipes)
 #' library(modeldata)
-#' data(okc_text)
+#' data(tate_text)
 #'
-#' okc_rec <- recipe(~., data = okc_text) %>%
-#'   step_tokenize(essay0) %>%
-#'   step_tf(essay0)
+#' tate_rec <- recipe(~., data = tate_text) %>%
+#'   step_tokenize(medium) %>%
+#'   step_tf(medium)
 #'
-#' okc_obj <- okc_rec %>%
+#' tate_obj <- tate_rec %>%
 #'   prep()
 #'
-#' bake(okc_obj, okc_text)
+#' bake(tate_obj, tate_text)
 #'
-#' tidy(okc_rec, number = 2)
-#' tidy(okc_obj, number = 2)
+#' tidy(tate_rec, number = 2)
+#' tidy(tate_obj, number = 2)
 #' }
-#' 
+#'
 #' @export
 step_tf <-
   function(recipe,
@@ -82,22 +91,23 @@ step_tf <-
            vocabulary = NULL,
            res = NULL,
            prefix = "tf",
+           keep_original_cols = FALSE,
            skip = FALSE,
            id = rand_id("tf")) {
     if (!(weight_scheme %in% tf_funs) | length(weight_scheme) != 1) {
-      rlang::abort(paste0(
-        "`weight_scheme` should be one of: ",
-        "'", 
-        tf_funs, 
-        "'",
-        collapse = ", "
-      ))
+      
+      tf_funs_all <- glue::glue_collapse(tf_funs, sep = ", ", last = ", or ")
+      rlang::abort(
+        glue(
+          "`weight_scheme` should be one of: {tf_funs_all}"
+        )
+      )
     }
 
     add_step(
       recipe,
       step_tf_new(
-        terms = ellipse_check(...),
+        terms = enquos(...),
         role = role,
         trained = trained,
         res = res,
@@ -106,6 +116,7 @@ step_tf <-
         weight = weight,
         vocabulary = vocabulary,
         prefix = prefix,
+        keep_original_cols = keep_original_cols,
         skip = skip,
         id = id
       )
@@ -119,7 +130,7 @@ tf_funs <- c(
 
 step_tf_new <-
   function(terms, role, trained, columns, weight_scheme, weight, vocabulary,
-           res, prefix, skip, id) {
+           res, prefix, keep_original_cols, skip, id) {
     step(
       subclass = "tf",
       terms = terms,
@@ -131,6 +142,7 @@ step_tf_new <-
       vocabulary = vocabulary,
       res = res,
       prefix = prefix,
+      keep_original_cols = keep_original_cols,
       skip = skip,
       id = id
     )
@@ -138,7 +150,7 @@ step_tf_new <-
 
 #' @export
 prep.step_tf <- function(x, training, info = NULL, ...) {
-  col_names <- terms_select(x$terms, info = info)
+  col_names <- recipes_eval_select(x$terms, training, info)
 
   check_list(training[, col_names])
 
@@ -159,6 +171,7 @@ prep.step_tf <- function(x, training, info = NULL, ...) {
     vocabulary = x$vocabulary,
     res = token_list,
     prefix = x$prefix,
+    keep_original_cols = get_keep_original_cols(x),
     skip = x$skip,
     id = x$id
   )
@@ -178,9 +191,12 @@ bake.step_tf <- function(object, new_data, ...) {
       object$weight
     )
 
-    new_data <-
-      new_data[, !(colnames(new_data) %in% col_names[i]), drop = FALSE]
-
+    keep_original_cols <- get_keep_original_cols(object)
+    if (!keep_original_cols) {
+      new_data <- 
+        new_data[, !(colnames(new_data) %in% col_names[i]), drop = FALSE]
+    }
+    
     new_data <- vctrs::vec_cbind(new_data, tf_text)
   }
   as_tibble(new_data)
@@ -189,18 +205,18 @@ bake.step_tf <- function(object, new_data, ...) {
 #' @export
 print.step_tf <-
   function(x, width = max(20, options()$width - 30), ...) {
-    cat("Term frequency with ", sep = "")
-    printer(x$columns, x$terms, x$trained, width = width)
+    title <- "Term frequency with "
+    print_step(x$columns, x$terms, x$trained, title, width)
     invisible(x)
   }
 
-#' @rdname step_tf
+#' @rdname tidy.recipe
 #' @param x A `step_tf` object.
 #' @export
 tidy.step_tf <- function(x, ...) {
   if (is_trained(x)) {
     res <- tibble(
-      terms = x$terms,
+      terms = unname(x$columns),
       value = x$weight_scheme
     )
   } else {
@@ -230,7 +246,10 @@ tf_weight <- function(x, scheme, weight) {
     return(x)
   }
   if (scheme == "term frequency") {
-    return(x / rowSums(x))
+    rowsums_x <- rowSums(x)
+    res <- x / rowsums_x
+    res[rowsums_x == 0, ] <- 0
+    return(res)
   }
   if (scheme == "log normalization") {
     return(log(1 + x))

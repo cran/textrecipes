@@ -2,8 +2,7 @@
 % Please edit documentation in R/tokenize.R
 \name{step_tokenize}
 \alias{step_tokenize}
-\alias{tidy.step_tokenize}
-\title{Tokenization of character variables}
+\title{Tokenization of Character Variables}
 \usage{
 step_tokenize(
   recipe,
@@ -19,8 +18,6 @@ step_tokenize(
   skip = FALSE,
   id = rand_id("tokenize")
 )
-
-\method{tidy}{step_tokenize}(x, ...)
 }
 \arguments{
 \item{recipe}{A \link{recipe} object. The step will be added to the
@@ -51,9 +48,9 @@ being trained. Only applicable for engine == "tokenizers.bpe".}
 \item{engine}{Package that will be used for tokenization. See details for
 options. Defaults to "tokenizers".}
 
-\item{custom_token}{User supplied tokenizer. Use of this argument
-will overwrite the token and engine arguments. Must take a character vector
-as input and output a list of character vectors.}
+\item{custom_token}{User supplied tokenizer. Use of this argument will
+overwrite the token and engine arguments. Must take a character vector as
+input and output a list of character vectors.}
 
 \item{skip}{A logical. Should the step be skipped when the
 recipe is baked by \code{\link[recipes:bake]{recipes::bake.recipe()}}? While all operations are baked
@@ -62,24 +59,22 @@ conducted on new data (e.g. processing the outcome variable(s)).
 Care should be taken when using \code{skip = FALSE}.}
 
 \item{id}{A character string that is unique to this step to identify it.}
-
-\item{x}{A \code{step_tokenize} object.}
 }
 \value{
 An updated version of \code{recipe} with the new step added
 to the sequence of existing steps (if any).
 }
 \description{
-\code{\link[=step_tokenize]{step_tokenize()}} creates a \emph{specification} of a recipe step that
-will convert a character predictor into a \link{tokenlist}.
+\code{\link[=step_tokenize]{step_tokenize()}} creates a \emph{specification} of a recipe step that will
+convert a character predictor into a \code{\link[=tokenlist]{token}} variable.
 }
 \details{
-Tokenization is the act of splitting a character string into smaller parts
-to be further analyzed. This step uses the \code{tokenizers} package which
-includes heuristics to split the text into paragraphs tokens, word tokens
-among others. \code{textrecipes} keeps the tokens in a \link{tokenlist} and other
-steps will do their tasks on those \link{tokenlist}s before transforming them
-back to numeric.
+Tokenization is the act of splitting a character string into smaller parts to
+be further analyzed. This step uses the \code{tokenizers} package which includes
+heuristics on how to to split the text into paragraphs tokens, word tokens,
+among others. \code{textrecipes} keeps the tokens as a \code{\link[=tokenlist]{token}}
+variable and other steps will do their tasks on those \code{\link[=tokenlist]{token}}
+variable before transforming them back to numeric variables.
 
 Working will \code{textrecipes} will almost always start by calling
 \code{step_tokenize} followed by modifying and filtering steps. This is not always
@@ -130,7 +125,7 @@ This tokenizer has arguments that change how the tokenization occurs and can
 accessed using the \code{options} argument by passing a named list. Here we are
 telling \link[tokenizers:basic-tokenizers]{tokenizers::tokenize_words} that we don't want to turn the words to
 lowercase\if{html}{\out{<div class="sourceCode r">}}\preformatted{recipe(~ text, data = text_tibble) \%>\%
-  step_tokenize(text, 
+  step_tokenize(text,
                 options = list(lowercase = FALSE)) \%>\%
   show_tokens(text)
 }\if{html}{\out{</div>}}\preformatted{## [[1]]
@@ -141,7 +136,7 @@ lowercase\if{html}{\out{<div class="sourceCode r">}}\preformatted{recipe(~ text,
 }
 
 We can also stop removing punctuation.\if{html}{\out{<div class="sourceCode r">}}\preformatted{recipe(~ text, data = text_tibble) \%>\%
-  step_tokenize(text, 
+  step_tokenize(text,
                 options = list(strip_punct = FALSE,
                                lowercase = FALSE)) \%>\%
   show_tokens(text)
@@ -187,8 +182,8 @@ tokens the tokenizer will produce. It is generally set to a much higher
 value, typically in the thousands, but is set to 22 here for demonstration
 purposes.\if{html}{\out{<div class="sourceCode r">}}\preformatted{recipe(~ text, data = text_tibble) \%>\%
   step_tokenize(
-    text, 
-    engine = "tokenizers.bpe", 
+    text,
+    engine = "tokenizers.bpe",
     training_options = list(vocab_size = 22)
   ) \%>\%
   show_tokens(text)
@@ -221,7 +216,7 @@ way of tokenizing.\if{html}{\out{<div class="sourceCode r">}}\preformatted{space
 
 recipe(~ text, data = text_tibble) \%>\%
   step_tokenize(
-    text, 
+    text,
     custom_token = space_tokenizer
   ) \%>\%
   show_tokens(text)
@@ -234,37 +229,46 @@ recipe(~ text, data = text_tibble) \%>\%
 }
 }
 
+\section{Tidying}{
+When you \code{\link[=tidy.recipe]{tidy()}} this step, a tibble with columns \code{terms}
+(the selectors or variables selected) and \code{value} (unit of tokenization).
+}
+
 \examples{
 library(recipes)
 library(modeldata)
-data(okc_text)
+data(tate_text)
 
-okc_rec <- recipe(~., data = okc_text) \%>\%
-  step_tokenize(essay0)
+tate_rec <- recipe(~., data = tate_text) \%>\%
+  step_tokenize(medium)
 
-okc_obj <- okc_rec \%>\%
+tate_obj <- tate_rec \%>\%
   prep()
 
-bake(okc_obj, new_data = NULL, essay0) \%>\%
+bake(tate_obj, new_data = NULL, medium) \%>\%
   slice(1:2)
 
-bake(okc_obj, new_data = NULL) \%>\%
+bake(tate_obj, new_data = NULL) \%>\%
   slice(2) \%>\%
-  pull(essay0)
+  pull(medium)
 
-tidy(okc_rec, number = 1)
-tidy(okc_obj, number = 1)
+tidy(tate_rec, number = 1)
+tidy(tate_obj, number = 1)
 
-okc_obj_chars <- recipe(~., data = okc_text) \%>\%
-  step_tokenize(essay0, token = "characters") \%>\%
+tate_obj_chars <- recipe(~., data = tate_text) \%>\%
+  step_tokenize(medium, token = "characters") \%>\%
   prep()
 
-bake(okc_obj, new_data = NULL) \%>\%
+bake(tate_obj, new_data = NULL) \%>\%
   slice(2) \%>\%
-  pull(essay0)
-
+  pull(medium)
 }
 \seealso{
 \code{\link[=step_untokenize]{step_untokenize()}} to untokenize.
+
+Other Steps for Tokenization: 
+\code{\link{step_tokenize_bpe}()},
+\code{\link{step_tokenize_sentencepiece}()},
+\code{\link{step_tokenize_wordpiece}()}
 }
-\concept{character to tokenlist steps}
+\concept{Steps for Tokenization}

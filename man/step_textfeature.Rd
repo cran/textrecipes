@@ -2,8 +2,7 @@
 % Please edit documentation in R/textfeature.R
 \name{step_textfeature}
 \alias{step_textfeature}
-\alias{tidy.step_textfeature}
-\title{Generate the basic set of text features}
+\title{Calculate Set of Text Features}
 \usage{
 step_textfeature(
   recipe,
@@ -13,11 +12,10 @@ step_textfeature(
   columns = NULL,
   extract_functions = textfeatures::count_functions,
   prefix = "textfeature",
+  keep_original_cols = FALSE,
   skip = FALSE,
   id = rand_id("textfeature")
 )
-
-\method{tidy}{step_textfeature}(x, ...)
 }
 \arguments{
 \item{recipe}{A \link{recipe} object. The step will be added to the
@@ -40,10 +38,13 @@ be populated (eventually) by the \code{terms} argument. This is \code{NULL}
 until the step is trained by \code{\link[recipes:prep]{recipes::prep.recipe()}}.}
 
 \item{extract_functions}{A named list of feature extracting functions.
-default to \code{\link[textfeatures]{count_functions}} from the textfeatures
-package. See details for more information.}
+default to \code{\link[textfeatures]{count_functions}} from the
+textfeatures package. See details for more information.}
 
 \item{prefix}{A prefix for generated column names, default to "textfeature".}
+
+\item{keep_original_cols}{A logical to keep the original variables in the
+output. Defaults to \code{FALSE}.}
 
 \item{skip}{A logical. Should the step be skipped when the
 recipe is baked by \code{\link[recipes:bake]{recipes::bake.recipe()}}? While all operations are baked
@@ -52,16 +53,14 @@ conducted on new data (e.g. processing the outcome variable(s)).
 Care should be taken when using \code{skip = FALSE}.}
 
 \item{id}{A character string that is unique to this step to identify it.}
-
-\item{x}{A \code{step_textfeature} object.}
 }
 \value{
 An updated version of \code{recipe} with the new step added
 to the sequence of existing steps (if any).
 }
 \description{
-\code{step_textfeature} creates a \emph{specification} of a recipe step that
-will extract a number of numeric features of a text column.
+\code{step_textfeature} creates a \emph{specification} of a recipe step that will
+extract a number of numeric features of a text column.
 }
 \details{
 This step will take a character column and returns a number of numeric
@@ -73,42 +72,47 @@ All the functions passed to \code{extract_functions} must take a character vecto
 as input and return a numeric vector of the same length, otherwise an error
 will be thrown.
 }
+\section{Tidying}{
+When you \code{\link[=tidy.recipe]{tidy()}} this step, a tibble with columns \code{terms}
+(the selectors or variables selected) and \code{functions} (name of feature
+functions).
+}
+
 \examples{
 if (requireNamespace("textfeatures", quietly = TRUE)) {
   library(recipes)
   library(modeldata)
-  data(okc_text)
+  data(tate_text)
 
-  okc_rec <- recipe(~., data = okc_text) \%>\%
-    step_textfeature(essay0)
+  tate_rec <- recipe(~., data = tate_text) \%>\%
+    step_textfeature(medium)
 
-  okc_obj <- okc_rec \%>\%
+  tate_obj <- tate_rec \%>\%
     prep()
 
-  bake(okc_obj, new_data = NULL) \%>\%
+  bake(tate_obj, new_data = NULL) \%>\%
     slice(1:2)
 
-  bake(okc_obj, new_data = NULL) \%>\%
-    pull(textfeature_essay0_n_words)
+  bake(tate_obj, new_data = NULL) \%>\%
+    pull(textfeature_medium_n_words)
 
-  tidy(okc_rec, number = 1)
-  tidy(okc_obj, number = 1)
+  tidy(tate_rec, number = 1)
+  tidy(tate_obj, number = 1)
 
   # Using custom extraction functions
   nchar_round_10 <- function(x) round(nchar(x) / 10) * 10
 
-  recipe(~., data = okc_text) \%>\%
-    step_textfeature(essay0,
+  recipe(~., data = tate_text) \%>\%
+    step_textfeature(medium,
       extract_functions = list(nchar10 = nchar_round_10)
     ) \%>\%
     prep() \%>\%
     bake(new_data = NULL)
 }
-
 }
 \seealso{
-Other character to numeric steps: 
-\code{\link{step_lda}()},
+Other Steps for Numeric Variables From Characters: 
+\code{\link{step_dummy_hash}()},
 \code{\link{step_sequence_onehot}()}
 }
-\concept{character to numeric steps}
+\concept{Steps for Numeric Variables From Characters}

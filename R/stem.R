@@ -1,7 +1,7 @@
-#' Stemming of [tokenlist] variables
+#' Stemming of Token Variables
 #'
-#' `step_stem` creates a *specification* of a recipe step that
-#'  will convert a [tokenlist] to have its tokens stemmed.
+#' `step_stem` creates a *specification* of a recipe step that will convert a
+#' [`token`][tokenlist()] variable to have its stemmed version.
 #'
 #' @template args-recipe
 #' @template args-dots
@@ -9,66 +9,71 @@
 #' @template args-trained
 #' @template args-columns
 #' @param options A list of options passed to the stemmer function.
-#' @param custom_stemmer A custom stemming function. If none is provided
-#'  it will default to "SnowballC".
+#' @param custom_stemmer A custom stemming function. If none is provided it will
+#'   default to "SnowballC".
 #' @template args-skip
 #' @template args-id
-#' 
-#' @template returns
-#' 
-#' @details
-#' Words tend to have different forms depending on context, such as
-#' organize, organizes, and organizing. In many situations it is beneficial
-#' to have these words condensed into one to allow for a smaller pool of
-#' words. Stemming is the act of chopping off the end of words using a set
-#'  of heuristics.
 #'
-#' Note that the stemming will only be done at the end of the word and
-#' will therefore not work reliably on ngrams or sentences.
-#' 
-#' @seealso [step_tokenize()] to turn character into tokenlist.
-#' @family tokenlist to tokenlist steps
-#' 
+#' @template returns
+#'
+#' @details
+#'
+#' Words tend to have different forms depending on context, such as organize,
+#' organizes, and organizing. In many situations it is beneficial to have these
+#' words condensed into one to allow for a smaller pool of words. Stemming is
+#' the act of chopping off the end of words using a set of heuristics.
+#'
+#' Note that the stemming will only be done at the end of the word and will
+#' therefore not work reliably on ngrams or sentences.
+#'
+#' # Tidying
+#'
+#' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
+#' (the selectors or variables selected) and `is_custom_stemmer` (indicate if
+#' custom stemmer was used).
+#'
+#' @seealso [step_tokenize()] to turn characters into [`tokens`][tokenlist()]
+#' @family Steps for Token Modification
+#'   
 #' @examples
 #' library(recipes)
 #' library(modeldata)
-#' data(okc_text)
+#' data(tate_text)
 #'
-#' okc_rec <- recipe(~., data = okc_text) %>%
-#'   step_tokenize(essay0) %>%
-#'   step_stem(essay0)
+#' tate_rec <- recipe(~., data = tate_text) %>%
+#'   step_tokenize(medium) %>%
+#'   step_stem(medium)
 #'
-#' okc_obj <- okc_rec %>%
+#' tate_obj <- tate_rec %>%
 #'   prep()
 #'
-#' bake(okc_obj, new_data = NULL, essay0) %>%
+#' bake(tate_obj, new_data = NULL, medium) %>%
 #'   slice(1:2)
 #'
-#' bake(okc_obj, new_data = NULL) %>%
+#' bake(tate_obj, new_data = NULL) %>%
 #'   slice(2) %>%
-#'   pull(essay0)
+#'   pull(medium)
 #'
-#' tidy(okc_rec, number = 2)
-#' tidy(okc_obj, number = 2)
+#' tidy(tate_rec, number = 2)
+#' tidy(tate_obj, number = 2)
 #'
 #' # Using custom stemmer. Here a custom stemmer that removes the last letter
 #' # if it is a "s".
 #' remove_s <- function(x) gsub("s$", "", x)
 #'
-#' okc_rec <- recipe(~., data = okc_text) %>%
-#'   step_tokenize(essay0) %>%
-#'   step_stem(essay0, custom_stemmer = remove_s)
+#' tate_rec <- recipe(~., data = tate_text) %>%
+#'   step_tokenize(medium) %>%
+#'   step_stem(medium, custom_stemmer = remove_s)
 #'
-#' okc_obj <- okc_rec %>%
+#' tate_obj <- tate_rec %>%
 #'   prep()
 #'
-#' bake(okc_obj, new_data = NULL, essay0) %>%
+#' bake(tate_obj, new_data = NULL, medium) %>%
 #'   slice(1:2)
 #'
-#' bake(okc_obj, new_data = NULL) %>%
+#' bake(tate_obj, new_data = NULL) %>%
 #'   slice(2) %>%
-#'   pull(essay0)
-#' 
+#'   pull(medium)
 #' @export
 step_stem <-
   function(recipe,
@@ -83,7 +88,7 @@ step_stem <-
     add_step(
       recipe,
       step_stem_new(
-        terms = ellipse_check(...),
+        terms = enquos(...),
         role = role,
         trained = trained,
         options = options,
@@ -112,7 +117,7 @@ step_stem_new <-
 
 #' @export
 prep.step_stem <- function(x, training, info = NULL, ...) {
-  col_names <- terms_select(x$terms, info = info)
+  col_names <- recipes_eval_select(x$terms, training, info)
 
   check_list(training[, col_names])
 
@@ -151,25 +156,25 @@ bake.step_stem <- function(object, new_data, ...) {
 #' @export
 print.step_stem <-
   function(x, width = max(20, options()$width - 30), ...) {
-    cat("Stemming for ", sep = "")
-    printer(x$columns, x$terms, x$trained, width = width)
+    title <- "Stemming for "
+    print_step(x$columns, x$terms, x$trained, title, width)
     invisible(x)
   }
 
-#' @rdname step_stem
+#' @rdname tidy.recipe
 #' @param x A `step_stem` object.
 #' @export
 tidy.step_stem <- function(x, ...) {
   if (is_trained(x)) {
     res <- tibble(
-      terms = x$terms,
-      is_custom_stemmer = is.null(x$custom_stemmer)
+      terms = unname(x$columns),
+      is_custom_stemmer = !is.null(x$custom_stemmer)
     )
   } else {
     term_names <- sel2char(x$terms)
     res <- tibble(
       terms = term_names,
-      value = na_chr
+      is_custom_stemmer = !is.null(x$custom_stemmer)
     )
   }
   res$id <- x$id

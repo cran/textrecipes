@@ -1,7 +1,7 @@
-#'  Generate the basic set of text features
+#' Calculate Set of Text Features
 #'
-#' `step_textfeature` creates a *specification* of a recipe step that
-#'  will extract a number of numeric features of a text column.
+#' `step_textfeature` creates a *specification* of a recipe step that will
+#' extract a number of numeric features of a text column.
 #'
 #' @template args-recipe
 #' @template args-dots
@@ -9,15 +9,17 @@
 #' @template args-trained
 #' @template args-columns
 #' @param extract_functions A named list of feature extracting functions.
-#'  default to \code{\link[textfeatures]{count_functions}} from the textfeatures
-#'  package. See details for more information.
+#'   default to \code{\link[textfeatures]{count_functions}} from the
+#'   textfeatures package. See details for more information.
 #' @param prefix A prefix for generated column names, default to "textfeature".
+#' @template args-keep_original_cols
 #' @template args-skip
 #' @template args-id
-#' 
+#'
 #' @template returns
-#' 
+#'
 #' @details
+#'
 #' This step will take a character column and returns a number of numeric
 #' columns equal to the number of functions in the list passed to the
 #' `extract_functions` argument. The default is a list of functions from the
@@ -27,40 +29,45 @@
 #' as input and return a numeric vector of the same length, otherwise an error
 #' will be thrown.
 #'
-#' @family character to numeric steps
-#' 
+#' # Tidying
+#'
+#' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
+#' (the selectors or variables selected) and `functions` (name of feature
+#' functions).
+#'
+#' @family Steps for Numeric Variables From Characters
+#'   
 #' @examples
 #' if (requireNamespace("textfeatures", quietly = TRUE)) {
 #'   library(recipes)
 #'   library(modeldata)
-#'   data(okc_text)
+#'   data(tate_text)
 #'
-#'   okc_rec <- recipe(~., data = okc_text) %>%
-#'     step_textfeature(essay0)
+#'   tate_rec <- recipe(~., data = tate_text) %>%
+#'     step_textfeature(medium)
 #'
-#'   okc_obj <- okc_rec %>%
+#'   tate_obj <- tate_rec %>%
 #'     prep()
 #'
-#'   bake(okc_obj, new_data = NULL) %>%
+#'   bake(tate_obj, new_data = NULL) %>%
 #'     slice(1:2)
 #'
-#'   bake(okc_obj, new_data = NULL) %>%
-#'     pull(textfeature_essay0_n_words)
+#'   bake(tate_obj, new_data = NULL) %>%
+#'     pull(textfeature_medium_n_words)
 #'
-#'   tidy(okc_rec, number = 1)
-#'   tidy(okc_obj, number = 1)
+#'   tidy(tate_rec, number = 1)
+#'   tidy(tate_obj, number = 1)
 #'
 #'   # Using custom extraction functions
 #'   nchar_round_10 <- function(x) round(nchar(x) / 10) * 10
 #'
-#'   recipe(~., data = okc_text) %>%
-#'     step_textfeature(essay0,
+#'   recipe(~., data = tate_text) %>%
+#'     step_textfeature(medium,
 #'       extract_functions = list(nchar10 = nchar_round_10)
 #'     ) %>%
 #'     prep() %>%
 #'     bake(new_data = NULL)
 #' }
-#' 
 #' @export
 step_textfeature <-
   function(recipe,
@@ -70,6 +77,7 @@ step_textfeature <-
            columns = NULL,
            extract_functions = textfeatures::count_functions,
            prefix = "textfeature",
+           keep_original_cols = FALSE,
            skip = FALSE,
            id = rand_id("textfeature")) {
     recipes::recipes_pkg_check(required_pkgs.step_textfeature())
@@ -77,12 +85,13 @@ step_textfeature <-
     add_step(
       recipe,
       step_textfeature_new(
-        terms = ellipse_check(...),
+        terms = enquos(...),
         role = role,
         trained = trained,
         columns = columns,
         extract_functions = extract_functions,
         prefix = prefix,
+        keep_original_cols = keep_original_cols,
         skip = skip,
         id = id
       )
@@ -91,7 +100,7 @@ step_textfeature <-
 
 step_textfeature_new <-
   function(terms, role, trained, columns, extract_functions, prefix,
-           skip, id) {
+           keep_original_cols, skip, id) {
     step(
       subclass = "textfeature",
       terms = terms,
@@ -100,6 +109,7 @@ step_textfeature_new <-
       columns = columns,
       extract_functions = extract_functions,
       prefix = prefix,
+      keep_original_cols = keep_original_cols,
       skip = skip,
       id = id
     )
@@ -107,7 +117,7 @@ step_textfeature_new <-
 
 #' @export
 prep.step_textfeature <- function(x, training, info = NULL, ...) {
-  col_names <- terms_select(x$terms, info = info)
+  col_names <- recipes_eval_select(x$terms, training, info)
 
   training <- factor_to_text(training, col_names)
 
@@ -122,6 +132,7 @@ prep.step_textfeature <- function(x, training, info = NULL, ...) {
     columns = col_names,
     extract_functions = x$extract_functions,
     prefix = x$prefix,
+    keep_original_cols = get_keep_original_cols(x),
     skip = x$skip,
     id = x$id
   )
@@ -146,8 +157,11 @@ bake.step_textfeature <- function(object, new_data, ...) {
 
     new_data <- vctrs::vec_cbind(new_data, tf_text)
 
-    new_data <-
-      new_data[, !(colnames(new_data) %in% col_names[i]), drop = FALSE]
+    keep_original_cols <- get_keep_original_cols(object)
+    if (!keep_original_cols) {
+      new_data <- 
+        new_data[, !(colnames(new_data) %in% col_names[i]), drop = FALSE]
+    }
   }
   as_tibble(new_data)
 }
@@ -155,21 +169,27 @@ bake.step_textfeature <- function(object, new_data, ...) {
 #' @export
 print.step_textfeature <-
   function(x, width = max(20, options()$width - 30), ...) {
-    cat("Text feature extraction for ", sep = "")
-    printer(x$columns, x$terms, x$trained, width = width)
+    title <- "Text feature extraction for "
+    print_step(x$columns, x$terms, x$trained, title, width)
     invisible(x)
   }
 
-#' @rdname step_textfeature
+#' @rdname tidy.recipe
 #' @param x A `step_textfeature` object.
 #' @export
 tidy.step_textfeature <- function(x, ...) {
   if (is_trained(x)) {
-    term_names <- sel2char(x$terms)
-    res <- tibble(
-      terms = rep(term_names, each = length(x$extract_functions)),
-      functions = rep(names(x$extract_functions), length(x$terms))
-    )
+    if (length(x$columns) == 0) {
+      res <- tibble(
+        terms = character(),
+        functions = character()
+      )
+    } else {
+      res <- tibble(
+        terms = rep(unname(x$columns), each = length(x$extract_functions)),
+        functions = rep(names(x$extract_functions), length(x$terms))
+      )
+    }
   } else {
     term_names <- sel2char(x$terms)
     res <- tibble(
