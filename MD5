@@ -1,7 +1,7 @@
-fa00fdcff1fdfb374e3d0bfefc2cc49f *DESCRIPTION
+aab9353c6c488d628a985ef2173ed22d *DESCRIPTION
 da5c99df12def62825ca3268c9874a1a *LICENSE
 75816a234bd5585cbc4a82a534f23e48 *NAMESPACE
-7a9e139a5c6d13d798e7d55bab00265c *NEWS.md
+1652353004b19b8318dab18306ba3a06 *NEWS.md
 5a0d738eb51d89089041ae2695027f0c *R/0_imports.R
 2cd7136841a7be4a1c48f9bd646f2bca *R/RcppExports.R
 93fa0fdd25860deedb60b974a5ff0f01 *R/aaa.R
@@ -25,7 +25,7 @@ d5c7b06b5974f4247b622c530d0a9535 *R/text_normalization.R
 21516588ff336aee920073823589c2b8 *R/textfeature.R
 6788151a163b081b6e1b0b47b2c4fe01 *R/textrecipes-package.R
 d0d65f6f54eb2315532cb988a895c064 *R/tf.R
-c8eeb5ce4169969f7fdba683d75b7ae5 *R/tfidf.R
+a0985e7780353b1aa9a43a78066a0a3c *R/tfidf.R
 f8c952edfc2a113fa9f9666fb12ea77a *R/tidy.R
 920bed5e0c3e97d493d19704b9cbdce5 *R/tokenfilter.R
 4f8831f52a93cb0d944084e7103efb19 *R/tokenize.R
@@ -40,7 +40,7 @@ e12a0fb92544c86abc1655918ebd867a *R/tokenizer-udpipe.R
 f1ccc3aba14f419876dab58face604c9 *R/tokenmerge.R
 56ad01594ef7e59914edbb9642eca3cd *R/untokenize.R
 65cef5e0674056f6fc07dd2b3ca85c13 *R/utils-pipe.R
-8ccd9784aaf7a387373c0e7b3ac90877 *README.md
+7e4b248d419749748b9d4987a9fe7a9a *README.md
 e56cf70169962ac9219af1fd31b4f0ac *build/vignette.rds
 2afd71b6f0bed0a8532ac00f22e2855e *data/emoji_samples.rda
 45c0b315e84c467046cdbfb5b94a3118 *inst/doc/Working-with-n-grams.R
@@ -48,7 +48,7 @@ d1c5ae75c17e82ba05010773d3f11bbb *inst/doc/Working-with-n-grams.Rmd
 4c94519ee6099498c45e98741e9c6a55 *inst/doc/Working-with-n-grams.html
 02af78b7ce2bac38003d9f26a2b59100 *inst/doc/cookbook---using-more-complex-recipes-involving-text.R
 0852241d342ba6787d9b02c90aa23614 *inst/doc/cookbook---using-more-complex-recipes-involving-text.Rmd
-16718492f2459f17f54068d396e9ce10 *inst/doc/cookbook---using-more-complex-recipes-involving-text.html
+17f3158f88de03ef75745e6d6a9a152c *inst/doc/cookbook---using-more-complex-recipes-involving-text.html
 20087ee200680315a54ce4f110f7c699 *inst/doc/tokenlist.R
 61b1e1975b6ec5cb194c8e8c41cc58d1 *inst/doc/tokenlist.Rmd
 147000ee5a880ad9317ca315b28f79b6 *inst/doc/tokenlist.html
@@ -84,7 +84,7 @@ b0f333987921678d98a4d9bd6720cc25 *man/step_text_normalization.Rd
 21bc0d61af5c7bb8110b2e3aa07086d5 *man/step_textfeature.Rd
 06b5a520ff5d4ce2b561fea578109ca6 *man/step_texthash.Rd
 5a943531c5ab874f02f49968a07f86f0 *man/step_tf.Rd
-95ec4d61f46f0a53f608dfac047b018d *man/step_tfidf.Rd
+889b85a075405d04c499936845db751e *man/step_tfidf.Rd
 faeecee6367cb46cd6770e95efd3c824 *man/step_tokenfilter.Rd
 1b9187bd33034b7a5d2ac707e1a55422 *man/step_tokenize.Rd
 82298561491209870765b8f1d0f12234 *man/step_tokenize_bpe.Rd
@@ -117,7 +117,7 @@ b4d12cc8373cc3de62d8b1af8e6bb943 *tests/testthat/_snaps/stopwords.md
 1ad2ccf7d5b65ff0ff6d16055e781372 *tests/testthat/_snaps/text_normalization.md
 7f2706d33f28db723106d6ba8606e629 *tests/testthat/_snaps/textfeature.md
 d74b7d949971f77409fa55852eacbf8d *tests/testthat/_snaps/tf.md
-7d02b08cead07fcfa43f7b4cc147ff56 *tests/testthat/_snaps/tfidf.md
+0427ac9142c87157089ccb06f2108b28 *tests/testthat/_snaps/tfidf.md
 6c46cb963a4c997aa7274453cb3b4c3b *tests/testthat/_snaps/tokenfilter.md
 317822cf2cb8f9d544e91a1a85ce78de *tests/testthat/_snaps/tokenize.md
 07d559683d27ec6b5d33e95c1f57f879 *tests/testthat/_snaps/tokenizer-tokenizersbpe.md
@@ -144,7 +144,7 @@ b5ba4c41706c9ea8ae226f81ff4e4c91 *tests/testthat/test-stopwords.R
 da88b9a166d017351da731364eba2781 *tests/testthat/test-text_normalization.R
 df0f2fffccd9c558c620362c834e6001 *tests/testthat/test-textfeature.R
 f38456e49d73b2c3fdd220c82684e88b *tests/testthat/test-tf.R
-cae0525103922e83dce34ef15acbbc4b *tests/testthat/test-tfidf.R
+44549ebf882233fbd4f32c518fd41ed5 *tests/testthat/test-tfidf.R
 9b16d8edb6c85f8fd8ccb168133e5822 *tests/testthat/test-tokenfilter.R
 676180f8976fe31a14ab4a791153ab9e *tests/testthat/test-tokenize.R
 f60ebde61701695d56cd748ac2dac0e0 *tests/testthat/test-tokenizer-spacyr.R

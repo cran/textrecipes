@@ -1,6 +1,6 @@
 Package: textrecipes
 Title: Extra 'Recipes' for Text Processing
-Version: 0.5.0
+Version: 0.5.1
 Authors@R: 
     person("Emil", "Hvitfeldt", , "emilhhvitfeldt@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-0679-1945"))
@@ -29,8 +29,8 @@ LazyData: true
 RoxygenNote: 7.1.2.9000
 SystemRequirements: GNU make, C++11
 NeedsCompilation: yes
-Packaged: 2022-03-20 22:26:35 UTC; emilhvitfeldt
+Packaged: 2022-03-29 22:17:52 UTC; emilhvitfeldt
 Author: Emil Hvitfeldt [aut, cre] (<https://orcid.org/0000-0002-0679-1945>)
 Maintainer: Emil Hvitfeldt <emilhhvitfeldt@gmail.com>
 Repository: CRAN
-Date/Publication: 2022-03-20 22:50:02 UTC
+Date/Publication: 2022-03-29 22:40:01 UTC

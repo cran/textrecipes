@@ -1,3 +1,9 @@
+# textrecipes 0.5.1
+
+* `step_tfidf()` now correctly saves the idf values and applies them to the testing data set.
+
+* `tidy.step_tfidf()` now returns calculated IDF weights.
+
 # textrecipes 0.5.0
 
 ## New steps
