@@ -5,25 +5,24 @@ knitr::opts_chunk$set(
 )
 
 ## ---- message=FALSE-----------------------------------------------------------
-library(dplyr)
 library(recipes)
 library(textrecipes)
 library(modeldata)
-data("okc_text")
+data("tate_text")
 
 ## -----------------------------------------------------------------------------
-words <- c("you", "i", "sad", "happy")
+words <- c("or", "and", "on")
 
-okc_rec <- recipe(~ ., data = okc_text) %>%
-  step_tokenize(essay0) %>%
-  step_stopwords(essay0, custom_stopword_source = words, keep = TRUE) %>% 
-  step_tf(essay0)
+okc_rec <- recipe(~ ., data = tate_text) %>%
+  step_tokenize(medium) %>%
+  step_stopwords(medium, custom_stopword_source = words, keep = TRUE) %>% 
+  step_tf(medium)
 
 okc_obj <- okc_rec %>%
   prep()
    
-bake(okc_obj, okc_text) %>%
-  select(starts_with("tf_essay0"))
+bake(okc_obj, tate_text) %>%
+  select(starts_with("tf_medium"))
 
 ## -----------------------------------------------------------------------------
 stopwords_list <- c("was", "she's", "who", "had", "some", "same", "you", "most", 
@@ -32,42 +31,42 @@ stopwords_list <- c("was", "she's", "who", "had", "some", "same", "you", "most",
 
 words <- c("sad", "happy")
 
-okc_rec <- recipe(~ ., data = okc_text) %>%
-  step_tokenize(essay0) %>%
-  step_stopwords(essay0, custom_stopword_source = stopwords_list) %>% 
-  step_stopwords(essay0, custom_stopword_source = words) %>% 
-  step_tfidf(essay0)
+okc_rec <- recipe(~ ., data = tate_text) %>%
+  step_tokenize(medium) %>%
+  step_stopwords(medium, custom_stopword_source = stopwords_list) %>% 
+  step_stopwords(medium, custom_stopword_source = words) %>% 
+  step_tfidf(medium)
 
 okc_obj <- okc_rec %>%
   prep()
    
-bake(okc_obj, okc_text) %>%
-  select(starts_with("tfidf_essay0"))
+bake(okc_obj, tate_text) %>%
+  select(starts_with("tfidf_medium"))
 
 ## -----------------------------------------------------------------------------
-okc_rec <- recipe(~ ., data = okc_text) %>%
-  step_tokenize(essay0, token = "characters") %>%
-  step_stopwords(essay0, custom_stopword_source = letters, keep = TRUE) %>%
-  step_tf(essay0)
+okc_rec <- recipe(~ ., data = tate_text) %>%
+  step_tokenize(medium, token = "characters") %>%
+  step_stopwords(medium, custom_stopword_source = letters, keep = TRUE) %>%
+  step_tf(medium)
 
 okc_obj <- okc_rec %>%
   prep()
    
-bake(okc_obj, okc_text) %>%
-  select(starts_with("tf_essay0"))
+bake(okc_obj, tate_text) %>%
+  select(starts_with("tf_medium"))
 
 ## -----------------------------------------------------------------------------
-okc_rec <- recipe(~ ., data = okc_text) %>%
-  step_tokenize(essay0, token = "words") %>%
-  step_stem(essay0) %>%
-  step_untokenize(essay0) %>%
-  step_tokenize(essay0, token = "ngrams") %>%
-  step_tokenfilter(essay0, max_tokens = 500) %>%
-  step_tfidf(essay0)
+okc_rec <- recipe(~ ., data = tate_text) %>%
+  step_tokenize(medium, token = "words") %>%
+  step_stem(medium) %>%
+  step_untokenize(medium) %>%
+  step_tokenize(medium, token = "ngrams") %>%
+  step_tokenfilter(medium, max_tokens = 500) %>%
+  step_tfidf(medium)
 
 okc_obj <- okc_rec %>%
   prep()
    
-bake(okc_obj, okc_text) %>%
-  select(starts_with("tfidf_essay0"))
+bake(okc_obj, tate_text) %>%
+  select(starts_with("tfidf_medium"))
 
