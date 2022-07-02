@@ -27,6 +27,8 @@
 #'
 #' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
 #' (the selectors or variables selected) and `num_topics` (number of topics).
+#' 
+#' @template case-weights-not-supported
 #'
 #' @seealso [step_tokenize()] to turn characters into [`tokens`][tokenlist()]
 #' @family Steps for Token Modification
@@ -108,7 +110,7 @@ prep.step_pos_filter <- function(x, training, info = NULL, ...) {
 #' @export
 bake.step_pos_filter <- function(object, new_data, ...) {
   col_names <- object$columns
-  # for backward compat
+  check_new_data(col_names, object, new_data)
 
   for (i in seq_along(col_names)) {
     variable <- new_data[, col_names[i], drop = TRUE]
@@ -128,7 +130,7 @@ bake.step_pos_filter <- function(object, new_data, ...) {
     new_data[, col_names[i]] <- tibble(pos_filter_variable)
   }
   new_data <- factor_to_text(new_data, col_names)
-  as_tibble(new_data)
+  new_data
 }
 
 #' @export

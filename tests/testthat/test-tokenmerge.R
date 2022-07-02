@@ -52,6 +52,32 @@ test_that("it complains when the selected column isn't a tokenlist", {
   )
 })
 
+test_that("bake method errors when needed non-standard role columns are missing", {
+  tokenized_test_data <- recipe(~text1 + text2, data = test_data) %>%
+    step_tokenize(text1, text2) %>%
+    prep() %>%
+    bake(new_data = NULL)
+  
+  rec <- recipe(tokenized_test_data) %>%
+    update_role(text1, text2, new_role = "predictor") %>%
+    step_tokenmerge(text1, text2) %>%
+    update_role(text1, new_role = "potato") %>%
+    update_role_requirements(role = "potato", bake = FALSE)
+  
+  trained <- prep(rec, training = tokenized_test_data, verbose = FALSE)
+  
+  expect_error(bake(trained, new_data = tokenized_test_data[, -1]),
+               class = "new_data_missing_column")
+})
+
+test_that("printing", {
+  rec <- rec %>%
+    step_tokenize(text1, text2) %>%
+    step_tokenmerge(text1, text2)
+  expect_snapshot(print(rec))
+  expect_snapshot(prep(rec))
+})
+
 test_that("empty selection prep/bake is a no-op", {
   rec1 <- recipe(mpg ~ ., mtcars)
   rec2 <- step_tokenmerge(rec1)

@@ -12,7 +12,7 @@
 
 <meta name="author" content="Emil Hvitfeldt" />
 
-<meta name="date" content="2022-05-03" />
+<meta name="date" content="2022-07-01" />
 
 <title>Cookbook - Using more complex recipes involving text</title>
 
@@ -335,7 +335,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h1 class="title toc-ignore">Cookbook - Using more complex recipes
 involving text</h1>
 <h4 class="author">Emil Hvitfeldt</h4>
-<h4 class="date">2022-05-03</h4>
+<h4 class="date">2022-07-01</h4>
 
 
 
@@ -411,25 +411,25 @@ words and once for your special words.</p>
 <span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="fu">bake</span>(okc_obj, tate_text) <span class="sc">%&gt;%</span></span>
 <span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">starts_with</span>(<span class="st">&quot;tfidf_medium&quot;</span>))</span>
 <span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 4,284 × 951</span></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    tfi…¹ tfi…² tfi…³ tfi…⁴ tfi…⁵ tfi…⁶ tfi…⁷ tfi…⁸ tfi…⁹ tfi…˟ tfi…˟ tfi…˟ tfi…˟</span></span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;</span></span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1     0     0     0     0     0     0     0     0     0     0     0     0     0</span></span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  2     0     0     0     0     0     0     0     0     0     0     0     0     0</span></span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3     0     0     0     0     0     0     0     0     0     0     0     0     0</span></span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  4     0     0     0     0     0     0     0     0     0     0     0     0     0</span></span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  5     0     0     0     0     0     0     0     0     0     0     0     0     0</span></span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  6     0     0     0     0     0     0     0     0     0     0     0     0     0</span></span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  7     0     0     0     0     0     0     0     0     0     0     0     0     0</span></span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  8     0     0     0     0     0     0     0     0     0     0     0     0     0</span></span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  9     0     0     0     0     0     0     0     0     0     0     0     0     0</span></span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10     0     0     0     0     0     0     0     0     0     0     0     0     0</span></span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 4,274 more rows, abbreviated variable names ¹​tfidf_medium_1,</span></span>
-<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ²​tfidf_medium_10, ³​tfidf_medium_100, ⁴​tfidf_medium_11, ⁵​tfidf_medium_12,</span></span>
-<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ⁶​tfidf_medium_13, ⁷​tfidf_medium_133, ⁸​tfidf_medium_14, ⁹​tfidf_medium_15,</span></span>
-<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ˟​tfidf_medium_151, ˟​tfidf_medium_16, ˟​tfidf_medium_160, ˟​tfidf_medium_16mm,</span></span>
-<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   and 938 more variables: tfidf_medium_18 &lt;dbl&gt;, tfidf_medium_19 &lt;dbl&gt;,</span></span>
-<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   tfidf_medium_2 &lt;dbl&gt;, tfidf_medium_20 &lt;dbl&gt;, tfidf_medium_2000 &lt;dbl&gt;,</span></span>
-<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   tfidf_medium_201 &lt;dbl&gt;, tfidf_medium_21 &lt;dbl&gt;, tfidf_medium_22 &lt;dbl&gt;, …</span></span></code></pre></div>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    tfidf_medium_1 tfidf_medium_10 tfidf_medium_100 tfidf_medium_11</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;             &lt;dbl&gt;           &lt;dbl&gt;            &lt;dbl&gt;           &lt;dbl&gt;</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1              0               0                0               0</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  2              0               0                0               0</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3              0               0                0               0</span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  4              0               0                0               0</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  5              0               0                0               0</span></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  6              0               0                0               0</span></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  7              0               0                0               0</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  8              0               0                0               0</span></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  9              0               0                0               0</span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10              0               0                0               0</span></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 4,274 more rows, and 947 more variables: tfidf_medium_12 &lt;dbl&gt;,</span></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   tfidf_medium_13 &lt;dbl&gt;, tfidf_medium_133 &lt;dbl&gt;, tfidf_medium_14 &lt;dbl&gt;,</span></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   tfidf_medium_15 &lt;dbl&gt;, tfidf_medium_151 &lt;dbl&gt;, tfidf_medium_16 &lt;dbl&gt;,</span></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   tfidf_medium_160 &lt;dbl&gt;, tfidf_medium_16mm &lt;dbl&gt;, tfidf_medium_18 &lt;dbl&gt;,</span></span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   tfidf_medium_19 &lt;dbl&gt;, tfidf_medium_2 &lt;dbl&gt;, tfidf_medium_20 &lt;dbl&gt;,</span></span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   tfidf_medium_2000 &lt;dbl&gt;, tfidf_medium_201 &lt;dbl&gt;, tfidf_medium_21 &lt;dbl&gt;,</span></span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   tfidf_medium_22 &lt;dbl&gt;, tfidf_medium_220 &lt;dbl&gt;, tfidf_medium_23 &lt;dbl&gt;, …</span></span></code></pre></div>
 </div>
 <div id="letter-distributions" class="section level2">
 <h2>Letter distributions</h2>
@@ -448,25 +448,24 @@ tokenizer and keep only the characters using the
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="fu">bake</span>(okc_obj, tate_text) <span class="sc">%&gt;%</span></span>
 <span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">starts_with</span>(<span class="st">&quot;tf_medium&quot;</span>))</span>
 <span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 4,284 × 26</span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    tf_…¹ tf_…² tf_…³ tf_…⁴ tf_…⁵ tf_…⁶ tf_…⁷ tf_…⁸ tf_…⁹ tf_…˟ tf_…˟ tf_…˟ tf_…˟</span></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;</span></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1     1     0     2     3     4     0     0     0     3     1     0     1     1</span></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  2     1     0     1     0     2     0     1     1     1     0     0     0     0</span></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3     1     0     1     0     2     0     1     1     1     0     0     0     0</span></span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  4     1     0     1     0     2     0     1     1     1     0     0     0     0</span></span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  5     3     0     1     0     0     0     0     0     2     0     0     1     0</span></span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  6     3     0     1     0     0     0     0     0     2     0     0     1     0</span></span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  7     3     0     2     0     1     0     0     0     2     0     0     1     0</span></span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  8     1     0     1     1     1     0     0     0     0     0     0     0     0</span></span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  9     5     0     1     1     0     0     0     0     2     0     0     1     0</span></span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10     1     0     0     0     1     0     0     0     1     0     0     0     0</span></span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 4,274 more rows, abbreviated variable names ¹​tf_medium_a,</span></span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ²​tf_medium_b, ³​tf_medium_c, ⁴​tf_medium_d, ⁵​tf_medium_e, ⁶​tf_medium_f,</span></span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ⁷​tf_medium_g, ⁸​tf_medium_h, ⁹​tf_medium_i, ˟​tf_medium_j, ˟​tf_medium_k,</span></span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ˟​tf_medium_l, ˟​tf_medium_m, and 13 more variables: tf_medium_n &lt;dbl&gt;,</span></span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   tf_medium_o &lt;dbl&gt;, tf_medium_p &lt;dbl&gt;, tf_medium_q &lt;dbl&gt;, tf_medium_r &lt;dbl&gt;,</span></span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   tf_medium_s &lt;dbl&gt;, tf_medium_t &lt;dbl&gt;, tf_medium_u &lt;dbl&gt;, tf_medium_v &lt;dbl&gt;,</span></span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   tf_medium_w &lt;dbl&gt;, tf_medium_x &lt;dbl&gt;, tf_medium_y &lt;dbl&gt;, …</span></span></code></pre></div>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    tf_medium_a tf_medium_b tf_medium_c tf_medium_d tf_medium_e tf_medium_f</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1           1           0           2           3           4           0</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  2           1           0           1           0           2           0</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3           1           0           1           0           2           0</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  4           1           0           1           0           2           0</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  5           3           0           1           0           0           0</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  6           3           0           1           0           0           0</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  7           3           0           2           0           1           0</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  8           1           0           1           1           1           0</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  9           5           0           1           1           0           0</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10           1           0           0           0           1           0</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 4,274 more rows, and 20 more variables: tf_medium_g &lt;dbl&gt;,</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   tf_medium_h &lt;dbl&gt;, tf_medium_i &lt;dbl&gt;, tf_medium_j &lt;dbl&gt;, tf_medium_k &lt;dbl&gt;,</span></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   tf_medium_l &lt;dbl&gt;, tf_medium_m &lt;dbl&gt;, tf_medium_n &lt;dbl&gt;, tf_medium_o &lt;dbl&gt;,</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   tf_medium_p &lt;dbl&gt;, tf_medium_q &lt;dbl&gt;, tf_medium_r &lt;dbl&gt;, tf_medium_s &lt;dbl&gt;,</span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   tf_medium_t &lt;dbl&gt;, tf_medium_u &lt;dbl&gt;, tf_medium_v &lt;dbl&gt;, tf_medium_w &lt;dbl&gt;,</span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   tf_medium_x &lt;dbl&gt;, tf_medium_y &lt;dbl&gt;, tf_medium_z &lt;dbl&gt;</span></span></code></pre></div>
 </div>
 <div id="tf-idf-of-ngrams-of-stemmed-tokens" class="section level2">
 <h2>TF-IDF of ngrams of stemmed tokens</h2>
@@ -494,25 +493,25 @@ filtering and tfidf as usual.</p>
 <span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="fu">bake</span>(okc_obj, tate_text) <span class="sc">%&gt;%</span></span>
 <span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">starts_with</span>(<span class="st">&quot;tfidf_medium&quot;</span>))</span>
 <span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 4,284 × 499</span></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    tfi…¹ tfi…² tfi…³ tfi…⁴ tfi…⁵ tfi…⁶ tfi…⁷ tfi…⁸ tfi…⁹ tfi…˟ tfi…˟ tfi…˟ tfi…˟</span></span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;</span></span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1     0     0     0     0     0     0     0     0     0     0     0     0     0</span></span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  2     0     0     0     0     0     0     0     0     0     0     0     0     0</span></span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3     0     0     0     0     0     0     0     0     0     0     0     0     0</span></span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  4     0     0     0     0     0     0     0     0     0     0     0     0     0</span></span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  5     0     0     0     0     0     0     0     0     0     0     0     0     0</span></span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  6     0     0     0     0     0     0     0     0     0     0     0     0     0</span></span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  7     0     0     0     0     0     0     0     0     0     0     0     0     0</span></span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  8     0     0     0     0     0     0     0     0     0     0     0     0     0</span></span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  9     0     0     0     0     0     0     0     0     0     0     0     0     0</span></span>
-<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10     0     0     0     0     0     0     0     0     0     0     0     0     0</span></span>
-<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 4,274 more rows, abbreviated variable names</span></span>
-<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ¹​`tfidf_medium_100 digit print`, ²​`tfidf_medium_16 mm black`,</span></span>
-<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ³​`tfidf_medium_16 mm project`, ⁴​`tfidf_medium_16 mm shown`,</span></span>
-<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ⁵​`tfidf_medium_16mm shown a`, ⁶​`tfidf_medium_2 aluminium panel`,</span></span>
-<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ⁷​`tfidf_medium_2 digit print`, ⁸​`tfidf_medium_2 lithograph on`,</span></span>
-<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ⁹​`tfidf_medium_2 monitor colour`, ˟​`tfidf_medium_2 photograph black`,</span></span>
-<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ˟​`tfidf_medium_2 photograph colour`, ˟​`tfidf_medium_2 project black`, …</span></span></code></pre></div>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    `tfidf_medium_100 digit …` `tfidf_medium_…` `tfidf_medium_…` `tfidf_medium_…`</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                         &lt;dbl&gt;            &lt;dbl&gt;            &lt;dbl&gt;            &lt;dbl&gt;</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1                          0                0                0                0</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  2                          0                0                0                0</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3                          0                0                0                0</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  4                          0                0                0                0</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  5                          0                0                0                0</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  6                          0                0                0                0</span></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  7                          0                0                0                0</span></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  8                          0                0                0                0</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  9                          0                0                0                0</span></span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10                          0                0                0                0</span></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 4,274 more rows, and 495 more variables:</span></span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   `tfidf_medium_16mm shown a` &lt;dbl&gt;, `tfidf_medium_2 aluminium panel` &lt;dbl&gt;,</span></span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   `tfidf_medium_2 digit print` &lt;dbl&gt;, `tfidf_medium_2 lithograph on` &lt;dbl&gt;,</span></span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   `tfidf_medium_2 monitor colour` &lt;dbl&gt;,</span></span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   `tfidf_medium_2 photograph black` &lt;dbl&gt;,</span></span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   `tfidf_medium_2 photograph colour` &lt;dbl&gt;,</span></span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   `tfidf_medium_2 project black` &lt;dbl&gt;, …</span></span></code></pre></div>
 </div>
 
 

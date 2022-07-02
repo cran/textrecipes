@@ -23,6 +23,8 @@
 #'
 #' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
 #' (the selectors or variables selected) and `num_topics` (number of topics).
+#' 
+#' @template case-weights-not-supported
 #'
 #' @source \url{https://arxiv.org/abs/1301.3781}
 #'
@@ -159,7 +161,7 @@ prep.step_lda <- function(x, training, info = NULL, ...) {
 #' @export
 bake.step_lda <- function(object, new_data, ...) {
   col_names <- object$columns
-  # for backward compat
+  check_new_data(col_names, object, new_data)
 
   for (i in seq_along(col_names)) {
     tokens <- get_tokens(new_data[, col_names[i], drop = TRUE])
@@ -182,7 +184,7 @@ bake.step_lda <- function(object, new_data, ...) {
     }
   }
 
-  as_tibble(new_data)
+  new_data
 }
 
 #' @export

@@ -48,6 +48,8 @@
 #' (the selectors or variables selected), `embedding_rows` (number of rows in
 #' embedding), and `aggregation` (the aggregation method).
 #'
+#' @template case-weights-not-supported
+#'
 #' @seealso [step_tokenize()] to turn characters into [`tokens`][tokenlist()]
 #' @family Steps for Numeric Variables From Tokens
 #'   
@@ -180,7 +182,7 @@ bake.step_word_embeddings <- function(object, new_data, ...) {
   }
 
   col_names <- object$columns
-  # for backward compat
+  check_new_data(col_names, object, new_data)
 
   for (i in seq_along(col_names)) {
     aggregation_fun <- switch(object$aggregation,
@@ -232,7 +234,7 @@ bake.step_word_embeddings <- function(object, new_data, ...) {
     }
   }
 
-  as_tibble(new_data)
+  new_data
 }
 
 #' @export

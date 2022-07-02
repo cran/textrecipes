@@ -56,6 +56,8 @@
 #'
 #' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
 #' (the selectors or variables selected) and `value` (the weighting scheme).
+#' 
+#' @template case-weights-not-supported
 #'
 #' @seealso [step_tokenize()] to turn characters into [`tokens`][tokenlist()]
 #' @family Steps for Numeric Variables From Tokens
@@ -180,7 +182,7 @@ prep.step_tf <- function(x, training, info = NULL, ...) {
 #' @export
 bake.step_tf <- function(object, new_data, ...) {
   col_names <- object$columns
-  # for backward compat
+  check_new_data(col_names, object, new_data)
 
   for (i in seq_along(col_names)) {
     tf_text <- tf_function(
@@ -199,7 +201,7 @@ bake.step_tf <- function(object, new_data, ...) {
     
     new_data <- vctrs::vec_cbind(new_data, tf_text)
   }
-  as_tibble(new_data)
+  new_data
 }
 
 #' @export

@@ -25,6 +25,8 @@
 #' (the selectors or variables selected) and `normalization_form` (type of
 #' normalization).
 #'
+#' @template case-weights-not-supported
+#'
 #' @seealso [step_texthash()] for feature hashing.
 #' @family Steps for Text Normalization
 #'   
@@ -112,7 +114,7 @@ prep.step_text_normalization <- function(x, training, info = NULL, ...) {
 #' @export
 bake.step_text_normalization <- function(object, new_data, ...) {
   col_names <- object$columns
-  # for backward compat
+  check_new_data(col_names, object, new_data)
 
   new_data <- factor_to_text(new_data, col_names)
 
@@ -137,7 +139,7 @@ bake.step_text_normalization <- function(object, new_data, ...) {
     )
   }
   new_data <- factor_to_text(new_data, col_names)
-  as_tibble(new_data)
+  new_data
 }
 
 #' @export

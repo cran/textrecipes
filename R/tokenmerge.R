@@ -21,6 +21,8 @@
 #'
 #' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
 #' (the selectors or variables selected).
+#' 
+#' @template case-weights-not-supported
 #'
 #' @seealso [step_tokenize()] to turn characters into [`tokens`][tokenlist()]
 #' @family Steps for Token Modification
@@ -105,8 +107,8 @@ bake.step_tokenmerge <- function(object, new_data, ...) {
   }
 
   col_names <- object$columns
-  # for backward compat
-
+  check_new_data(col_names, object, new_data)
+  
   new_col <- as.list(unname(as.data.frame(new_data[, col_names, drop = FALSE]))) %>%
     map(get_tokens) %>%
     pmap(c)
@@ -118,7 +120,7 @@ bake.step_tokenmerge <- function(object, new_data, ...) {
 
   new_data <- vctrs::vec_cbind(new_data, new_col)
 
-  as_tibble(new_data)
+  new_data
 }
 
 #' @export

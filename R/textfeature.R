@@ -35,6 +35,8 @@
 #' (the selectors or variables selected) and `functions` (name of feature
 #' functions).
 #'
+#'@template case-weights-not-supported
+#'
 #' @family Steps for Numeric Variables From Characters
 #'   
 #' @examples
@@ -141,7 +143,7 @@ prep.step_textfeature <- function(x, training, info = NULL, ...) {
 #' @export
 bake.step_textfeature <- function(object, new_data, ...) {
   col_names <- object$columns
-  # for backward compat
+  check_new_data(col_names, object, new_data)
 
   new_data <- factor_to_text(new_data, col_names)
 
@@ -163,7 +165,7 @@ bake.step_textfeature <- function(object, new_data, ...) {
         new_data[, !(colnames(new_data) %in% col_names[i]), drop = FALSE]
     }
   }
-  as_tibble(new_data)
+  new_data
 }
 
 #' @export

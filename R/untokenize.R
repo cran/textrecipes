@@ -26,6 +26,8 @@
 #' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
 #' (the selectors or variables selected) and `value` (seperator used for
 #' collapsing).
+#' 
+#' @template case-weights-not-supported
 #'
 #' @seealso [step_tokenize()] to turn characters into [`tokens`][tokenlist()]
 #' @family Steps for Un-Tokenization
@@ -109,7 +111,7 @@ prep.step_untokenize <- function(x, training, info = NULL, ...) {
 #' @export
 bake.step_untokenize <- function(object, new_data, ...) {
   col_names <- object$columns
-  # for backward compat
+  check_new_data(col_names, object, new_data)
 
   for (i in seq_along(col_names)) {
     tokens <- get_tokens(new_data[, col_names[i], drop = TRUE])
@@ -122,7 +124,7 @@ bake.step_untokenize <- function(object, new_data, ...) {
 
   new_data <- factor_to_text(new_data, col_names)
 
-  as_tibble(new_data)
+  new_data
 }
 
 #' @export

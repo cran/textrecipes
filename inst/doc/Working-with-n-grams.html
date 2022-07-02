@@ -445,26 +445,25 @@ of the resulting data.frame.</p>
 <span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>abc_ngram</span>
 <span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 2 × 14</span></span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   tf_t…¹ tf_…² tf_…³ tf_…⁴ tf_…⁵ tf_…⁶ tf_…⁷ tf_…⁸ tf_…⁹ tf_…˟ tf_…˟ tf_…˟ tf_…˟</span></span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;</span></span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1      1     0     1     0     0     1     0     1     1     0     1     0     1</span></span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2      0     1     0     1     1     0     1     0     0     1     0     1     0</span></span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with abbreviated variable names ¹​`tf_text_a place where`,</span></span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ²​`tf_text_an insect that`, ³​`tf_text_bank is a`, ⁴​`tf_text_bee is an`,</span></span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ⁵​`tf_text_insect that gathers`, ⁶​`tf_text_is a place`,</span></span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ⁷​`tf_text_is an insect`, ⁸​`tf_text_place where you`,</span></span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ⁹​`tf_text_put your money`, ˟​`tf_text_that gathers honey`,</span></span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ˟​`tf_text_the bank is`, ˟​`tf_text_the bee is`, ˟​`tf_text_where you put`,</span></span>
-<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   and 1 more variable: `tf_text_you put your` &lt;dbl&gt;</span></span>
-<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(abc_ngram)</span>
-<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;tf_text_a place where&quot;       &quot;tf_text_an insect that&quot;     </span></span>
-<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [3] &quot;tf_text_bank is a&quot;           &quot;tf_text_bee is an&quot;          </span></span>
-<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [5] &quot;tf_text_insect that gathers&quot; &quot;tf_text_is a place&quot;         </span></span>
-<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [7] &quot;tf_text_is an insect&quot;        &quot;tf_text_place where you&quot;    </span></span>
-<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [9] &quot;tf_text_put your money&quot;      &quot;tf_text_that gathers honey&quot; </span></span>
-<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [11] &quot;tf_text_the bank is&quot;         &quot;tf_text_the bee is&quot;         </span></span>
-<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [13] &quot;tf_text_where you put&quot;       &quot;tf_text_you put your&quot;</span></span></code></pre></div>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   `tf_text_a place where` `tf_text_an insect…` `tf_text_bank …` `tf_text_bee i…`</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                     &lt;dbl&gt;                &lt;dbl&gt;            &lt;dbl&gt;            &lt;dbl&gt;</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1                       1                    0                1                0</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2                       0                    1                0                1</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 10 more variables: `tf_text_insect that gathers` &lt;dbl&gt;,</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   `tf_text_is a place` &lt;dbl&gt;, `tf_text_is an insect` &lt;dbl&gt;,</span></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   `tf_text_place where you` &lt;dbl&gt;, `tf_text_put your money` &lt;dbl&gt;,</span></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   `tf_text_that gathers honey` &lt;dbl&gt;, `tf_text_the bank is` &lt;dbl&gt;,</span></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   `tf_text_the bee is` &lt;dbl&gt;, `tf_text_where you put` &lt;dbl&gt;,</span></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   `tf_text_you put your` &lt;dbl&gt;</span></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(abc_ngram)</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;tf_text_a place where&quot;       &quot;tf_text_an insect that&quot;     </span></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [3] &quot;tf_text_bank is a&quot;           &quot;tf_text_bee is an&quot;          </span></span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [5] &quot;tf_text_insect that gathers&quot; &quot;tf_text_is a place&quot;         </span></span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [7] &quot;tf_text_is an insect&quot;        &quot;tf_text_place where you&quot;    </span></span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [9] &quot;tf_text_put your money&quot;      &quot;tf_text_that gathers honey&quot; </span></span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [11] &quot;tf_text_the bank is&quot;         &quot;tf_text_the bee is&quot;         </span></span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [13] &quot;tf_text_where you put&quot;       &quot;tf_text_you put your&quot;</span></span></code></pre></div>
 <p>If you need to pass arguments to the underlying tokenizer function
 you can pass a named list to the <code>options</code> argument in
 <code>step_tokenize()</code></p>
@@ -483,24 +482,23 @@ you can pass a named list to the <code>options</code> argument in
 <span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>abc_ngram</span>
 <span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 2 × 16</span></span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   tf_t…¹ tf_…² tf_…³ tf_…⁴ tf_…⁵ tf_…⁶ tf_…⁷ tf_…⁸ tf_…⁹ tf_…˟ tf_…˟ tf_…˟ tf_…˟</span></span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;</span></span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1      1     0     1     0     0     0     1     0     1     1     0     1     0</span></span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2      0     1     0     1     1     1     0     1     0     0     1     0     1</span></span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with abbreviated variable names ¹​tf_text_a_place, ²​tf_text_an_insect,</span></span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ³​tf_text_bank_is, ⁴​tf_text_bee_is, ⁵​tf_text_gathers_honey,</span></span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ⁶​tf_text_insect_that, ⁷​tf_text_is_a, ⁸​tf_text_is_an, ⁹​tf_text_place_where,</span></span>
-<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ˟​tf_text_put_your, ˟​tf_text_that_gathers, ˟​tf_text_the_bank,</span></span>
-<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ˟​tf_text_the_bee, and 3 more variables: tf_text_where_you &lt;dbl&gt;,</span></span>
-<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   tf_text_you_put &lt;dbl&gt;, tf_text_your_money &lt;dbl&gt;</span></span>
-<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(abc_ngram)</span>
-<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;tf_text_a_place&quot;       &quot;tf_text_an_insect&quot;     &quot;tf_text_bank_is&quot;      </span></span>
-<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [4] &quot;tf_text_bee_is&quot;        &quot;tf_text_gathers_honey&quot; &quot;tf_text_insect_that&quot;  </span></span>
-<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [7] &quot;tf_text_is_a&quot;          &quot;tf_text_is_an&quot;         &quot;tf_text_place_where&quot;  </span></span>
-<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [10] &quot;tf_text_put_your&quot;      &quot;tf_text_that_gathers&quot;  &quot;tf_text_the_bank&quot;     </span></span>
-<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [13] &quot;tf_text_the_bee&quot;       &quot;tf_text_where_you&quot;     &quot;tf_text_you_put&quot;      </span></span>
-<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [16] &quot;tf_text_your_money&quot;</span></span></code></pre></div>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   tf_text_a_place tf_text_an_insect tf_text_bank_is tf_text_bee_is</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;             &lt;dbl&gt;             &lt;dbl&gt;           &lt;dbl&gt;          &lt;dbl&gt;</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1               1                 0               1              0</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2               0                 1               0              1</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 12 more variables: tf_text_gathers_honey &lt;dbl&gt;,</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   tf_text_insect_that &lt;dbl&gt;, tf_text_is_a &lt;dbl&gt;, tf_text_is_an &lt;dbl&gt;,</span></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   tf_text_place_where &lt;dbl&gt;, tf_text_put_your &lt;dbl&gt;,</span></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   tf_text_that_gathers &lt;dbl&gt;, tf_text_the_bank &lt;dbl&gt;, tf_text_the_bee &lt;dbl&gt;,</span></span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   tf_text_where_you &lt;dbl&gt;, tf_text_you_put &lt;dbl&gt;, tf_text_your_money &lt;dbl&gt;</span></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(abc_ngram)</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;tf_text_a_place&quot;       &quot;tf_text_an_insect&quot;     &quot;tf_text_bank_is&quot;      </span></span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [4] &quot;tf_text_bee_is&quot;        &quot;tf_text_gathers_honey&quot; &quot;tf_text_insect_that&quot;  </span></span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [7] &quot;tf_text_is_a&quot;          &quot;tf_text_is_an&quot;         &quot;tf_text_place_where&quot;  </span></span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [10] &quot;tf_text_put_your&quot;      &quot;tf_text_that_gathers&quot;  &quot;tf_text_the_bank&quot;     </span></span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [13] &quot;tf_text_the_bee&quot;       &quot;tf_text_where_you&quot;     &quot;tf_text_you_put&quot;      </span></span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [16] &quot;tf_text_your_money&quot;</span></span></code></pre></div>
 <p>Lastly you can also supply a custom tokenizer to
 <code>step_tokenize()</code> using the <code>custom_token</code>
 argument.</p>
@@ -522,24 +520,23 @@ argument.</p>
 <span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>abc_ngram</span>
 <span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 2 × 16</span></span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   tf_t…¹ tf_…² tf_…³ tf_…⁴ tf_…⁵ tf_…⁶ tf_…⁷ tf_…⁸ tf_…⁹ tf_…˟ tf_…˟ tf_…˟ tf_…˟</span></span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;</span></span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1      1     0     1     0     1     0     0     0     1     0     1     1     0</span></span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2      0     1     0     1     0     1     1     1     0     1     0     0     1</span></span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with abbreviated variable names ¹​tf_text_Bank.is, ²​tf_text_Bee.is,</span></span>
-<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ³​tf_text_The.Bank, ⁴​tf_text_The.Bee, ⁵​tf_text_a.place, ⁶​tf_text_an.insect,</span></span>
-<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ⁷​tf_text_gathers.honey, ⁸​tf_text_insect.that, ⁹​tf_text_is.a,</span></span>
-<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ˟​tf_text_is.an, ˟​tf_text_place.where, ˟​tf_text_put.your,</span></span>
-<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ˟​tf_text_that.gathers, and 3 more variables: tf_text_where.you &lt;dbl&gt;,</span></span>
-<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   tf_text_you.put &lt;dbl&gt;, tf_text_your.money &lt;dbl&gt;</span></span>
-<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(abc_ngram)</span>
-<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;tf_text_Bank.is&quot;       &quot;tf_text_Bee.is&quot;        &quot;tf_text_The.Bank&quot;     </span></span>
-<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [4] &quot;tf_text_The.Bee&quot;       &quot;tf_text_a.place&quot;       &quot;tf_text_an.insect&quot;    </span></span>
-<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [7] &quot;tf_text_gathers.honey&quot; &quot;tf_text_insect.that&quot;   &quot;tf_text_is.a&quot;         </span></span>
-<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [10] &quot;tf_text_is.an&quot;         &quot;tf_text_place.where&quot;   &quot;tf_text_put.your&quot;     </span></span>
-<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [13] &quot;tf_text_that.gathers&quot;  &quot;tf_text_where.you&quot;     &quot;tf_text_you.put&quot;      </span></span>
-<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [16] &quot;tf_text_your.money&quot;</span></span></code></pre></div>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   tf_text_Bank.is tf_text_Bee.is tf_text_The.Bank tf_text_The.Bee</span></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;             &lt;dbl&gt;          &lt;dbl&gt;            &lt;dbl&gt;           &lt;dbl&gt;</span></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1               1              0                1               0</span></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2               0              1                0               1</span></span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 12 more variables: tf_text_a.place &lt;dbl&gt;, tf_text_an.insect &lt;dbl&gt;,</span></span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   tf_text_gathers.honey &lt;dbl&gt;, tf_text_insect.that &lt;dbl&gt;, tf_text_is.a &lt;dbl&gt;,</span></span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   tf_text_is.an &lt;dbl&gt;, tf_text_place.where &lt;dbl&gt;, tf_text_put.your &lt;dbl&gt;,</span></span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   tf_text_that.gathers &lt;dbl&gt;, tf_text_where.you &lt;dbl&gt;, tf_text_you.put &lt;dbl&gt;,</span></span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   tf_text_your.money &lt;dbl&gt;</span></span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(abc_ngram)</span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;tf_text_Bank.is&quot;       &quot;tf_text_Bee.is&quot;        &quot;tf_text_The.Bank&quot;     </span></span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [4] &quot;tf_text_The.Bee&quot;       &quot;tf_text_a.place&quot;       &quot;tf_text_an.insect&quot;    </span></span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [7] &quot;tf_text_gathers.honey&quot; &quot;tf_text_insect.that&quot;   &quot;tf_text_is.a&quot;         </span></span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [10] &quot;tf_text_is.an&quot;         &quot;tf_text_place.where&quot;   &quot;tf_text_put.your&quot;     </span></span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [13] &quot;tf_text_that.gathers&quot;  &quot;tf_text_where.you&quot;     &quot;tf_text_you.put&quot;      </span></span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [16] &quot;tf_text_your.money&quot;</span></span></code></pre></div>
 <p>Pros:</p>
 <ul>
 <li>Only uses 1 step</li>
@@ -573,16 +570,16 @@ n-grams are being generated.</p>
 <span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>abc_ngram</span>
 <span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 2 × 14</span></span>
-<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   tf_t…¹ tf_…² tf_…³ tf_…⁴ tf_…⁵ tf_…⁶ tf_…⁷ tf_…⁸ tf_…⁹ tf_…˟ tf_…˟ tf_…˟ tf_…˟</span></span>
-<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;</span></span>
-<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1      1     0     1     0     0     1     0     1     1     0     1     0     1</span></span>
-<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2      0     1     0     1     1     0     1     0     0     1     0     1     0</span></span>
-<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with abbreviated variable names ¹​tf_text_a_place_where,</span></span>
-<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ²​tf_text_an_insect_that, ³​tf_text_bank_is_a, ⁴​tf_text_bee_is_an,</span></span>
-<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ⁵​tf_text_insect_that_gathers, ⁶​tf_text_is_a_place, ⁷​tf_text_is_an_insect,</span></span>
-<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ⁸​tf_text_place_where_you, ⁹​tf_text_put_your_money,</span></span>
-<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ˟​tf_text_that_gathers_honey, ˟​tf_text_the_bank_is, ˟​tf_text_the_bee_is,</span></span>
-<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ˟​tf_text_where_you_put, and 1 more variable: tf_text_you_put_your &lt;dbl&gt;</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   tf_text_a_place_where tf_text_an_insect_that tf_text_bank_is… tf_text_bee_is_…</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                   &lt;dbl&gt;                  &lt;dbl&gt;            &lt;dbl&gt;            &lt;dbl&gt;</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1                     1                      0                1                0</span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2                     0                      1                0                1</span></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 10 more variables: tf_text_insect_that_gathers &lt;dbl&gt;,</span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   tf_text_is_a_place &lt;dbl&gt;, tf_text_is_an_insect &lt;dbl&gt;,</span></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   tf_text_place_where_you &lt;dbl&gt;, tf_text_put_your_money &lt;dbl&gt;,</span></span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   tf_text_that_gathers_honey &lt;dbl&gt;, tf_text_the_bank_is &lt;dbl&gt;,</span></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   tf_text_the_bee_is &lt;dbl&gt;, tf_text_where_you_put &lt;dbl&gt;,</span></span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   tf_text_you_put_your &lt;dbl&gt;</span></span>
 <span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(abc_ngram)</span>
 <span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;tf_text_a_place_where&quot;       &quot;tf_text_an_insect_that&quot;     </span></span>
@@ -610,25 +607,24 @@ and the n-gram creation such as stemming the tokens.</p>
 <span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>abc_ngram</span>
 <span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 2 × 14</span></span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   tf_t…¹ tf_…² tf_…³ tf_…⁴ tf_…⁵ tf_…⁶ tf_…⁷ tf_…⁸ tf_…⁹ tf_…˟ tf_…˟ tf_…˟ tf_…˟</span></span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;</span></span>
-<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1      1     0     1     0     1     0     0     1     1     0     1     0     1</span></span>
-<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2      0     1     0     1     0     1     1     0     0     1     0     1     0</span></span>
-<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with abbreviated variable names ¹​tf_text_a_place_where,</span></span>
-<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ²​tf_text_an_insect_that, ³​tf_text_bank_i_a, ⁴​tf_text_bee_i_an,</span></span>
-<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ⁵​tf_text_i_a_place, ⁶​tf_text_i_an_insect, ⁷​tf_text_insect_that_gather,</span></span>
-<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ⁸​tf_text_place_where_you, ⁹​tf_text_put_your_monei,</span></span>
-<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ˟​tf_text_that_gather_honei, ˟​tf_text_the_bank_i, ˟​tf_text_the_bee_i,</span></span>
-<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ˟​tf_text_where_you_put, and 1 more variable: tf_text_you_put_your &lt;dbl&gt;</span></span>
-<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(abc_ngram)</span>
-<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;tf_text_a_place_where&quot;      &quot;tf_text_an_insect_that&quot;    </span></span>
-<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [3] &quot;tf_text_bank_i_a&quot;           &quot;tf_text_bee_i_an&quot;          </span></span>
-<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [5] &quot;tf_text_i_a_place&quot;          &quot;tf_text_i_an_insect&quot;       </span></span>
-<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [7] &quot;tf_text_insect_that_gather&quot; &quot;tf_text_place_where_you&quot;   </span></span>
-<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [9] &quot;tf_text_put_your_monei&quot;     &quot;tf_text_that_gather_honei&quot; </span></span>
-<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [11] &quot;tf_text_the_bank_i&quot;         &quot;tf_text_the_bee_i&quot;         </span></span>
-<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [13] &quot;tf_text_where_you_put&quot;      &quot;tf_text_you_put_your&quot;</span></span></code></pre></div>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   tf_text_a_place_where tf_text_an_insect_that tf_text_bank_i_a tf_text_bee_i_an</span></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                   &lt;dbl&gt;                  &lt;dbl&gt;            &lt;dbl&gt;            &lt;dbl&gt;</span></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1                     1                      0                1                0</span></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2                     0                      1                0                1</span></span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 10 more variables: tf_text_i_a_place &lt;dbl&gt;, tf_text_i_an_insect &lt;dbl&gt;,</span></span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   tf_text_insect_that_gather &lt;dbl&gt;, tf_text_place_where_you &lt;dbl&gt;,</span></span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   tf_text_put_your_monei &lt;dbl&gt;, tf_text_that_gather_honei &lt;dbl&gt;,</span></span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   tf_text_the_bank_i &lt;dbl&gt;, tf_text_the_bee_i &lt;dbl&gt;,</span></span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   tf_text_where_you_put &lt;dbl&gt;, tf_text_you_put_your &lt;dbl&gt;</span></span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(abc_ngram)</span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;tf_text_a_place_where&quot;      &quot;tf_text_an_insect_that&quot;    </span></span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [3] &quot;tf_text_bank_i_a&quot;           &quot;tf_text_bee_i_an&quot;          </span></span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [5] &quot;tf_text_i_a_place&quot;          &quot;tf_text_i_an_insect&quot;       </span></span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [7] &quot;tf_text_insect_that_gather&quot; &quot;tf_text_place_where_you&quot;   </span></span>
+<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [9] &quot;tf_text_put_your_monei&quot;     &quot;tf_text_that_gather_honei&quot; </span></span>
+<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [11] &quot;tf_text_the_bank_i&quot;         &quot;tf_text_the_bee_i&quot;         </span></span>
+<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [13] &quot;tf_text_where_you_put&quot;      &quot;tf_text_you_put_your&quot;</span></span></code></pre></div>
 <p>This also works great for cases where you need higher flexibility or
 when you want to use a more powerful engine such as
 <strong>spacyr</strong> that doesn’t come with an n-gram tokenizer.</p>

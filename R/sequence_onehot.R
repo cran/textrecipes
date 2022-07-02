@@ -41,6 +41,8 @@
 #' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
 #' (the selectors or variables selected), `vocabulary` (index) and `token` (text
 #' correspoding to the index).
+#' 
+#' @template case-weights-not-supported
 #'
 #' @family Steps for Numeric Variables From Characters
 #'   
@@ -155,7 +157,7 @@ prep.step_sequence_onehot <- function(x, training, info = NULL, ...) {
 #' @export
 bake.step_sequence_onehot <- function(object, new_data, ...) {
   col_names <- object$columns
-  # for backward compat
+  check_new_data(col_names, object, new_data)
 
   for (i in seq_along(col_names)) {
     out_text <- string2encoded_matrix(
@@ -181,7 +183,7 @@ bake.step_sequence_onehot <- function(object, new_data, ...) {
 
     new_data <- vctrs::vec_cbind(new_data, as_tibble(out_text))
   }
-  as_tibble(new_data)
+  new_data
 }
 
 #' @export

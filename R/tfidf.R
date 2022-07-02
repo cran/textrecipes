@@ -54,8 +54,10 @@
 #' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
 #' (the selectors or variables selected), `token` (name of the tokens), 
 #' `weight` (the calculated IDF weight) is returned. 
-#'
+#' 
 #' @template details-prefix
+#'
+#' @template case-weights-not-supported
 #'
 #' @seealso [step_tokenize()] to turn characters into [`tokens`][tokenlist()]
 #' @family Steps for Numeric Variables From Tokens
@@ -171,7 +173,7 @@ prep.step_tfidf <- function(x, training, info = NULL, ...) {
 #' @export
 bake.step_tfidf <- function(object, new_data, ...) {
   col_names <- object$columns
-  # for backward compat
+  check_new_data(col_names, object, new_data)
 
   for (i in seq_along(col_names)) {
     tfidf_text <- tfidf_function(
@@ -191,7 +193,7 @@ bake.step_tfidf <- function(object, new_data, ...) {
 
     new_data <- vctrs::vec_cbind(new_data, tfidf_text)
   }
-  as_tibble(new_data)
+  new_data
 }
 
 #' @export

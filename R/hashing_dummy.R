@@ -39,7 +39,7 @@
 #' will a higher value of `num_terms` result in a lower chance of collision.
 #'
 #' @template details-prefix
-#'
+#' 
 #' @details
 #'
 #' # Tidying
@@ -48,6 +48,8 @@
 #' (the selectors or variables selected), `value` (whether a signed hashing was
 #' performed), `num_terms` (number of terms), and `collapse` (where columns
 #' collapsed).
+#' 
+#' @template case-weights-not-supported
 #' 
 #' @references Kilian Weinberger; Anirban Dasgupta; John Langford; Alex Smola;
 #'   Josh Attenberg (2009).
@@ -161,6 +163,8 @@ bake.step_dummy_hash <- function(object, new_data, ...) {
 
   col_names <- object$columns
   hash_cols <- col_names
+  
+  check_new_data(col_names, object, new_data)
 
   if (object$collapse) {
     new_name <- paste0(col_names, collapse = "_")
@@ -199,7 +203,7 @@ bake.step_dummy_hash <- function(object, new_data, ...) {
     new_data <- new_data[, !(colnames(new_data) %in% col_names), drop = FALSE]
   }
 
-  as_tibble(new_data)
+  new_data
 }
 
 #' @export

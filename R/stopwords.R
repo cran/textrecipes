@@ -37,6 +37,8 @@
 #' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
 #' (the selectors or variables selected), `value` (name of stop word list), and
 #' `keep` (whether stop words are removed or kept).
+#' 
+#' @template case-weights-not-supported
 #'
 #' @seealso [step_tokenize()] to turn characters into [`tokens`][tokenlist()]
 #' @family Steps for Token Modification
@@ -147,6 +149,7 @@ prep.step_stopwords <- function(x, training, info = NULL, ...) {
 #' @export
 bake.step_stopwords <- function(object, new_data, ...) {
   col_names <- object$columns
+  check_new_data(col_names, object, new_data)
 
   stopword_list <- object$custom_stopword_source %||%
     stopwords::stopwords(
@@ -165,7 +168,7 @@ bake.step_stopwords <- function(object, new_data, ...) {
   }
   new_data <- factor_to_text(new_data, col_names)
 
-  as_tibble(new_data)
+  new_data
 }
 
 #' @export
