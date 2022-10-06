@@ -1,3 +1,7 @@
+# textrecipes 1.0.1
+
+* Examples no longer include `if (require(...))` code.
+
 # textrecipes 1.0.0
 
 * Indicate which steps support case weights (none), to align documentation with other packages.
