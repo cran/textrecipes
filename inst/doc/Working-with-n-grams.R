@@ -35,7 +35,7 @@ rec <- recipe(~ text, data = abc_tibble) %>%
 
 abc_ngram <- rec %>%
   prep() %>%
-  juice()
+  bake(new_data = NULL)
 
 abc_ngram
 
@@ -52,7 +52,7 @@ rec <- recipe(~ text, data = abc_tibble) %>%
 
 abc_ngram <- rec %>%
   prep() %>%
-  juice()
+  bake(new_data = NULL)
 
 abc_ngram
 
@@ -72,7 +72,7 @@ rec <- recipe(~ text, data = abc_tibble) %>%
 
 abc_ngram <- rec %>%
   prep() %>%
-  juice()
+  bake(new_data = NULL)
 
 abc_ngram
 
@@ -89,7 +89,7 @@ rec <- recipe(~ text, data = abc_tibble) %>%
 
 abc_ngram <- rec %>%
   prep() %>%
-  juice()
+  bake(new_data = NULL)
 
 abc_ngram
 
@@ -107,7 +107,7 @@ rec <- recipe(~ text, data = abc_tibble) %>%
 
 abc_ngram <- rec %>%
   prep() %>%
-  juice()
+  bake(new_data = NULL)
 
 abc_ngram
 
