@@ -1,3 +1,15 @@
+# textrecipes 1.0.3
+
+## Improvements
+
+* Steps with tunable arguments now have those arguments listed in the documentation.
+
+* All steps that add new columns will now informatively error if name collision occurs.
+
+## Bug Fixes
+
+* Fixed bug where `step_tf()` wasn't tunable for `weight` argument.
+
 # textrecipes 1.0.2
 
 * Setting `token = "tweets"` in `step_tokenize()` have been deprecated due to `tokenizers::tokenize_tweets()` being deprecated. (#209)

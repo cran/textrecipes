@@ -35,10 +35,10 @@
 #' (the selectors or variables selected) and `functions` (name of feature
 #' functions).
 #'
-#'@template case-weights-not-supported
+#' @template case-weights-not-supported
 #'
 #' @family Steps for Numeric Variables From Characters
-#'   
+#'
 #' @examplesIf rlang::is_installed("textfeatures")
 #' library(recipes)
 #' library(modeldata)
@@ -121,7 +121,7 @@ prep.step_textfeature <- function(x, training, info = NULL, ...) {
 
   training <- factor_to_text(training, col_names)
 
-  check_type(training[, col_names], quant = FALSE)
+  check_type(training[, col_names], types = c("string", "factor", "ordered"))
 
   purrr::walk(x$extract_functions, validate_string2num)
 
@@ -155,11 +155,13 @@ bake.step_textfeature <- function(object, new_data, ...) {
       sep = "_"
     )
 
+    tf_text <- check_name(tf_text, new_data, object, names(tf_text))
+    
     new_data <- vctrs::vec_cbind(new_data, tf_text)
 
     keep_original_cols <- get_keep_original_cols(object)
     if (!keep_original_cols) {
-      new_data <- 
+      new_data <-
         new_data[, !(colnames(new_data) %in% col_names[i]), drop = FALSE]
     }
   }
@@ -216,7 +218,6 @@ validate_string2num <- function(fun) {
     ))
   }
 }
-
 
 #' @rdname required_pkgs.step
 #' @export

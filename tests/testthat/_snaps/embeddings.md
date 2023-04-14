@@ -1,38 +1,46 @@
+# check_name() is used
+
+    Code
+      prep(rec, training = dat)
+    Error <recipes_error_step>
+      Error in `step_word_embeddings()`:
+      Caused by error in `check_name()`:
+      ! Name collision occured in `step_word_embeddings`. The following variable names already exists: wordembed_text_d1.
+
 # printing
 
     Code
       print(rec)
-    Output
-      Recipe
+    Message <cliMessage>
       
-      Inputs:
+      -- Recipe ----------------------------------------------------------------------
       
-            role #variables
-       predictor          1
+      -- Inputs 
+      Number of variables by role
+      predictor: 1
       
-      Operations:
-      
-      Tokenization for text
-      Word embeddings aggregated from text
+      -- Operations 
+      * Tokenization for: text
+      * Word embeddings aggregated from: text
 
 ---
 
     Code
       prep(rec)
-    Output
-      Recipe
+    Message <cliMessage>
       
-      Inputs:
+      -- Recipe ----------------------------------------------------------------------
       
-            role #variables
-       predictor          1
+      -- Inputs 
+      Number of variables by role
+      predictor: 1
       
-      Training data contained 4 data points and no missing data.
+      -- Training information 
+      Training data contained 4 data points and no incomplete rows.
       
-      Operations:
-      
-      Tokenization for text [trained]
-      Word embeddings aggregated from text [trained]
+      -- Operations 
+      * Tokenization for: text | Trained
+      * Word embeddings aggregated from: text | Trained
 
 # can prep recipes with no keep_original_cols
 
@@ -46,35 +54,34 @@
 
     Code
       rec
-    Output
-      Recipe
+    Message <cliMessage>
       
-      Inputs:
+      -- Recipe ----------------------------------------------------------------------
       
-            role #variables
-         outcome          1
-       predictor         10
+      -- Inputs 
+      Number of variables by role
+      outcome:    1
+      predictor: 10
       
-      Operations:
-      
-      Word embeddings aggregated from <none>
+      -- Operations 
+      * Word embeddings aggregated from: <none>
 
 ---
 
     Code
       rec
-    Output
-      Recipe
+    Message <cliMessage>
       
-      Inputs:
+      -- Recipe ----------------------------------------------------------------------
       
-            role #variables
-         outcome          1
-       predictor         10
+      -- Inputs 
+      Number of variables by role
+      outcome:    1
+      predictor: 10
       
-      Training data contained 32 data points and no missing data.
+      -- Training information 
+      Training data contained 32 data points and no incomplete rows.
       
-      Operations:
-      
-      Word embeddings aggregated from <none> [trained]
+      -- Operations 
+      * Word embeddings aggregated from: <none> | Trained
 

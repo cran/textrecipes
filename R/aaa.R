@@ -10,25 +10,17 @@ factor_to_text <- function(data, names) {
   data
 }
 
-check_list <- function(dat) {
-  all_good <- vapply(dat, is.list, logical(1))
-
-  if (!all(all_good)) {
-    rlang::abort("All columns selected for this step should be tokenlists")
-  }
-
-  invisible(all_good)
-}
-
-check_possible_tokenizers <- function(x, dict) {
+check_possible_tokenizers <- function(x, dict, call = caller_env(2)) {
   if (!(x %in% dict)) {
     possible_tokenizers <- glue::glue_collapse(
-      dict, sep = ", ", last = ", or "
+      dict,
+      sep = ", ", last = ", or "
     )
     rlang::abort(
       glue(
         "token should be one of the supported: {possible_tokenizers}"
-      )
+      ),
+      call = call
     )
   }
 }

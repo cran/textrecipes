@@ -52,16 +52,16 @@
 #' # Tidying
 #'
 #' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
-#' (the selectors or variables selected), `token` (name of the tokens), 
-#' `weight` (the calculated IDF weight) is returned. 
-#' 
+#' (the selectors or variables selected), `token` (name of the tokens),
+#' `weight` (the calculated IDF weight) is returned.
+#'
 #' @template details-prefix
 #'
 #' @template case-weights-not-supported
 #'
 #' @seealso [step_tokenize()] to turn characters into [`tokens`][tokenlist()]
 #' @family Steps for Numeric Variables From Tokens
-#'   
+#'
 #' @examples
 #' \donttest{
 #' library(recipes)
@@ -142,7 +142,7 @@ step_tfidf_new <-
 prep.step_tfidf <- function(x, training, info = NULL, ...) {
   col_names <- recipes_eval_select(x$terms, training, info)
 
-  check_list(training[, col_names])
+  check_type(training[, col_names], types = "tokenlist")
 
   idf_weights <- list()
 
@@ -187,9 +187,11 @@ bake.step_tfidf <- function(object, new_data, ...) {
 
     keep_original_cols <- get_keep_original_cols(object)
     if (!keep_original_cols) {
-      new_data <- 
+      new_data <-
         new_data[, !(colnames(new_data) %in% col_names[i]), drop = FALSE]
     }
+    
+    tfidf_text <- check_name(tfidf_text, new_data, object, names(tfidf_text))
 
     new_data <- vctrs::vec_cbind(new_data, tfidf_text)
   }
@@ -217,11 +219,13 @@ tidy.step_tfidf <- function(x, ...) {
       )
     } else {
       res <- purrr::map2_dfr(
-        x$columns, x$res, 
-        ~ tibble(terms = .x, 
-                 token = names(.y), 
-                 weight = unname(.y))
+        x$columns, x$res,
+        ~ tibble(
+          terms = .x,
+          token = names(.y),
+          weight = unname(.y)
         )
+      )
     }
   } else {
     term_names <- sel2char(x$terms)
@@ -238,7 +242,6 @@ tidy.step_tfidf <- function(x, ...) {
 # Implementation
 tfidf_function <- function(data, weights, labels, smooth_idf, norm,
                            sublinear_tf) {
-
   # Backwards compatibility with 1592690d36581fc5f4952da3e9b02351b31f1a2e
   if (is.numeric(weights)) {
     dict <- names(weights)

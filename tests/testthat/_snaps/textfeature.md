@@ -2,8 +2,10 @@
 
     Code
       rec %>% step_textfeature(text, extract_functions = list(as.character)) %>% prep()
-    Error <vctrs_error_subscript_oob>
-      Can't subset columns that don't exist.
+    Error <recipes_error_step>
+      Error in `step_textfeature()`:
+      Caused by error in `prep()`:
+      ! Can't subset columns that don't exist.
       x Column `text` doesn't exist.
 
 ---
@@ -11,43 +13,53 @@
     Code
       rec %>% step_textfeature(text, extract_functions = list(function(x) 1)) %>%
         prep()
-    Error <vctrs_error_subscript_oob>
-      Can't subset columns that don't exist.
+    Error <recipes_error_step>
+      Error in `step_textfeature()`:
+      Caused by error in `prep()`:
+      ! Can't subset columns that don't exist.
       x Column `text` doesn't exist.
+
+# check_name() is used
+
+    Code
+      prep(rec, training = dat)
+    Error <recipes_error_step>
+      Error in `step_textfeature()`:
+      Caused by error in `check_name()`:
+      ! Name collision occured in `step_textfeature`. The following variable names already exists: textfeature_text_n_words.
 
 # printing
 
     Code
       print(rec)
-    Output
-      Recipe
+    Message <cliMessage>
       
-      Inputs:
+      -- Recipe ----------------------------------------------------------------------
       
-            role #variables
-       predictor          1
+      -- Inputs 
+      Number of variables by role
+      predictor: 1
       
-      Operations:
-      
-      Text feature extraction for text
+      -- Operations 
+      * Text feature extraction for: text
 
 ---
 
     Code
       prep(rec)
-    Output
-      Recipe
+    Message <cliMessage>
       
-      Inputs:
+      -- Recipe ----------------------------------------------------------------------
       
-            role #variables
-       predictor          1
+      -- Inputs 
+      Number of variables by role
+      predictor: 1
       
-      Training data contained 4 data points and no missing data.
+      -- Training information 
+      Training data contained 4 data points and no incomplete rows.
       
-      Operations:
-      
-      Text feature extraction for text [trained]
+      -- Operations 
+      * Text feature extraction for: text | Trained
 
 # can prep recipes with no keep_original_cols
 
@@ -61,35 +73,34 @@
 
     Code
       rec
-    Output
-      Recipe
+    Message <cliMessage>
       
-      Inputs:
+      -- Recipe ----------------------------------------------------------------------
       
-            role #variables
-         outcome          1
-       predictor         10
+      -- Inputs 
+      Number of variables by role
+      outcome:    1
+      predictor: 10
       
-      Operations:
-      
-      Text feature extraction for <none>
+      -- Operations 
+      * Text feature extraction for: <none>
 
 ---
 
     Code
       rec
-    Output
-      Recipe
+    Message <cliMessage>
       
-      Inputs:
+      -- Recipe ----------------------------------------------------------------------
       
-            role #variables
-         outcome          1
-       predictor         10
+      -- Inputs 
+      Number of variables by role
+      outcome:    1
+      predictor: 10
       
-      Training data contained 32 data points and no missing data.
+      -- Training information 
+      Training data contained 32 data points and no incomplete rows.
       
-      Operations:
-      
-      Text feature extraction for <none> [trained]
+      -- Operations 
+      * Text feature extraction for: <none> | Trained
 

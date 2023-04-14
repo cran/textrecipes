@@ -39,7 +39,7 @@
 #' will a higher value of `num_terms` result in a lower chance of collision.
 #'
 #' @template details-prefix
-#' 
+#'
 #' @details
 #'
 #' # Tidying
@@ -49,8 +49,14 @@
 #' performed), `num_terms` (number of terms), and `collapse` (where columns
 #' collapsed).
 #' 
+#' ```{r, echo = FALSE, results="asis"}
+#' step <- "step_dummy_hash"
+#' result <- knitr::knit_child("man/rmd/tunable-args.Rmd")
+#' cat(result)
+#' ```
+#'
 #' @template case-weights-not-supported
-#' 
+#'
 #' @references Kilian Weinberger; Anirban Dasgupta; John Langford; Alex Smola;
 #'   Josh Attenberg (2009).
 #'
@@ -59,10 +65,10 @@
 #'
 #'
 #'
-#'   
+#'
 #' @seealso [recipes::step_dummy()]
 #' @family Steps for Numeric Variables From Characters
-#'   
+#'
 #' @examplesIf rlang::is_installed("text2vec")
 #' library(recipes)
 #' library(modeldata)
@@ -135,7 +141,7 @@ step_dummy_hash_new <-
 prep.step_dummy_hash <- function(x, training, info = NULL, ...) {
   col_names <- recipes_eval_select(x$terms, training, info)
 
-  recipes::check_type(training[, col_names], quant = FALSE)
+  check_type(training[, col_names], types = c("string", "factor", "ordered"))
 
   step_dummy_hash_new(
     terms = x$terms,
@@ -162,7 +168,7 @@ bake.step_dummy_hash <- function(object, new_data, ...) {
   col_names <- object$columns
   hash_cols <- col_names
   hash_cols <- unname(hash_cols)
-  
+
   check_new_data(col_names, object, new_data)
 
   if (object$collapse) {
@@ -182,8 +188,8 @@ bake.step_dummy_hash <- function(object, new_data, ...) {
       hashing_function(
         as.character(new_data[[hash_cols[i]]]),
         paste0(
-          object$prefix, "_", 
-          hash_cols[i], "_", 
+          object$prefix, "_",
+          hash_cols[i], "_",
           names0(object$num_terms, "")
         ),
         object$signed,
@@ -193,9 +199,11 @@ bake.step_dummy_hash <- function(object, new_data, ...) {
     tf_text <- purrr::map_dfc(tf_text, as.integer)
     keep_original_cols <- get_keep_original_cols(object)
     if (!keep_original_cols) {
-      new_data <- 
+      new_data <-
         new_data[, !(colnames(new_data) %in% hash_cols[i]), drop = FALSE]
     }
+
+    tf_text <- check_name(tf_text, new_data, object, names(tf_text))
     
     new_data <- vctrs::vec_cbind(tf_text, new_data)
   }
@@ -245,8 +253,7 @@ required_pkgs.step_dummy_hash <- function(x, ...) {
   c("text2vec", "textrecipes")
 }
 
-#' @rdname tunable.step
-#' @keywords internal
+#' @rdname tunable_textrecipes
 #' @export
 tunable.step_dummy_hash <- function(x, ...) {
   tibble::tibble(

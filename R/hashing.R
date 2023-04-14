@@ -34,21 +34,27 @@
 #' will a higher value of `num_terms` result in a lower chance of collision.
 #'
 #' @template details-prefix
-#' 
+#'
 #' @details # Tidying
 #'
 #'   When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
 #'   (the selectors or variables selected) and `value` (number of terms).
-#' 
-#'  @template case-weights-not-supported
-#'   
+#'
+#' ```{r, echo = FALSE, results="asis"}
+#' step <- "step_texthash"
+#' result <- knitr::knit_child("man/rmd/tunable-args.Rmd")
+#' cat(result)
+#' ```
+#'
+#' @template case-weights-not-supported
+#'
 #' @references Kilian Weinberger; Anirban Dasgupta; John Langford; Alex Smola;
 #'   Josh Attenberg (2009).
 #'
 #' @seealso [step_tokenize()] to turn characters into [`tokens`][tokenlist()]
 #'   [step_text_normalization()] to perform text normalization.
 #' @family Steps for Numeric Variables From Tokens
-#'   
+#'
 #' @examplesIf rlang::is_installed("text2vec")
 #' library(recipes)
 #' library(modeldata)
@@ -104,7 +110,7 @@ hash_funs <- c(
 )
 
 step_texthash_new <-
-  function(terms, role, trained, columns, signed, num_terms, prefix, 
+  function(terms, role, trained, columns, signed, num_terms, prefix,
            keep_original_cols, skip, id) {
     step(
       subclass = "texthash",
@@ -125,7 +131,7 @@ step_texthash_new <-
 prep.step_texthash <- function(x, training, info = NULL, ...) {
   col_names <- recipes_eval_select(x$terms, training, info)
 
-  check_list(training[, col_names])
+  check_type(training[, col_names], types = "tokenlist")
 
   step_texthash_new(
     terms = x$terms,
@@ -157,13 +163,15 @@ bake.step_texthash <- function(object, new_data, ...) {
       object$signed,
       object$num_terms
     )
-    
+
     tf_text <- purrr::map_dfc(tf_text, as.integer)
     keep_original_cols <- get_keep_original_cols(object)
     if (!keep_original_cols) {
-      new_data <- 
+      new_data <-
         new_data[, !(colnames(new_data) %in% col_names[i]), drop = FALSE]
     }
+    
+    tf_text <- check_name(tf_text, new_data, object, names(tf_text))
 
     new_data <- vctrs::vec_cbind(tf_text, new_data)
   }
@@ -216,7 +224,6 @@ list_to_hash <- function(x, n, signed) {
   as.matrix(text2vec::create_dtm(it, vectorizer))
 }
 
-
 #' S3 methods for tracking which additional packages are needed for steps.
 #'
 #' Recipe-adjacent packages always list themselves as a required package so that
@@ -230,14 +237,7 @@ required_pkgs.step_texthash <- function(x, ...) {
   c("text2vec", "textrecipes")
 }
 
-#' Find recommended methods for generating parameter values
-#'
-#' [tunable()] determines which parameters in an object _can_ be tuned along
-#' with information about the parameters.
-#' @param x A recipe step
-#' @param ... Not currently used.
-#' @rdname tunable.step
-#' @keywords internal
+#' @rdname tunable_textrecipes
 #' @export
 tunable.step_texthash <- function(x, ...) {
   tibble::tibble(

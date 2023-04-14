@@ -33,11 +33,17 @@
 #' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
 #' (the selectors or variables selected).
 #' 
+#' ```{r, echo = FALSE, results="asis"}
+#' step <- "step_ngram"
+#' result <- knitr::knit_child("man/rmd/tunable-args.Rmd")
+#' cat(result)
+#' ```
+#'
 #' @template case-weights-not-supported
 #'
 #' @seealso [step_tokenize()] to turn characters into [`tokens`][tokenlist()]
 #' @family Steps for Token Modification
-#'   
+#'
 #' @examples
 #' library(recipes)
 #' library(modeldata)
@@ -108,7 +114,7 @@ step_ngram_new <-
 prep.step_ngram <- function(x, training, info = NULL, ...) {
   col_names <- recipes_eval_select(x$terms, training, info)
 
-  check_list(training[, col_names])
+  check_type(training[, col_names], types = "tokenlist")
 
   step_ngram_new(
     terms = x$terms,
@@ -173,7 +179,7 @@ required_pkgs.step_ngram <- function(x, ...) {
   c("textrecipes")
 }
 
-#' @rdname tunable.step
+#' @rdname tunable_textrecipes
 #' @export
 tunable.step_ngram <- function(x, ...) {
   tibble::tibble(

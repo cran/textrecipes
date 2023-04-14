@@ -1,36 +1,44 @@
+# check_name() is used
+
+    Code
+      prep(rec, training = dat)
+    Error <recipes_error_step>
+      Error in `step_dummy_hash()`:
+      Caused by error in `check_name()`:
+      ! Name collision occured in `step_dummy_hash`. The following variable names already exists: dummyhash_text_01.
+
 # printing
 
     Code
       print(rec)
-    Output
-      Recipe
+    Message <cliMessage>
       
-      Inputs:
+      -- Recipe ----------------------------------------------------------------------
       
-            role #variables
-       predictor          2
+      -- Inputs 
+      Number of variables by role
+      predictor: 2
       
-      Operations:
-      
-      Feature hashing with sponsor_code
+      -- Operations 
+      * Feature hashing with: sponsor_code
 
 ---
 
     Code
       prep(rec)
-    Output
-      Recipe
+    Message <cliMessage>
       
-      Inputs:
+      -- Recipe ----------------------------------------------------------------------
       
-            role #variables
-       predictor          2
+      -- Inputs 
+      Number of variables by role
+      predictor: 2
       
-      Training data contained 20 data points and no missing data.
+      -- Training information 
+      Training data contained 20 data points and no incomplete rows.
       
-      Operations:
-      
-      Feature hashing with sponsor_code [trained]
+      -- Operations 
+      * Feature hashing with: sponsor_code | Trained
 
 # can prep recipes with no keep_original_cols
 
@@ -44,35 +52,34 @@
 
     Code
       rec
-    Output
-      Recipe
+    Message <cliMessage>
       
-      Inputs:
+      -- Recipe ----------------------------------------------------------------------
       
-            role #variables
-         outcome          1
-       predictor         10
+      -- Inputs 
+      Number of variables by role
+      outcome:    1
+      predictor: 10
       
-      Operations:
-      
-      Feature hashing with <none>
+      -- Operations 
+      * Feature hashing with: <none>
 
 ---
 
     Code
       rec
-    Output
-      Recipe
+    Message <cliMessage>
       
-      Inputs:
+      -- Recipe ----------------------------------------------------------------------
       
-            role #variables
-         outcome          1
-       predictor         10
+      -- Inputs 
+      Number of variables by role
+      outcome:    1
+      predictor: 10
       
-      Training data contained 32 data points and no missing data.
+      -- Training information 
+      Training data contained 32 data points and no incomplete rows.
       
-      Operations:
-      
-      Feature hashing with <none> [trained]
+      -- Operations 
+      * Feature hashing with: <none> | Trained
 

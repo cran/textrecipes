@@ -340,23 +340,23 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(textrecipes)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Loading required package: recipes</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Loading required package: dplyr</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Attaching package: &#39;dplyr&#39;</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; The following objects are masked from &#39;package:stats&#39;:</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     filter, lag</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; The following objects are masked from &#39;package:base&#39;:</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     intersect, setdiff, setequal, union</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Attaching package: &#39;recipes&#39;</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; The following object is masked from &#39;package:stats&#39;:</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     step</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tokenizers)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(textrecipes)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="co">#&gt; Loading required package: recipes</span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co">#&gt; Loading required package: dplyr</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="co">#&gt; Attaching package: &#39;dplyr&#39;</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="co">#&gt; The following objects are masked from &#39;package:stats&#39;:</span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="co">#&gt;     filter, lag</span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co">#&gt; The following objects are masked from &#39;package:base&#39;:</span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="co">#&gt;     intersect, setdiff, setequal, union</span></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="co">#&gt; Attaching package: &#39;recipes&#39;</span></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a><span class="co">#&gt; The following object is masked from &#39;package:stats&#39;:</span></span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a><span class="co">#&gt;     step</span></span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a><span class="fu">library</span>(tokenizers)</span></code></pre></div>
 <p>If you want to use n-grams with textrecipes you have 2 options:</p>
 <ul>
 <li>Use a tokenizer in <code>step_tokenize()</code> that tokenizes to
@@ -371,59 +371,61 @@ we mean when we are talking about n-grams. We normally tokenize our text
 into words, which we can do with <code>tokenize_words()</code> from the
 tokenizers package (this is the default engine and token for
 <code>step_tokenize()</code> in textrecipes)</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>abc <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;The Bank is a place where you put your money;&quot;</span>,</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>         <span class="st">&quot;The Bee is an insect that gathers honey.&quot;</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">tokenize_words</span>(abc)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [[1]]</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;the&quot;   &quot;bank&quot;  &quot;is&quot;    &quot;a&quot;     &quot;place&quot; &quot;where&quot; &quot;you&quot;   &quot;put&quot;   &quot;your&quot; </span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [10] &quot;money&quot;</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [[2]]</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;the&quot;     &quot;bee&quot;     &quot;is&quot;      &quot;an&quot;      &quot;insect&quot;  &quot;that&quot;    &quot;gathers&quot;</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [8] &quot;honey&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>abc <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  <span class="st">&quot;The Bank is a place where you put your money;&quot;</span>,</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  <span class="st">&quot;The Bee is an insect that gathers honey.&quot;</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>)</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="fu">tokenize_words</span>(abc)</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="co">#&gt; [[1]]</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;the&quot;   &quot;bank&quot;  &quot;is&quot;    &quot;a&quot;     &quot;place&quot; &quot;where&quot; &quot;you&quot;   &quot;put&quot;   &quot;your&quot; </span></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="co">#&gt; [10] &quot;money&quot;</span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="co">#&gt; [[2]]</span></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="co">#&gt; [1] &quot;the&quot;     &quot;bee&quot;     &quot;is&quot;      &quot;an&quot;      &quot;insect&quot;  &quot;that&quot;    &quot;gathers&quot;</span></span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a><span class="co">#&gt; [8] &quot;honey&quot;</span></span></code></pre></div>
 <p>N-grams are a contiguous sequence of n tokens. So to get 2-gram (or
 bigrams as they are also called) we can use the
 <code>tokenize_ngrams()</code> function to get them</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tokenize_ngrams</span>(abc, <span class="at">n =</span> <span class="dv">2</span>)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [[1]]</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;the bank&quot;    &quot;bank is&quot;     &quot;is a&quot;        &quot;a place&quot;     &quot;place where&quot;</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [6] &quot;where you&quot;   &quot;you put&quot;     &quot;put your&quot;    &quot;your money&quot; </span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [[2]]</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;the bee&quot;       &quot;bee is&quot;        &quot;is an&quot;         &quot;an insect&quot;    </span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [5] &quot;insect that&quot;   &quot;that gathers&quot;  &quot;gathers honey&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">tokenize_ngrams</span>(abc, <span class="at">n =</span> <span class="dv">2</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="co">#&gt; [[1]]</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co">#&gt; [1] &quot;the bank&quot;    &quot;bank is&quot;     &quot;is a&quot;        &quot;a place&quot;     &quot;place where&quot;</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co">#&gt; [6] &quot;where you&quot;   &quot;you put&quot;     &quot;put your&quot;    &quot;your money&quot; </span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt; [[2]]</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt; [1] &quot;the bee&quot;       &quot;bee is&quot;        &quot;is an&quot;         &quot;an insect&quot;    </span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#&gt; [5] &quot;insect that&quot;   &quot;that gathers&quot;  &quot;gathers honey&quot;</span></span></code></pre></div>
 <p>Notice how the words appear in multiple n-grams as the window slides
 across them. And why changing the <code>n</code> argument we can any
 kind of n-gram (notice how <code>n = 1</code> is the special case of
 tokenizing to words).</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tokenize_ngrams</span>(abc, <span class="at">n =</span> <span class="dv">3</span>)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [[1]]</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;the bank is&quot;     &quot;bank is a&quot;       &quot;is a place&quot;      &quot;a place where&quot;  </span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [5] &quot;place where you&quot; &quot;where you put&quot;   &quot;you put your&quot;    &quot;put your money&quot; </span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [[2]]</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;the bee is&quot;          &quot;bee is an&quot;           &quot;is an insect&quot;       </span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [4] &quot;an insect that&quot;      &quot;insect that gathers&quot; &quot;that gathers honey&quot;</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="fu">tokenize_ngrams</span>(abc, <span class="at">n =</span> <span class="dv">1</span>)</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [[1]]</span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;the&quot;   &quot;bank&quot;  &quot;is&quot;    &quot;a&quot;     &quot;place&quot; &quot;where&quot; &quot;you&quot;   &quot;put&quot;   &quot;your&quot; </span></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [10] &quot;money&quot;</span></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [[2]]</span></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;the&quot;     &quot;bee&quot;     &quot;is&quot;      &quot;an&quot;      &quot;insect&quot;  &quot;that&quot;    &quot;gathers&quot;</span></span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [8] &quot;honey&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">tokenize_ngrams</span>(abc, <span class="at">n =</span> <span class="dv">3</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="co">#&gt; [[1]]</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="co">#&gt; [1] &quot;the bank is&quot;     &quot;bank is a&quot;       &quot;is a place&quot;      &quot;a place where&quot;  </span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="co">#&gt; [5] &quot;place where you&quot; &quot;where you put&quot;   &quot;you put your&quot;    &quot;put your money&quot; </span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="co">#&gt; [[2]]</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="co">#&gt; [1] &quot;the bee is&quot;          &quot;bee is an&quot;           &quot;is an insect&quot;       </span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="co">#&gt; [4] &quot;an insect that&quot;      &quot;insect that gathers&quot; &quot;that gathers honey&quot;</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="fu">tokenize_ngrams</span>(abc, <span class="at">n =</span> <span class="dv">1</span>)</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="co">#&gt; [[1]]</span></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;the&quot;   &quot;bank&quot;  &quot;is&quot;    &quot;a&quot;     &quot;place&quot; &quot;where&quot; &quot;you&quot;   &quot;put&quot;   &quot;your&quot; </span></span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="co">#&gt; [10] &quot;money&quot;</span></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="co">#&gt; [[2]]</span></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a><span class="co">#&gt; [1] &quot;the&quot;     &quot;bee&quot;     &quot;is&quot;      &quot;an&quot;      &quot;insect&quot;  &quot;that&quot;    &quot;gathers&quot;</span></span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a><span class="co">#&gt; [8] &quot;honey&quot;</span></span></code></pre></div>
 <p>It can also be beneficial to specify a delimiter between the tokens
 in your n-gram.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tokenize_ngrams</span>(abc, <span class="at">n =</span> <span class="dv">3</span>, <span class="at">ngram_delim =</span> <span class="st">&quot;_&quot;</span>)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [[1]]</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;the_bank_is&quot;     &quot;bank_is_a&quot;       &quot;is_a_place&quot;      &quot;a_place_where&quot;  </span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [5] &quot;place_where_you&quot; &quot;where_you_put&quot;   &quot;you_put_your&quot;    &quot;put_your_money&quot; </span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [[2]]</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;the_bee_is&quot;          &quot;bee_is_an&quot;           &quot;is_an_insect&quot;       </span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [4] &quot;an_insect_that&quot;      &quot;insect_that_gathers&quot; &quot;that_gathers_honey&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">tokenize_ngrams</span>(abc, <span class="at">n =</span> <span class="dv">3</span>, <span class="at">ngram_delim =</span> <span class="st">&quot;_&quot;</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="co">#&gt; [[1]]</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="co">#&gt; [1] &quot;the_bank_is&quot;     &quot;bank_is_a&quot;       &quot;is_a_place&quot;      &quot;a_place_where&quot;  </span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="co">#&gt; [5] &quot;place_where_you&quot; &quot;where_you_put&quot;   &quot;you_put_your&quot;    &quot;put_your_money&quot; </span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="co">#&gt; [[2]]</span></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="co">#&gt; [1] &quot;the_bee_is&quot;          &quot;bee_is_an&quot;           &quot;is_an_insect&quot;       </span></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a><span class="co">#&gt; [4] &quot;an_insect_that&quot;      &quot;insect_that_gathers&quot; &quot;that_gathers_honey&quot;</span></span></code></pre></div>
 <div id="only-using-step_tokenize" class="section level1">
 <h1>Only using <code>step_tokenize()</code></h1>
 <p>The first methods work by using n-gram <code>token</code> from one of
@@ -437,115 +439,114 @@ filtering doesn’t do anything to the data of this size but it is a good
 practice to use <code>step_tokenfilter()</code> before using
 <code>step_tf()</code> or <code>step_tfidf()</code> to control the size
 of the resulting data.frame.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>abc_tibble <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">text =</span> abc)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>rec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(<span class="sc">~</span> text, <span class="at">data =</span> abc_tibble) <span class="sc">%&gt;%</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_tokenize</span>(text, <span class="at">token =</span> <span class="st">&quot;ngrams&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_tokenfilter</span>(text) <span class="sc">%&gt;%</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_tf</span>(text)</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>abc_ngram <span class="ot">&lt;-</span> rec <span class="sc">%&gt;%</span></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prep</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bake</span>(<span class="at">new_data =</span> <span class="cn">NULL</span>)</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning: max_tokens was set to &#39;100&#39;, but only 14 was available and selected.</span></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>abc_ngram</span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 2 × 14</span></span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   tf_text_a pl…¹ tf_te…² tf_te…³ tf_te…⁴ tf_te…⁵ tf_te…⁶ tf_te…⁷ tf_te…⁸ tf_te…⁹</span></span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;            &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;</span></span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1              1       0       1       0       0       1       0       1       1</span></span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2              0       1       0       1       1       0       1       0       0</span></span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 5 more variables: `tf_text_that gathers honey` &lt;int&gt;,</span></span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   `tf_text_the bank is` &lt;int&gt;, `tf_text_the bee is` &lt;int&gt;,</span></span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   `tf_text_where you put` &lt;int&gt;, `tf_text_you put your` &lt;int&gt;, and</span></span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   abbreviated variable names ¹​`tf_text_a place where`,</span></span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ²​`tf_text_an insect that`, ³​`tf_text_bank is a`, ⁴​`tf_text_bee is an`,</span></span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ⁵​`tf_text_insect that gathers`, ⁶​`tf_text_is a place`,</span></span>
-<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ⁷​`tf_text_is an insect`, ⁸​`tf_text_place where you`, …</span></span>
-<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(abc_ngram)</span>
-<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;tf_text_a place where&quot;       &quot;tf_text_an insect that&quot;     </span></span>
-<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [3] &quot;tf_text_bank is a&quot;           &quot;tf_text_bee is an&quot;          </span></span>
-<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [5] &quot;tf_text_insect that gathers&quot; &quot;tf_text_is a place&quot;         </span></span>
-<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [7] &quot;tf_text_is an insect&quot;        &quot;tf_text_place where you&quot;    </span></span>
-<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [9] &quot;tf_text_put your money&quot;      &quot;tf_text_that gathers honey&quot; </span></span>
-<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [11] &quot;tf_text_the bank is&quot;         &quot;tf_text_the bee is&quot;         </span></span>
-<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [13] &quot;tf_text_where you put&quot;       &quot;tf_text_you put your&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>abc_tibble <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">text =</span> abc)</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>rec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(<span class="sc">~</span>text, <span class="at">data =</span> abc_tibble) <span class="sc">%&gt;%</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>  <span class="fu">step_tokenize</span>(text, <span class="at">token =</span> <span class="st">&quot;ngrams&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>  <span class="fu">step_tokenfilter</span>(text) <span class="sc">%&gt;%</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>  <span class="fu">step_tf</span>(text)</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>abc_ngram <span class="ot">&lt;-</span> rec <span class="sc">%&gt;%</span></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>  <span class="fu">prep</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>  <span class="fu">bake</span>(<span class="at">new_data =</span> <span class="cn">NULL</span>)</span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="co">#&gt; Warning: max_tokens was set to &#39;100&#39;, but only 14 was available and selected.</span></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a></span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>abc_ngram</span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a><span class="co">#&gt; # A tibble: 2 × 14</span></span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a><span class="co">#&gt;   `tf_text_a place where` `tf_text_an insect that` `tf_text_bank is a`</span></span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a><span class="co">#&gt;                     &lt;int&gt;                    &lt;int&gt;               &lt;int&gt;</span></span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a><span class="co">#&gt; 1                       1                        0                   1</span></span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a><span class="co">#&gt; 2                       0                        1                   0</span></span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a><span class="co">#&gt; # ℹ 11 more variables: `tf_text_bee is an` &lt;int&gt;,</span></span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a><span class="co">#&gt; #   `tf_text_insect that gathers` &lt;int&gt;, `tf_text_is a place` &lt;int&gt;,</span></span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a><span class="co">#&gt; #   `tf_text_is an insect` &lt;int&gt;, `tf_text_place where you` &lt;int&gt;,</span></span>
+<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a><span class="co">#&gt; #   `tf_text_put your money` &lt;int&gt;, `tf_text_that gathers honey` &lt;int&gt;,</span></span>
+<span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a><span class="co">#&gt; #   `tf_text_the bank is` &lt;int&gt;, `tf_text_the bee is` &lt;int&gt;,</span></span>
+<span id="cb6-24"><a href="#cb6-24" tabindex="-1"></a><span class="co">#&gt; #   `tf_text_where you put` &lt;int&gt;, `tf_text_you put your` &lt;int&gt;</span></span>
+<span id="cb6-25"><a href="#cb6-25" tabindex="-1"></a></span>
+<span id="cb6-26"><a href="#cb6-26" tabindex="-1"></a><span class="fu">names</span>(abc_ngram)</span>
+<span id="cb6-27"><a href="#cb6-27" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;tf_text_a place where&quot;       &quot;tf_text_an insect that&quot;     </span></span>
+<span id="cb6-28"><a href="#cb6-28" tabindex="-1"></a><span class="co">#&gt;  [3] &quot;tf_text_bank is a&quot;           &quot;tf_text_bee is an&quot;          </span></span>
+<span id="cb6-29"><a href="#cb6-29" tabindex="-1"></a><span class="co">#&gt;  [5] &quot;tf_text_insect that gathers&quot; &quot;tf_text_is a place&quot;         </span></span>
+<span id="cb6-30"><a href="#cb6-30" tabindex="-1"></a><span class="co">#&gt;  [7] &quot;tf_text_is an insect&quot;        &quot;tf_text_place where you&quot;    </span></span>
+<span id="cb6-31"><a href="#cb6-31" tabindex="-1"></a><span class="co">#&gt;  [9] &quot;tf_text_put your money&quot;      &quot;tf_text_that gathers honey&quot; </span></span>
+<span id="cb6-32"><a href="#cb6-32" tabindex="-1"></a><span class="co">#&gt; [11] &quot;tf_text_the bank is&quot;         &quot;tf_text_the bee is&quot;         </span></span>
+<span id="cb6-33"><a href="#cb6-33" tabindex="-1"></a><span class="co">#&gt; [13] &quot;tf_text_where you put&quot;       &quot;tf_text_you put your&quot;</span></span></code></pre></div>
 <p>If you need to pass arguments to the underlying tokenizer function
 you can pass a named list to the <code>options</code> argument in
 <code>step_tokenize()</code></p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>abc_tibble <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">text =</span> abc)</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>rec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(<span class="sc">~</span> text, <span class="at">data =</span> abc_tibble) <span class="sc">%&gt;%</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_tokenize</span>(text, <span class="at">token =</span> <span class="st">&quot;ngrams&quot;</span>, <span class="at">options =</span> <span class="fu">list</span>(<span class="at">n =</span> <span class="dv">2</span>, </span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>                                                       <span class="at">ngram_delim =</span> <span class="st">&quot;_&quot;</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_tokenfilter</span>(text) <span class="sc">%&gt;%</span></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_tf</span>(text)</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>abc_ngram <span class="ot">&lt;-</span> rec <span class="sc">%&gt;%</span></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prep</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bake</span>(<span class="at">new_data =</span> <span class="cn">NULL</span>)</span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning: max_tokens was set to &#39;100&#39;, but only 16 was available and selected.</span></span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>abc_ngram</span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 2 × 16</span></span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   tf_text_a_pl…¹ tf_te…² tf_te…³ tf_te…⁴ tf_te…⁵ tf_te…⁶ tf_te…⁷ tf_te…⁸ tf_te…⁹</span></span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;            &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;</span></span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1              1       0       1       0       0       0       1       0       1</span></span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2              0       1       0       1       1       1       0       1       0</span></span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 7 more variables: tf_text_put_your &lt;int&gt;, tf_text_that_gathers &lt;int&gt;,</span></span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   tf_text_the_bank &lt;int&gt;, tf_text_the_bee &lt;int&gt;, tf_text_where_you &lt;int&gt;,</span></span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   tf_text_you_put &lt;int&gt;, tf_text_your_money &lt;int&gt;, and abbreviated variable</span></span>
-<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   names ¹​tf_text_a_place, ²​tf_text_an_insect, ³​tf_text_bank_is,</span></span>
-<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ⁴​tf_text_bee_is, ⁵​tf_text_gathers_honey, ⁶​tf_text_insect_that,</span></span>
-<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ⁷​tf_text_is_a, ⁸​tf_text_is_an, ⁹​tf_text_place_where</span></span>
-<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(abc_ngram)</span>
-<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;tf_text_a_place&quot;       &quot;tf_text_an_insect&quot;     &quot;tf_text_bank_is&quot;      </span></span>
-<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [4] &quot;tf_text_bee_is&quot;        &quot;tf_text_gathers_honey&quot; &quot;tf_text_insect_that&quot;  </span></span>
-<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [7] &quot;tf_text_is_a&quot;          &quot;tf_text_is_an&quot;         &quot;tf_text_place_where&quot;  </span></span>
-<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [10] &quot;tf_text_put_your&quot;      &quot;tf_text_that_gathers&quot;  &quot;tf_text_the_bank&quot;     </span></span>
-<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [13] &quot;tf_text_the_bee&quot;       &quot;tf_text_where_you&quot;     &quot;tf_text_you_put&quot;      </span></span>
-<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [16] &quot;tf_text_your_money&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>abc_tibble <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">text =</span> abc)</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>rec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(<span class="sc">~</span>text, <span class="at">data =</span> abc_tibble) <span class="sc">%&gt;%</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>  <span class="fu">step_tokenize</span>(text, <span class="at">token =</span> <span class="st">&quot;ngrams&quot;</span>, <span class="at">options =</span> <span class="fu">list</span>(</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>    <span class="at">n =</span> <span class="dv">2</span>,</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>    <span class="at">ngram_delim =</span> <span class="st">&quot;_&quot;</span></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>  <span class="fu">step_tokenfilter</span>(text) <span class="sc">%&gt;%</span></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>  <span class="fu">step_tf</span>(text)</span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a></span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>abc_ngram <span class="ot">&lt;-</span> rec <span class="sc">%&gt;%</span></span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a>  <span class="fu">prep</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>  <span class="fu">bake</span>(<span class="at">new_data =</span> <span class="cn">NULL</span>)</span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a><span class="co">#&gt; Warning: max_tokens was set to &#39;100&#39;, but only 16 was available and selected.</span></span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a></span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a>abc_ngram</span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a><span class="co">#&gt; # A tibble: 2 × 16</span></span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a><span class="co">#&gt;   tf_text_a_place tf_text_an_insect tf_text_bank_is tf_text_bee_is</span></span>
+<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a><span class="co">#&gt;             &lt;int&gt;             &lt;int&gt;           &lt;int&gt;          &lt;int&gt;</span></span>
+<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a><span class="co">#&gt; 1               1                 0               1              0</span></span>
+<span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a><span class="co">#&gt; 2               0                 1               0              1</span></span>
+<span id="cb7-22"><a href="#cb7-22" tabindex="-1"></a><span class="co">#&gt; # ℹ 12 more variables: tf_text_gathers_honey &lt;int&gt;, tf_text_insect_that &lt;int&gt;,</span></span>
+<span id="cb7-23"><a href="#cb7-23" tabindex="-1"></a><span class="co">#&gt; #   tf_text_is_a &lt;int&gt;, tf_text_is_an &lt;int&gt;, tf_text_place_where &lt;int&gt;,</span></span>
+<span id="cb7-24"><a href="#cb7-24" tabindex="-1"></a><span class="co">#&gt; #   tf_text_put_your &lt;int&gt;, tf_text_that_gathers &lt;int&gt;, tf_text_the_bank &lt;int&gt;,</span></span>
+<span id="cb7-25"><a href="#cb7-25" tabindex="-1"></a><span class="co">#&gt; #   tf_text_the_bee &lt;int&gt;, tf_text_where_you &lt;int&gt;, tf_text_you_put &lt;int&gt;,</span></span>
+<span id="cb7-26"><a href="#cb7-26" tabindex="-1"></a><span class="co">#&gt; #   tf_text_your_money &lt;int&gt;</span></span>
+<span id="cb7-27"><a href="#cb7-27" tabindex="-1"></a></span>
+<span id="cb7-28"><a href="#cb7-28" tabindex="-1"></a><span class="fu">names</span>(abc_ngram)</span>
+<span id="cb7-29"><a href="#cb7-29" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;tf_text_a_place&quot;       &quot;tf_text_an_insect&quot;     &quot;tf_text_bank_is&quot;      </span></span>
+<span id="cb7-30"><a href="#cb7-30" tabindex="-1"></a><span class="co">#&gt;  [4] &quot;tf_text_bee_is&quot;        &quot;tf_text_gathers_honey&quot; &quot;tf_text_insect_that&quot;  </span></span>
+<span id="cb7-31"><a href="#cb7-31" tabindex="-1"></a><span class="co">#&gt;  [7] &quot;tf_text_is_a&quot;          &quot;tf_text_is_an&quot;         &quot;tf_text_place_where&quot;  </span></span>
+<span id="cb7-32"><a href="#cb7-32" tabindex="-1"></a><span class="co">#&gt; [10] &quot;tf_text_put_your&quot;      &quot;tf_text_that_gathers&quot;  &quot;tf_text_the_bank&quot;     </span></span>
+<span id="cb7-33"><a href="#cb7-33" tabindex="-1"></a><span class="co">#&gt; [13] &quot;tf_text_the_bee&quot;       &quot;tf_text_where_you&quot;     &quot;tf_text_you_put&quot;      </span></span>
+<span id="cb7-34"><a href="#cb7-34" tabindex="-1"></a><span class="co">#&gt; [16] &quot;tf_text_your_money&quot;</span></span></code></pre></div>
 <p>Lastly you can also supply a custom tokenizer to
 <code>step_tokenize()</code> using the <code>custom_token</code>
 argument.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>abc_tibble <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">text =</span> abc)</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>bigram <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  tokenizers<span class="sc">::</span><span class="fu">tokenize_ngrams</span>(x, <span class="at">lowercase =</span> <span class="cn">FALSE</span>, <span class="at">n =</span> <span class="dv">2</span>, <span class="at">ngram_delim =</span> <span class="st">&quot;.&quot;</span>)</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>rec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(<span class="sc">~</span> text, <span class="at">data =</span> abc_tibble) <span class="sc">%&gt;%</span></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_tokenize</span>(text, <span class="at">custom_token =</span> bigram) <span class="sc">%&gt;%</span></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_tokenfilter</span>(text) <span class="sc">%&gt;%</span></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_tf</span>(text)</span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>abc_ngram <span class="ot">&lt;-</span> rec <span class="sc">%&gt;%</span></span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prep</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bake</span>(<span class="at">new_data =</span> <span class="cn">NULL</span>)</span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning: max_tokens was set to &#39;100&#39;, but only 16 was available and selected.</span></span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>abc_ngram</span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 2 × 16</span></span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   tf_text_Bank…¹ tf_te…² tf_te…³ tf_te…⁴ tf_te…⁵ tf_te…⁶ tf_te…⁷ tf_te…⁸ tf_te…⁹</span></span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;            &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;</span></span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1              1       0       1       0       1       0       0       0       1</span></span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2              0       1       0       1       0       1       1       1       0</span></span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 7 more variables: tf_text_is.an &lt;int&gt;, tf_text_place.where &lt;int&gt;,</span></span>
-<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   tf_text_put.your &lt;int&gt;, tf_text_that.gathers &lt;int&gt;,</span></span>
-<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   tf_text_where.you &lt;int&gt;, tf_text_you.put &lt;int&gt;, tf_text_your.money &lt;int&gt;,</span></span>
-<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   and abbreviated variable names ¹​tf_text_Bank.is, ²​tf_text_Bee.is,</span></span>
-<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ³​tf_text_The.Bank, ⁴​tf_text_The.Bee, ⁵​tf_text_a.place, ⁶​tf_text_an.insect,</span></span>
-<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ⁷​tf_text_gathers.honey, ⁸​tf_text_insect.that, ⁹​tf_text_is.a</span></span>
-<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(abc_ngram)</span>
-<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;tf_text_Bank.is&quot;       &quot;tf_text_Bee.is&quot;        &quot;tf_text_The.Bank&quot;     </span></span>
-<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [4] &quot;tf_text_The.Bee&quot;       &quot;tf_text_a.place&quot;       &quot;tf_text_an.insect&quot;    </span></span>
-<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [7] &quot;tf_text_gathers.honey&quot; &quot;tf_text_insect.that&quot;   &quot;tf_text_is.a&quot;         </span></span>
-<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [10] &quot;tf_text_is.an&quot;         &quot;tf_text_place.where&quot;   &quot;tf_text_put.your&quot;     </span></span>
-<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [13] &quot;tf_text_that.gathers&quot;  &quot;tf_text_where.you&quot;     &quot;tf_text_you.put&quot;      </span></span>
-<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [16] &quot;tf_text_your.money&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>abc_tibble <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">text =</span> abc)</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>bigram <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>  tokenizers<span class="sc">::</span><span class="fu">tokenize_ngrams</span>(x, <span class="at">lowercase =</span> <span class="cn">FALSE</span>, <span class="at">n =</span> <span class="dv">2</span>, <span class="at">ngram_delim =</span> <span class="st">&quot;.&quot;</span>)</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>}</span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>rec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(<span class="sc">~</span>text, <span class="at">data =</span> abc_tibble) <span class="sc">%&gt;%</span></span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>  <span class="fu">step_tokenize</span>(text, <span class="at">custom_token =</span> bigram) <span class="sc">%&gt;%</span></span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>  <span class="fu">step_tokenfilter</span>(text) <span class="sc">%&gt;%</span></span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a>  <span class="fu">step_tf</span>(text)</span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a></span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a>abc_ngram <span class="ot">&lt;-</span> rec <span class="sc">%&gt;%</span></span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a>  <span class="fu">prep</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a>  <span class="fu">bake</span>(<span class="at">new_data =</span> <span class="cn">NULL</span>)</span>
+<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a><span class="co">#&gt; Warning: max_tokens was set to &#39;100&#39;, but only 16 was available and selected.</span></span>
+<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a></span>
+<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a>abc_ngram</span>
+<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a><span class="co">#&gt; # A tibble: 2 × 16</span></span>
+<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a><span class="co">#&gt;   tf_text_Bank.is tf_text_Bee.is tf_text_The.Bank tf_text_The.Bee</span></span>
+<span id="cb8-20"><a href="#cb8-20" tabindex="-1"></a><span class="co">#&gt;             &lt;int&gt;          &lt;int&gt;            &lt;int&gt;           &lt;int&gt;</span></span>
+<span id="cb8-21"><a href="#cb8-21" tabindex="-1"></a><span class="co">#&gt; 1               1              0                1               0</span></span>
+<span id="cb8-22"><a href="#cb8-22" tabindex="-1"></a><span class="co">#&gt; 2               0              1                0               1</span></span>
+<span id="cb8-23"><a href="#cb8-23" tabindex="-1"></a><span class="co">#&gt; # ℹ 12 more variables: tf_text_a.place &lt;int&gt;, tf_text_an.insect &lt;int&gt;,</span></span>
+<span id="cb8-24"><a href="#cb8-24" tabindex="-1"></a><span class="co">#&gt; #   tf_text_gathers.honey &lt;int&gt;, tf_text_insect.that &lt;int&gt;, tf_text_is.a &lt;int&gt;,</span></span>
+<span id="cb8-25"><a href="#cb8-25" tabindex="-1"></a><span class="co">#&gt; #   tf_text_is.an &lt;int&gt;, tf_text_place.where &lt;int&gt;, tf_text_put.your &lt;int&gt;,</span></span>
+<span id="cb8-26"><a href="#cb8-26" tabindex="-1"></a><span class="co">#&gt; #   tf_text_that.gathers &lt;int&gt;, tf_text_where.you &lt;int&gt;, tf_text_you.put &lt;int&gt;,</span></span>
+<span id="cb8-27"><a href="#cb8-27" tabindex="-1"></a><span class="co">#&gt; #   tf_text_your.money &lt;int&gt;</span></span>
+<span id="cb8-28"><a href="#cb8-28" tabindex="-1"></a></span>
+<span id="cb8-29"><a href="#cb8-29" tabindex="-1"></a><span class="fu">names</span>(abc_ngram)</span>
+<span id="cb8-30"><a href="#cb8-30" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;tf_text_Bank.is&quot;       &quot;tf_text_Bee.is&quot;        &quot;tf_text_The.Bank&quot;     </span></span>
+<span id="cb8-31"><a href="#cb8-31" tabindex="-1"></a><span class="co">#&gt;  [4] &quot;tf_text_The.Bee&quot;       &quot;tf_text_a.place&quot;       &quot;tf_text_an.insect&quot;    </span></span>
+<span id="cb8-32"><a href="#cb8-32" tabindex="-1"></a><span class="co">#&gt;  [7] &quot;tf_text_gathers.honey&quot; &quot;tf_text_insect.that&quot;   &quot;tf_text_is.a&quot;         </span></span>
+<span id="cb8-33"><a href="#cb8-33" tabindex="-1"></a><span class="co">#&gt; [10] &quot;tf_text_is.an&quot;         &quot;tf_text_place.where&quot;   &quot;tf_text_put.your&quot;     </span></span>
+<span id="cb8-34"><a href="#cb8-34" tabindex="-1"></a><span class="co">#&gt; [13] &quot;tf_text_that.gathers&quot;  &quot;tf_text_where.you&quot;     &quot;tf_text_you.put&quot;      </span></span>
+<span id="cb8-35"><a href="#cb8-35" tabindex="-1"></a><span class="co">#&gt; [16] &quot;tf_text_your.money&quot;</span></span></code></pre></div>
 <p>Pros:</p>
 <ul>
 <li>Only uses 1 step</li>
@@ -564,79 +565,76 @@ don’t let you control how the words are tokenized.)</li>
 <p>As of version 0.2.0 you can use <code>step_ngram()</code> along with
 <code>step_tokenize()</code> to gain higher control over how your
 n-grams are being generated.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>abc_tibble <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">text =</span> abc)</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>rec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(<span class="sc">~</span> text, <span class="at">data =</span> abc_tibble) <span class="sc">%&gt;%</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_tokenize</span>(text) <span class="sc">%&gt;%</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_ngram</span>(text, <span class="at">num_tokens =</span> <span class="dv">3</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_tokenfilter</span>(text) <span class="sc">%&gt;%</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_tf</span>(text)</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>abc_ngram <span class="ot">&lt;-</span> rec <span class="sc">%&gt;%</span></span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prep</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bake</span>(<span class="at">new_data =</span> <span class="cn">NULL</span>)</span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning: max_tokens was set to &#39;100&#39;, but only 14 was available and selected.</span></span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>abc_ngram</span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 2 × 14</span></span>
-<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   tf_text_a_pl…¹ tf_te…² tf_te…³ tf_te…⁴ tf_te…⁵ tf_te…⁶ tf_te…⁷ tf_te…⁸ tf_te…⁹</span></span>
-<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;            &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;</span></span>
-<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1              1       0       1       0       0       1       0       1       1</span></span>
-<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2              0       1       0       1       1       0       1       0       0</span></span>
-<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 5 more variables: tf_text_that_gathers_honey &lt;int&gt;,</span></span>
-<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   tf_text_the_bank_is &lt;int&gt;, tf_text_the_bee_is &lt;int&gt;,</span></span>
-<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   tf_text_where_you_put &lt;int&gt;, tf_text_you_put_your &lt;int&gt;, and abbreviated</span></span>
-<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   variable names ¹​tf_text_a_place_where, ²​tf_text_an_insect_that,</span></span>
-<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ³​tf_text_bank_is_a, ⁴​tf_text_bee_is_an, ⁵​tf_text_insect_that_gathers,</span></span>
-<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ⁶​tf_text_is_a_place, ⁷​tf_text_is_an_insect, ⁸​tf_text_place_where_you,</span></span>
-<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ⁹​tf_text_put_your_money</span></span>
-<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(abc_ngram)</span>
-<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;tf_text_a_place_where&quot;       &quot;tf_text_an_insect_that&quot;     </span></span>
-<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [3] &quot;tf_text_bank_is_a&quot;           &quot;tf_text_bee_is_an&quot;          </span></span>
-<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [5] &quot;tf_text_insect_that_gathers&quot; &quot;tf_text_is_a_place&quot;         </span></span>
-<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [7] &quot;tf_text_is_an_insect&quot;        &quot;tf_text_place_where_you&quot;    </span></span>
-<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [9] &quot;tf_text_put_your_money&quot;      &quot;tf_text_that_gathers_honey&quot; </span></span>
-<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [11] &quot;tf_text_the_bank_is&quot;         &quot;tf_text_the_bee_is&quot;         </span></span>
-<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [13] &quot;tf_text_where_you_put&quot;       &quot;tf_text_you_put_your&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>abc_tibble <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">text =</span> abc)</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>rec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(<span class="sc">~</span>text, <span class="at">data =</span> abc_tibble) <span class="sc">%&gt;%</span></span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>  <span class="fu">step_tokenize</span>(text) <span class="sc">%&gt;%</span></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>  <span class="fu">step_ngram</span>(text, <span class="at">num_tokens =</span> <span class="dv">3</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>  <span class="fu">step_tokenfilter</span>(text) <span class="sc">%&gt;%</span></span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>  <span class="fu">step_tf</span>(text)</span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a></span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a>abc_ngram <span class="ot">&lt;-</span> rec <span class="sc">%&gt;%</span></span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a>  <span class="fu">prep</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a>  <span class="fu">bake</span>(<span class="at">new_data =</span> <span class="cn">NULL</span>)</span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a><span class="co">#&gt; Warning: max_tokens was set to &#39;100&#39;, but only 14 was available and selected.</span></span>
+<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a></span>
+<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a>abc_ngram</span>
+<span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a><span class="co">#&gt; # A tibble: 2 × 14</span></span>
+<span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a><span class="co">#&gt;   tf_text_a_place_where tf_text_an_insect_that tf_text_bank_is_a</span></span>
+<span id="cb9-17"><a href="#cb9-17" tabindex="-1"></a><span class="co">#&gt;                   &lt;int&gt;                  &lt;int&gt;             &lt;int&gt;</span></span>
+<span id="cb9-18"><a href="#cb9-18" tabindex="-1"></a><span class="co">#&gt; 1                     1                      0                 1</span></span>
+<span id="cb9-19"><a href="#cb9-19" tabindex="-1"></a><span class="co">#&gt; 2                     0                      1                 0</span></span>
+<span id="cb9-20"><a href="#cb9-20" tabindex="-1"></a><span class="co">#&gt; # ℹ 11 more variables: tf_text_bee_is_an &lt;int&gt;,</span></span>
+<span id="cb9-21"><a href="#cb9-21" tabindex="-1"></a><span class="co">#&gt; #   tf_text_insect_that_gathers &lt;int&gt;, tf_text_is_a_place &lt;int&gt;,</span></span>
+<span id="cb9-22"><a href="#cb9-22" tabindex="-1"></a><span class="co">#&gt; #   tf_text_is_an_insect &lt;int&gt;, tf_text_place_where_you &lt;int&gt;,</span></span>
+<span id="cb9-23"><a href="#cb9-23" tabindex="-1"></a><span class="co">#&gt; #   tf_text_put_your_money &lt;int&gt;, tf_text_that_gathers_honey &lt;int&gt;,</span></span>
+<span id="cb9-24"><a href="#cb9-24" tabindex="-1"></a><span class="co">#&gt; #   tf_text_the_bank_is &lt;int&gt;, tf_text_the_bee_is &lt;int&gt;,</span></span>
+<span id="cb9-25"><a href="#cb9-25" tabindex="-1"></a><span class="co">#&gt; #   tf_text_where_you_put &lt;int&gt;, tf_text_you_put_your &lt;int&gt;</span></span>
+<span id="cb9-26"><a href="#cb9-26" tabindex="-1"></a></span>
+<span id="cb9-27"><a href="#cb9-27" tabindex="-1"></a><span class="fu">names</span>(abc_ngram)</span>
+<span id="cb9-28"><a href="#cb9-28" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;tf_text_a_place_where&quot;       &quot;tf_text_an_insect_that&quot;     </span></span>
+<span id="cb9-29"><a href="#cb9-29" tabindex="-1"></a><span class="co">#&gt;  [3] &quot;tf_text_bank_is_a&quot;           &quot;tf_text_bee_is_an&quot;          </span></span>
+<span id="cb9-30"><a href="#cb9-30" tabindex="-1"></a><span class="co">#&gt;  [5] &quot;tf_text_insect_that_gathers&quot; &quot;tf_text_is_a_place&quot;         </span></span>
+<span id="cb9-31"><a href="#cb9-31" tabindex="-1"></a><span class="co">#&gt;  [7] &quot;tf_text_is_an_insect&quot;        &quot;tf_text_place_where_you&quot;    </span></span>
+<span id="cb9-32"><a href="#cb9-32" tabindex="-1"></a><span class="co">#&gt;  [9] &quot;tf_text_put_your_money&quot;      &quot;tf_text_that_gathers_honey&quot; </span></span>
+<span id="cb9-33"><a href="#cb9-33" tabindex="-1"></a><span class="co">#&gt; [11] &quot;tf_text_the_bank_is&quot;         &quot;tf_text_the_bee_is&quot;         </span></span>
+<span id="cb9-34"><a href="#cb9-34" tabindex="-1"></a><span class="co">#&gt; [13] &quot;tf_text_where_you_put&quot;       &quot;tf_text_you_put_your&quot;</span></span></code></pre></div>
 <p>Now you are able to perform additional steps between the tokenization
 and the n-gram creation such as stemming the tokens.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>abc_tibble <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">text =</span> abc)</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>rec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(<span class="sc">~</span> text, <span class="at">data =</span> abc_tibble) <span class="sc">%&gt;%</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_tokenize</span>(text) <span class="sc">%&gt;%</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_stem</span>(text) <span class="sc">%&gt;%</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_ngram</span>(text, <span class="at">num_tokens =</span> <span class="dv">3</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_tokenfilter</span>(text) <span class="sc">%&gt;%</span></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_tf</span>(text)</span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>abc_ngram <span class="ot">&lt;-</span> rec <span class="sc">%&gt;%</span></span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prep</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bake</span>(<span class="at">new_data =</span> <span class="cn">NULL</span>)</span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning: max_tokens was set to &#39;100&#39;, but only 14 was available and selected.</span></span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>abc_ngram</span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 2 × 14</span></span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   tf_text_a_pl…¹ tf_te…² tf_te…³ tf_te…⁴ tf_te…⁵ tf_te…⁶ tf_te…⁷ tf_te…⁸ tf_te…⁹</span></span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;            &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;</span></span>
-<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1              1       0       1       0       1       0       0       1       1</span></span>
-<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2              0       1       0       1       0       1       1       0       0</span></span>
-<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 5 more variables: tf_text_that_gather_honei &lt;int&gt;,</span></span>
-<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   tf_text_the_bank_i &lt;int&gt;, tf_text_the_bee_i &lt;int&gt;,</span></span>
-<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   tf_text_where_you_put &lt;int&gt;, tf_text_you_put_your &lt;int&gt;, and abbreviated</span></span>
-<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   variable names ¹​tf_text_a_place_where, ²​tf_text_an_insect_that,</span></span>
-<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ³​tf_text_bank_i_a, ⁴​tf_text_bee_i_an, ⁵​tf_text_i_a_place,</span></span>
-<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ⁶​tf_text_i_an_insect, ⁷​tf_text_insect_that_gather,</span></span>
-<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ⁸​tf_text_place_where_you, ⁹​tf_text_put_your_monei</span></span>
-<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(abc_ngram)</span>
-<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;tf_text_a_place_where&quot;      &quot;tf_text_an_insect_that&quot;    </span></span>
-<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [3] &quot;tf_text_bank_i_a&quot;           &quot;tf_text_bee_i_an&quot;          </span></span>
-<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [5] &quot;tf_text_i_a_place&quot;          &quot;tf_text_i_an_insect&quot;       </span></span>
-<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [7] &quot;tf_text_insect_that_gather&quot; &quot;tf_text_place_where_you&quot;   </span></span>
-<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [9] &quot;tf_text_put_your_monei&quot;     &quot;tf_text_that_gather_honei&quot; </span></span>
-<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [11] &quot;tf_text_the_bank_i&quot;         &quot;tf_text_the_bee_i&quot;         </span></span>
-<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [13] &quot;tf_text_where_you_put&quot;      &quot;tf_text_you_put_your&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>abc_tibble <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">text =</span> abc)</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>rec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(<span class="sc">~</span>text, <span class="at">data =</span> abc_tibble) <span class="sc">%&gt;%</span></span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>  <span class="fu">step_tokenize</span>(text) <span class="sc">%&gt;%</span></span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>  <span class="fu">step_stem</span>(text) <span class="sc">%&gt;%</span></span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a>  <span class="fu">step_ngram</span>(text, <span class="at">num_tokens =</span> <span class="dv">3</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a>  <span class="fu">step_tokenfilter</span>(text) <span class="sc">%&gt;%</span></span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a>  <span class="fu">step_tf</span>(text)</span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a></span>
+<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a>abc_ngram <span class="ot">&lt;-</span> rec <span class="sc">%&gt;%</span></span>
+<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a>  <span class="fu">prep</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a>  <span class="fu">bake</span>(<span class="at">new_data =</span> <span class="cn">NULL</span>)</span>
+<span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a><span class="co">#&gt; Warning: max_tokens was set to &#39;100&#39;, but only 14 was available and selected.</span></span>
+<span id="cb10-14"><a href="#cb10-14" tabindex="-1"></a></span>
+<span id="cb10-15"><a href="#cb10-15" tabindex="-1"></a>abc_ngram</span>
+<span id="cb10-16"><a href="#cb10-16" tabindex="-1"></a><span class="co">#&gt; # A tibble: 2 × 14</span></span>
+<span id="cb10-17"><a href="#cb10-17" tabindex="-1"></a><span class="co">#&gt;   tf_text_a_place_where tf_text_an_insect_that tf_text_bank_i_a tf_text_bee_i_an</span></span>
+<span id="cb10-18"><a href="#cb10-18" tabindex="-1"></a><span class="co">#&gt;                   &lt;int&gt;                  &lt;int&gt;            &lt;int&gt;            &lt;int&gt;</span></span>
+<span id="cb10-19"><a href="#cb10-19" tabindex="-1"></a><span class="co">#&gt; 1                     1                      0                1                0</span></span>
+<span id="cb10-20"><a href="#cb10-20" tabindex="-1"></a><span class="co">#&gt; 2                     0                      1                0                1</span></span>
+<span id="cb10-21"><a href="#cb10-21" tabindex="-1"></a><span class="co">#&gt; # ℹ 10 more variables: tf_text_i_a_place &lt;int&gt;, tf_text_i_an_insect &lt;int&gt;,</span></span>
+<span id="cb10-22"><a href="#cb10-22" tabindex="-1"></a><span class="co">#&gt; #   tf_text_insect_that_gather &lt;int&gt;, tf_text_place_where_you &lt;int&gt;,</span></span>
+<span id="cb10-23"><a href="#cb10-23" tabindex="-1"></a><span class="co">#&gt; #   tf_text_put_your_monei &lt;int&gt;, tf_text_that_gather_honei &lt;int&gt;,</span></span>
+<span id="cb10-24"><a href="#cb10-24" tabindex="-1"></a><span class="co">#&gt; #   tf_text_the_bank_i &lt;int&gt;, tf_text_the_bee_i &lt;int&gt;,</span></span>
+<span id="cb10-25"><a href="#cb10-25" tabindex="-1"></a><span class="co">#&gt; #   tf_text_where_you_put &lt;int&gt;, tf_text_you_put_your &lt;int&gt;</span></span>
+<span id="cb10-26"><a href="#cb10-26" tabindex="-1"></a></span>
+<span id="cb10-27"><a href="#cb10-27" tabindex="-1"></a><span class="fu">names</span>(abc_ngram)</span>
+<span id="cb10-28"><a href="#cb10-28" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;tf_text_a_place_where&quot;      &quot;tf_text_an_insect_that&quot;    </span></span>
+<span id="cb10-29"><a href="#cb10-29" tabindex="-1"></a><span class="co">#&gt;  [3] &quot;tf_text_bank_i_a&quot;           &quot;tf_text_bee_i_an&quot;          </span></span>
+<span id="cb10-30"><a href="#cb10-30" tabindex="-1"></a><span class="co">#&gt;  [5] &quot;tf_text_i_a_place&quot;          &quot;tf_text_i_an_insect&quot;       </span></span>
+<span id="cb10-31"><a href="#cb10-31" tabindex="-1"></a><span class="co">#&gt;  [7] &quot;tf_text_insect_that_gather&quot; &quot;tf_text_place_where_you&quot;   </span></span>
+<span id="cb10-32"><a href="#cb10-32" tabindex="-1"></a><span class="co">#&gt;  [9] &quot;tf_text_put_your_monei&quot;     &quot;tf_text_that_gather_honei&quot; </span></span>
+<span id="cb10-33"><a href="#cb10-33" tabindex="-1"></a><span class="co">#&gt; [11] &quot;tf_text_the_bank_i&quot;         &quot;tf_text_the_bee_i&quot;         </span></span>
+<span id="cb10-34"><a href="#cb10-34" tabindex="-1"></a><span class="co">#&gt; [13] &quot;tf_text_where_you_put&quot;      &quot;tf_text_you_put_your&quot;</span></span></code></pre></div>
 <p>This also works great for cases where you need higher flexibility or
 when you want to use a more powerful engine such as
 <strong>spacyr</strong> that doesn’t come with an n-gram tokenizer.</p>

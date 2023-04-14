@@ -52,7 +52,7 @@
 #'
 #' @seealso [step_tokenize()] to turn characters into [`tokens`][tokenlist()]
 #' @family Steps for Numeric Variables From Tokens
-#'   
+#'
 #' @examples
 #' library(recipes)
 #'
@@ -157,7 +157,7 @@ step_word_embeddings_new <- function(terms, role, trained, columns, embeddings,
 prep.step_word_embeddings <- function(x, training, info = NULL, ...) {
   col_names <- recipes_eval_select(x$terms, training, info)
 
-  check_list(training[, col_names])
+  check_type(training[, col_names], types = "tokenlist")
 
   step_word_embeddings_new(
     terms = x$terms,
@@ -212,24 +212,26 @@ bake.step_word_embeddings <- function(object, new_data, ...) {
       }
     )
 
-    embeddings_columns <- tokenlist_embedding(
+    emb_columns <- tokenlist_embedding(
       new_data[, col_names[i], drop = TRUE],
       object$embeddings,
       aggregation_fun
     )
 
-    colnames(embeddings_columns) <- paste(
+    colnames(emb_columns) <- paste(
       object$prefix,
       col_names[i],
-      colnames(embeddings_columns),
+      colnames(emb_columns),
       sep = "_"
     )
 
-    new_data <- vctrs::vec_cbind(new_data, embeddings_columns)
+    emb_columns <- check_name(emb_columns, new_data, object, names(emb_columns))
+    
+    new_data <- vctrs::vec_cbind(new_data, emb_columns)
 
     keep_original_cols <- get_keep_original_cols(object)
     if (!keep_original_cols) {
-      new_data <- 
+      new_data <-
         new_data[, !(colnames(new_data) %in% col_names[i]), drop = FALSE]
     }
   }

@@ -41,11 +41,11 @@
 #' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
 #' (the selectors or variables selected), `vocabulary` (index) and `token` (text
 #' correspoding to the index).
-#' 
+#'
 #' @template case-weights-not-supported
 #'
 #' @family Steps for Numeric Variables From Characters
-#'   
+#'
 #' @examples
 #' library(recipes)
 #' library(modeldata)
@@ -129,7 +129,7 @@ step_sequence_onehot_new <-
 prep.step_sequence_onehot <- function(x, training, info = NULL, ...) {
   col_names <- recipes_eval_select(x$terms, training, info)
 
-  check_list(training[, col_names])
+  check_type(training[, col_names], types = "tokenlist")
 
   token_list <- list()
 
@@ -167,21 +167,25 @@ bake.step_sequence_onehot <- function(object, new_data, ...) {
       padding = object$padding,
       truncating = object$truncating
     )
-
+    
     colnames(out_text) <- paste(
       sep = "_",
       object$prefix,
       col_names[i],
       seq_len(ncol(out_text))
     )
+    
+    out_text <- as_tibble(out_text)
 
     keep_original_cols <- get_keep_original_cols(object)
     if (!keep_original_cols) {
-      new_data <- 
+      new_data <-
         new_data[, !(colnames(new_data) %in% col_names[i]), drop = FALSE]
     }
+    
+    out_text <- check_name(out_text, new_data, object, names(out_text))
 
-    new_data <- vctrs::vec_cbind(new_data, as_tibble(out_text))
+    new_data <- vctrs::vec_cbind(new_data, out_text)
   }
   new_data
 }

@@ -46,12 +46,18 @@
 #'
 #' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
 #' (the selectors or variables selected) and `value` (number of unique tokens).
-#' 
+#'
+#' ```{r, echo = FALSE, results="asis"}
+#' step <- "step_tokenfilter"
+#' result <- knitr::knit_child("man/rmd/tunable-args.Rmd")
+#' cat(result)
+#' ```
+#'
 #' @template case-weights-not-supported
 #'
 #' @seealso [step_tokenize()] to turn characters into [`tokens`][tokenlist()]
 #' @family Steps for Token Modification
-#'   
+#'
 #' @examples
 #' library(recipes)
 #' library(modeldata)
@@ -138,7 +144,7 @@ step_tokenfilter_new <-
 prep.step_tokenfilter <- function(x, training, info = NULL, ...) {
   col_names <- recipes_eval_select(x$terms, training, info)
 
-  check_list(training[, col_names])
+  check_type(training[, col_names], types = "tokenlist")
 
   retain_words <- list()
   n_words <- integer()
@@ -241,9 +247,10 @@ tokenfilter_fun <- function(data, max_times, min_times, max_tokens,
     if (max_tokens > sum(ids)) {
       rlang::warn(
         glue(
-        "max_tokens was set to '{max_tokens}', ",
-        "but only {sum(ids)} was available and selected."
-      ))
+          "max_tokens was set to '{max_tokens}', ",
+          "but only {sum(ids)} was available and selected."
+        )
+      )
       max_tokens <- sum(ids)
     }
     names(sort(tf[ids], decreasing = TRUE)[seq_len(max_tokens)])
@@ -256,7 +263,7 @@ required_pkgs.step_tokenfilter <- function(x, ...) {
   c("textrecipes")
 }
 
-#' @rdname tunable.step
+#' @rdname tunable_textrecipes
 #' @export
 tunable.step_tokenfilter <- function(x, ...) {
   tibble::tibble(

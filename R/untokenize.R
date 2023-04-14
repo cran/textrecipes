@@ -26,12 +26,12 @@
 #' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
 #' (the selectors or variables selected) and `value` (seperator used for
 #' collapsing).
-#' 
+#'
 #' @template case-weights-not-supported
 #'
 #' @seealso [step_tokenize()] to turn characters into [`tokens`][tokenlist()]
 #' @family Steps for Un-Tokenization
-#'   
+#'
 #' @examples
 #' library(recipes)
 #' library(modeldata)
@@ -95,7 +95,7 @@ step_untokenize_new <-
 prep.step_untokenize <- function(x, training, info = NULL, ...) {
   col_names <- recipes_eval_select(x$terms, training, info)
 
-  check_list(training[, col_names])
+  check_type(training[, col_names], types = "tokenlist")
 
   step_untokenize_new(
     terms = x$terms,

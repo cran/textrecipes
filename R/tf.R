@@ -56,12 +56,18 @@
 #'
 #' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
 #' (the selectors or variables selected) and `value` (the weighting scheme).
-#' 
+#'
+#' ```{r, echo = FALSE, results="asis"}
+#' step <- "step_tf"
+#' result <- knitr::knit_child("man/rmd/tunable-args.Rmd")
+#' cat(result)
+#' ```
+#'
 #' @template case-weights-not-supported
 #'
 #' @seealso [step_tokenize()] to turn characters into [`tokens`][tokenlist()]
 #' @family Steps for Numeric Variables From Tokens
-#'   
+#'
 #' @examples
 #' \donttest{
 #' library(recipes)
@@ -96,16 +102,6 @@ step_tf <-
            keep_original_cols = FALSE,
            skip = FALSE,
            id = rand_id("tf")) {
-    if (!(weight_scheme %in% tf_funs) | length(weight_scheme) != 1) {
-      
-      tf_funs_all <- glue::glue_collapse(tf_funs, sep = ", ", last = ", or ")
-      rlang::abort(
-        glue(
-          "`weight_scheme` should be one of: {tf_funs_all}"
-        )
-      )
-    }
-
     add_step(
       recipe,
       step_tf_new(
@@ -154,7 +150,7 @@ step_tf_new <-
 prep.step_tf <- function(x, training, info = NULL, ...) {
   col_names <- recipes_eval_select(x$terms, training, info)
 
-  check_list(training[, col_names])
+  check_type(training[, col_names], types = "tokenlist")
 
   token_list <- list()
 
@@ -196,13 +192,15 @@ bake.step_tf <- function(object, new_data, ...) {
     if (object$weight_scheme %in% c("binary", "raw count")) {
       tf_text <- purrr::map_dfc(tf_text, as.integer)
     }
-    
+
     keep_original_cols <- get_keep_original_cols(object)
     if (!keep_original_cols) {
-      new_data <- 
+      new_data <-
         new_data[, !(colnames(new_data) %in% col_names[i]), drop = FALSE]
     }
     
+    tf_text <- check_name(tf_text, new_data, object, names(tf_text))
+
     new_data <- vctrs::vec_cbind(new_data, tf_text)
   }
   new_data
@@ -272,11 +270,11 @@ required_pkgs.step_tf <- function(x, ...) {
   c("textrecipes")
 }
 
-#' @rdname tunable.step
+#' @rdname tunable_textrecipes
 #' @export
 tunable.step_tf <- function(x, ...) {
   tibble::tibble(
-    name = c("weight_scheme", "num_terms"),
+    name = c("weight_scheme", "weight"),
     call_info = list(
       list(pkg = "dials", fun = "weight_scheme"),
       list(pkg = "dials", fun = "weight")

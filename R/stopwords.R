@@ -37,12 +37,12 @@
 #' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
 #' (the selectors or variables selected), `value` (name of stop word list), and
 #' `keep` (whether stop words are removed or kept).
-#' 
+#'
 #' @template case-weights-not-supported
 #'
 #' @seealso [step_tokenize()] to turn characters into [`tokens`][tokenlist()]
 #' @family Steps for Token Modification
-#'   
+#'
 #' @examplesIf rlang::is_installed("stopwords")
 #' library(recipes)
 #' library(modeldata)
@@ -127,7 +127,7 @@ step_stopwords_new <-
 prep.step_stopwords <- function(x, training, info = NULL, ...) {
   col_names <- recipes_eval_select(x$terms, training, info)
 
-  check_list(training[, col_names])
+  check_type(training[, col_names], types = "tokenlist")
 
   step_stopwords_new(
     terms = x$terms,

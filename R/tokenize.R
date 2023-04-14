@@ -20,7 +20,7 @@
 #'   input and output a list of character vectors.
 #' @template args-skip
 #' @template args-id
-#'   
+#'
 #' @template returns
 #'
 #' @details
@@ -40,7 +40,7 @@
 #' `step_tokenize` followed by modifying and filtering steps. This is not always
 #' the case as you sometimes want to do apply pre-tokenization steps, this can
 #' be done with [recipes::step_mutate()].
-#' 
+#'
 #' # Engines
 #'
 #' The choice of `engine` determines the possible choices of `token`.
@@ -58,7 +58,7 @@
 #' The tokenizers package is the default `engine` and it comes with the
 #' following unit of `token`. All of these options correspond to a function in
 #' the tokenizers package.
-#' 
+#'
 #' * "words" (default)
 #' * "characters"
 #' * "character_shingles"
@@ -86,7 +86,7 @@
 #' accessed using the `options` argument by passing a named list. Here we are
 #' telling [tokenizers::tokenize_words] that we don't want to turn the words to
 #' lowercase
-#' 
+#'
 #' ```{r}
 #' recipe(~ text, data = text_tibble) %>%
 #'   step_tokenize(text,
@@ -184,7 +184,13 @@
 #'
 #' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
 #' (the selectors or variables selected) and `value` (unit of tokenization).
-#' 
+#'
+#' ```{r, echo = FALSE, results="asis"}
+#' step <- "step_tokenize"
+#' result <- knitr::knit_child("man/rmd/tunable-args.Rmd")
+#' cat(result)
+#' ```
+#'
 #' @template case-weights-not-supported
 #'
 #' @seealso [step_untokenize()] to untokenize.
@@ -275,7 +281,7 @@ prep.step_tokenize <- function(x, training, info = NULL, ...) {
 
   training <- factor_to_text(training, col_names)
 
-  check_type(training[, col_names], quant = FALSE)
+  check_type(training[, col_names], types = c("string", "factor", "ordered"))
 
   tokenizers <- list()
 
@@ -375,7 +381,7 @@ tokenizer_fun <- function(data, name, options, token, ...) {
   out
 }
 
-tokenizer_switch <- function(name, object, data) {
+tokenizer_switch <- function(name, object, data, call = caller_env()) {
   if (object$engine == "tokenizers") {
     possible_tokenizers <-
       c(
@@ -383,7 +389,7 @@ tokenizer_switch <- function(name, object, data) {
         "paragraphs", "ptb", "regex", "sentences", "skip_ngrams",
         "words", "word_stems"
       )
-    
+
     check_possible_tokenizers(name, possible_tokenizers)
 
     res <- switch(name,
@@ -421,7 +427,7 @@ tokenizer_switch <- function(name, object, data) {
     possible_tokenizers <- c("words")
 
     check_possible_tokenizers(name, possible_tokenizers)
-    
+
     res <- switch(name,
       words = tokenizers_bpe_tokens(data, object$training_options)
     )
@@ -441,7 +447,7 @@ tokenizer_switch <- function(name, object, data) {
     return(res)
   }
 
-  rlang::abort("`engine` argument is not valid.")
+  rlang::abort("`engine` argument is not valid.", call = call)
 }
 
 #' @rdname required_pkgs.step
@@ -458,7 +464,7 @@ required_pkgs.step_tokenize <- function(x, ...) {
   }
 }
 
-#' @rdname tunable.step
+#' @rdname tunable_textrecipes
 #' @export
 tunable.step_tokenize <- function(x, ...) {
   tibble::tibble(

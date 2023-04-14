@@ -27,12 +27,12 @@
 #'
 #' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
 #' (the selectors or variables selected) and `num_topics` (number of topics).
-#' 
+#'
 #' @template case-weights-not-supported
 #'
 #' @seealso [step_tokenize()] to turn characters into [`tokens`][tokenlist()]
 #' @family Steps for Token Modification
-#'   
+#'
 #' @examples
 #' \dontrun{
 #' library(recipes)
@@ -94,7 +94,7 @@ step_pos_filter_new <-
 prep.step_pos_filter <- function(x, training, info = NULL, ...) {
   col_names <- recipes_eval_select(x$terms, training, info)
 
-  check_list(training[, col_names])
+  check_type(training[, col_names], types = "tokenlist")
 
   step_pos_filter_new(
     terms = x$terms,
@@ -118,9 +118,9 @@ bake.step_pos_filter <- function(object, new_data, ...) {
     if (is.null(maybe_get_pos(variable))) {
       rlang::abort(
         glue(
-        "`{col_names[i]}` doesn't have a pos attribute. ",
-        "Make sure the tokenization step includes ",
-        "part of speech tagging."
+          "`{col_names[i]}` doesn't have a pos attribute. ",
+          "Make sure the tokenization step includes ",
+          "part of speech tagging."
         )
       )
     } else {
