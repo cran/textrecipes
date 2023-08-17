@@ -1,6 +1,6 @@
 #' Combine Multiple Token Variables Into One
 #'
-#' `step_tokenmerge` creates a *specification* of a recipe step that will take
+#' `step_tokenmerge()` creates a *specification* of a recipe step that will take
 #' multiple [`token`][tokenlist()] variables and combine them into one
 #' [`token`][tokenlist()] variable.
 #'
@@ -10,6 +10,7 @@
 #' @template args-trained
 #' @template args-columns
 #' @param prefix A prefix for generated column names, default to "tokenmerge".
+#' @template args-keep_original_cols
 #' @template args-skip
 #' @template args-id
 #'
@@ -51,6 +52,7 @@ step_tokenmerge <-
            trained = FALSE,
            columns = NULL,
            prefix = "tokenmerge",
+           keep_original_cols = FALSE,
            skip = FALSE,
            id = rand_id("tokenmerge")) {
     add_step(
@@ -61,6 +63,7 @@ step_tokenmerge <-
         trained = trained,
         columns = columns,
         prefix = prefix,
+        keep_original_cols = keep_original_cols,
         skip = skip,
         id = id
       )
@@ -68,7 +71,7 @@ step_tokenmerge <-
   }
 
 step_tokenmerge_new <-
-  function(terms, role, trained, columns, prefix,
+  function(terms, role, trained, columns, prefix, keep_original_cols,
            skip, id) {
     step(
       subclass = "tokenmerge",
@@ -77,6 +80,7 @@ step_tokenmerge_new <-
       trained = trained,
       columns = columns,
       prefix = prefix,
+      keep_original_cols = keep_original_cols,
       skip = skip,
       id = id
     )
@@ -94,6 +98,7 @@ prep.step_tokenmerge <- function(x, training, info = NULL, ...) {
     trained = TRUE,
     columns = col_names,
     prefix = x$prefix,
+    keep_original_cols = get_keep_original_cols(x),
     skip = x$skip,
     id = x$id
   )
@@ -115,12 +120,11 @@ bake.step_tokenmerge <- function(object, new_data, ...) {
   new_col <- tibble(tokenlist(new_col))
   names(new_col) <- object$prefix
 
-  new_data <-
-    new_data[, !(colnames(new_data) %in% col_names), drop = FALSE]
-
+  new_data <- remove_original_cols(new_data, object, col_names)
+  
   new_col <- check_name(new_col, new_data, object, names(new_col))
   
-  new_data <- vctrs::vec_cbind(new_data, new_col)
+  new_data <- vec_cbind(new_data, new_col)
 
   new_data
 }

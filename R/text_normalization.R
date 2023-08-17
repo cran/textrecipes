@@ -1,6 +1,6 @@
 #' Normalization of Character Variables
 #'
-#' `step_text_normalization` creates a *specification* of a recipe step that
+#' `step_text_normalization()` creates a *specification* of a recipe step that
 #' will perform Unicode Normalization on character variables.
 #'
 #' @template args-recipe
@@ -131,11 +131,10 @@ bake.step_text_normalization <- function(object, new_data, ...) {
     )
   )
 
-  for (i in seq_along(col_names)) {
-    new_data[, col_names[i]] <- normalization_fun(
-      getElement(new_data, col_names[i])
-    )
+  for (col_name in col_names) {
+    new_data[[col_name]] <- normalization_fun(new_data[[col_name]])
   }
+  
   new_data <- factor_to_text(new_data, col_names)
   new_data
 }

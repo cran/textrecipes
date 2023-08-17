@@ -65,27 +65,6 @@ test_that("step_tfidf works with vocabulary argument", {
   )
 })
 
-test_that("bake method errors when needed non-standard role columns are missing", {
-  tokenized_test_data <- recipe(~text, data = test_data) %>%
-    step_tokenize(text) %>%
-    prep() %>%
-    bake(new_data = NULL)
-
-  rec <- recipe(tokenized_test_data) %>%
-    update_role(text, new_role = "predictor") %>%
-    step_tfidf(text) %>%
-    update_role(text, new_role = "potato") %>%
-    update_role_requirements(role = "potato", bake = FALSE)
-
-  trained <- prep(rec, training = tokenized_test_data, verbose = FALSE)
-
-  expect_error(
-    bake(trained, new_data = tokenized_test_data[, -1]),
-    class = "new_data_missing_column"
-  )
-})
-
-
 test_that("check_name() is used", {
   dat <- test_data
   dat$tfidf_text_i <- dat$text
@@ -97,55 +76,6 @@ test_that("check_name() is used", {
   expect_snapshot(
     error = TRUE,
     prep(rec, training = dat)
-  )
-})
-
-
-test_that("printing", {
-  rec <- rec %>%
-    step_tokenize(text) %>%
-    step_tfidf(text)
-  expect_snapshot(print(rec))
-  expect_snapshot(prep(rec))
-})
-
-test_that("keep_original_cols works", {
-  koc_rec <- rec %>%
-    step_tokenize(text) %>%
-    step_tfidf(text, keep_original_cols = TRUE)
-
-  koc_trained <- prep(koc_rec, training = test_data, verbose = FALSE)
-
-  koc_pred <- bake(koc_trained, new_data = test_data, all_predictors())
-
-  expect_equal(
-    colnames(koc_pred),
-    c(
-      c(
-        "text", "tfidf_text_am", "tfidf_text_and", "tfidf_text_anywhere",
-        "tfidf_text_do", "tfidf_text_eat", "tfidf_text_eggs", "tfidf_text_green",
-        "tfidf_text_ham", "tfidf_text_here", "tfidf_text_i", "tfidf_text_like",
-        "tfidf_text_not", "tfidf_text_or", "tfidf_text_sam", "tfidf_text_them",
-        "tfidf_text_there", "tfidf_text_would"
-      )
-    )
-  )
-})
-
-test_that("can prep recipes with no keep_original_cols", {
-  koc_rec <- rec %>%
-    step_tokenize(text) %>%
-    step_tfidf(text, keep_original_cols = TRUE)
-
-  koc_rec$steps[[2]]$keep_original_cols <- NULL
-
-  expect_snapshot(
-    koc_trained <- prep(koc_rec, training = test_data, verbose = FALSE)
-  )
-
-  expect_error(
-    pca_pred <- bake(koc_trained, new_data = test_data, all_predictors()),
-    NA
   )
 })
 
@@ -196,53 +126,126 @@ test_that("Backwards compatibility with 1592690d36581fc5f4952da3e9b02351b31f1a2e
   )
 })
 
-test_that("empty selection prep/bake is a no-op", {
-  rec1 <- recipe(mpg ~ ., mtcars)
-  rec2 <- step_tfidf(rec1)
+# Infrastructure ---------------------------------------------------------------
 
-  rec1 <- prep(rec1, mtcars)
-  rec2 <- prep(rec2, mtcars)
-
-  baked1 <- bake(rec1, mtcars)
-  baked2 <- bake(rec2, mtcars)
-
-  expect_identical(baked1, baked1)
-})
-
-test_that("empty selection tidy method works", {
-  rec <- recipe(mpg ~ ., mtcars)
-  rec <- step_tfidf(rec)
-
-  expect_identical(
-    tidy(rec, number = 1),
-    tibble(
-      terms = character(),
-      token = character(),
-      weight = double(),
-      id = character()
-    )
-  )
-
-  rec <- prep(rec, mtcars)
-
-  expect_identical(
-    tidy(rec, number = 1),
-    tibble(
-      terms = character(),
-      token = character(),
-      weight = double(),
-      id = character()
-    )
+test_that("bake method errors when needed non-standard role columns are missing", {
+  tokenized_test_data <- recipe(~text, data = test_data) %>%
+    step_tokenize(text) %>%
+    prep() %>%
+    bake(new_data = NULL)
+  
+  rec <- recipe(tokenized_test_data) %>%
+    update_role(text, new_role = "predictor") %>%
+    step_tfidf(text) %>%
+    update_role(text, new_role = "potato") %>%
+    update_role_requirements(role = "potato", bake = FALSE)
+  
+  trained <- prep(rec, training = tokenized_test_data, verbose = FALSE)
+  
+  expect_error(
+    bake(trained, new_data = tokenized_test_data[, -1]),
+    class = "new_data_missing_column"
   )
 })
 
 test_that("empty printing", {
   rec <- recipe(mpg ~ ., mtcars)
   rec <- step_tfidf(rec)
-
+  
   expect_snapshot(rec)
-
+  
   rec <- prep(rec, mtcars)
-
+  
   expect_snapshot(rec)
+})
+
+test_that("empty selection prep/bake is a no-op", {
+  rec1 <- recipe(mpg ~ ., mtcars)
+  rec2 <- step_tfidf(rec1)
+  
+  rec1 <- prep(rec1, mtcars)
+  rec2 <- prep(rec2, mtcars)
+  
+  baked1 <- bake(rec1, mtcars)
+  baked2 <- bake(rec2, mtcars)
+  
+  expect_identical(baked1, baked1)
+})
+
+test_that("empty selection tidy method works", {
+  rec <- recipe(mpg ~ ., mtcars)
+  rec <- step_tfidf(rec)
+  
+  expect <- tibble(
+    terms = character(),
+    token = character(),
+    weight = double(),
+    id = character()
+  )
+  
+  expect_identical(tidy(rec, number = 1), expect)
+  
+  rec <- prep(rec, mtcars)
+  
+  expect_identical(tidy(rec, number = 1), expect)
+})
+
+test_that("keep_original_cols works", {
+  new_names <- c(
+    "tfidf_text_am", "tfidf_text_and", "tfidf_text_anywhere", "tfidf_text_do", 
+    "tfidf_text_eat", "tfidf_text_eggs", "tfidf_text_green", "tfidf_text_ham", 
+    "tfidf_text_here", "tfidf_text_i", "tfidf_text_like", "tfidf_text_not", 
+    "tfidf_text_or", "tfidf_text_sam", "tfidf_text_them", "tfidf_text_there", 
+    "tfidf_text_would"
+  )
+  
+  rec <- recipe(~text, data = test_data) %>%
+    step_tokenize(text) %>%
+    step_tfidf(text, keep_original_cols = FALSE)
+  
+  rec <- prep(rec)
+  res <- bake(rec, new_data = NULL)
+  
+  expect_equal(
+    colnames(res),
+    new_names
+  )
+  
+  rec <- recipe(~text, data = test_data) %>%
+    step_tokenize(text) %>%
+    step_tfidf(text, keep_original_cols = TRUE)
+  
+  rec <- prep(rec)
+  res <- bake(rec, new_data = NULL)
+  
+  expect_equal(
+    colnames(res),
+    c("text", new_names)
+  )
+})
+
+test_that("keep_original_cols - can prep recipes with it missing", {
+  rec <- recipe(~text, data = test_data) %>%
+    step_tokenize(text) %>%
+    step_tfidf(text)
+  
+  rec$steps[[2]]$keep_original_cols <- NULL
+  
+  expect_snapshot(
+    rec <- prep(rec)
+  )
+  
+  expect_error(
+    bake(rec, new_data = test_data),
+    NA
+  )
+})
+
+test_that("printing", {
+  rec <- rec %>%
+    step_tokenize(text) %>%
+    step_tfidf(text)
+  
+  expect_snapshot(print(rec))
+  expect_snapshot(prep(rec))
 })

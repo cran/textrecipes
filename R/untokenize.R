@@ -1,6 +1,6 @@
 #' Untokenization of Token Variables
 #'
-#' `step_untokenize` creates a *specification* of a recipe step that will
+#' `step_untokenize()` creates a *specification* of a recipe step that will
 #' convert a [`token`][tokenlist()] variable into a character predictor.
 #'
 #' @template args-recipe
@@ -113,17 +113,12 @@ bake.step_untokenize <- function(object, new_data, ...) {
   col_names <- object$columns
   check_new_data(col_names, object, new_data)
 
-  for (i in seq_along(col_names)) {
-    tokens <- get_tokens(new_data[, col_names[i], drop = TRUE])
-    new_data[, col_names[i]] <- map_chr(
-      .x = tokens,
-      .f = paste,
-      collapse = object$sep
-    )
+  for (col_name in col_names) {
+    tokens <- get_tokens(new_data[[col_name]])
+    new_data[[col_name]] <- map_chr(tokens, paste, collapse = object$sep)
   }
 
   new_data <- factor_to_text(new_data, col_names)
-
   new_data
 }
 

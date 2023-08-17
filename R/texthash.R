@@ -1,8 +1,8 @@
 #' Feature Hashing of Tokens
 #'
-#' `step_texthash` creates a *specification* of a recipe step that will convert
-#' a [`token`][tokenlist()] variable into multiple numeric variables using the
-#' hashing trick.
+#' `step_texthash()` creates a *specification* of a recipe step that will
+#' convert a [`token`][tokenlist()] variable into multiple numeric variables
+#' using the hashing trick.
 #'
 #' @template args-recipe
 #' @template args-dots
@@ -55,23 +55,6 @@
 #'   [step_text_normalization()] to perform text normalization.
 #' @family Steps for Numeric Variables From Tokens
 #'
-#' @examplesIf rlang::is_installed("text2vec")
-#' library(recipes)
-#' library(modeldata)
-#' data(tate_text)
-#'
-#' tate_rec <- recipe(~., data = tate_text) %>%
-#'   step_tokenize(medium) %>%
-#'   step_tokenfilter(medium, max_tokens = 10) %>%
-#'   step_texthash(medium)
-#'
-#' tate_obj <- tate_rec %>%
-#'   prep()
-#'
-#' bake(tate_obj, tate_text)
-#'
-#' tidy(tate_rec, number = 3)
-#' tidy(tate_obj, number = 3)
 #' @export
 step_texthash <-
   function(recipe,
@@ -152,12 +135,12 @@ bake.step_texthash <- function(object, new_data, ...) {
   col_names <- object$columns
   check_new_data(col_names, object, new_data)
 
-  for (i in seq_along(col_names)) {
+  for (col_name in col_names) {
     tf_text <- hashing_function(
-      get_tokens(new_data[, col_names[i], drop = TRUE]),
+      get_tokens(new_data[[col_name]]),
       paste0(
         object$prefix, "_",
-        col_names[i], "_",
+        col_name, "_",
         names0(object$num_terms, "")
       ),
       object$signed,
@@ -165,16 +148,13 @@ bake.step_texthash <- function(object, new_data, ...) {
     )
 
     tf_text <- purrr::map_dfc(tf_text, as.integer)
-    keep_original_cols <- get_keep_original_cols(object)
-    if (!keep_original_cols) {
-      new_data <-
-        new_data[, !(colnames(new_data) %in% col_names[i]), drop = FALSE]
-    }
-    
+
     tf_text <- check_name(tf_text, new_data, object, names(tf_text))
 
-    new_data <- vctrs::vec_cbind(tf_text, new_data)
+    new_data <- vec_cbind(new_data, tf_text)
   }
+  
+  new_data <- remove_original_cols(new_data, object, col_names)
 
   new_data
 }

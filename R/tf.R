@@ -1,9 +1,9 @@
 #' Term frequency of Tokens
 #'
-#' `step_tf` creates a *specification* of a recipe step that will convert a
+#' `step_tf()` creates a *specification* of a recipe step that will convert a
 #' [`token`][tokenlist()] variable into multiple variables containing the token
 #' counts.
-#'
+#' 
 #' @template args-recipe
 #' @template args-dots
 #' @template args-role_predictors
@@ -154,9 +154,9 @@ prep.step_tf <- function(x, training, info = NULL, ...) {
 
   token_list <- list()
 
-  for (i in seq_along(col_names)) {
-    token_list[[i]] <- x$vocabulary %||%
-      sort(get_unique_tokens(training[, col_names[i], drop = TRUE]))
+  for (col_name in col_names) {
+    token_list[[col_name]] <- x$vocabulary %||%
+      sort(get_unique_tokens(training[[col_name]]))
   }
 
   step_tf_new(
@@ -180,11 +180,16 @@ bake.step_tf <- function(object, new_data, ...) {
   col_names <- object$columns
   check_new_data(col_names, object, new_data)
 
-  for (i in seq_along(col_names)) {
+  if (is.null(names(object$res))) {
+    # Backwards compatibility with 1.0.3 (#230)
+    names(object$res) <- col_names
+  }
+  
+  for (col_name in col_names) {
     tf_text <- tf_function(
-      new_data[, col_names[i], drop = TRUE],
-      object$res[[i]],
-      paste0(object$prefix, "_", col_names[i]),
+      new_data[[col_name]],
+      object$res[[col_name]],
+      paste0(object$prefix, "_", col_name),
       object$weight_scheme,
       object$weight
     )
@@ -193,16 +198,13 @@ bake.step_tf <- function(object, new_data, ...) {
       tf_text <- purrr::map_dfc(tf_text, as.integer)
     }
 
-    keep_original_cols <- get_keep_original_cols(object)
-    if (!keep_original_cols) {
-      new_data <-
-        new_data[, !(colnames(new_data) %in% col_names[i]), drop = FALSE]
-    }
-    
     tf_text <- check_name(tf_text, new_data, object, names(tf_text))
 
-    new_data <- vctrs::vec_cbind(new_data, tf_text)
+    new_data <- vec_cbind(new_data, tf_text)
   }
+  
+  new_data <- remove_original_cols(new_data, object, col_names)
+
   new_data
 }
 

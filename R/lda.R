@@ -1,7 +1,7 @@
 #' Calculate LDA Dimension Estimates of Tokens
 #'
-#' @description `step_lda` creates a *specification* of a recipe step that will
-#'   return the lda dimension estimates of a text variable.
+#' `step_lda()` creates a *specification* of a recipe step that will return the
+#' lda dimension estimates of a text variable.
 #'
 #' @template args-recipe
 #' @template args-dots
@@ -32,45 +32,6 @@
 #'
 #' @family Steps for Numeric Variables From Tokens
 #'
-#' @examplesIf rlang::is_installed("text2vec")
-#' library(recipes)
-#' library(modeldata)
-#' data(tate_text)
-#'
-#' tate_rec <- recipe(~., data = tate_text) %>%
-#'   step_tokenize(medium) %>%
-#'   step_lda(medium)
-#'
-#' tate_obj <- tate_rec %>%
-#'   prep()
-#'
-#' bake(tate_obj, new_data = NULL) %>%
-#'   slice(1:2)
-#' tidy(tate_rec, number = 2)
-#' tidy(tate_obj, number = 2)
-#'
-#' # Changing the number of topics.
-#' recipe(~., data = tate_text) %>%
-#'   step_tokenize(medium, artist) %>%
-#'   step_lda(medium, artist, num_topics = 20) %>%
-#'   prep() %>%
-#'   bake(new_data = NULL) %>%
-#'   slice(1:2)
-#'
-#' # Supplying A pre-trained LDA model trained using text2vec
-#' library(text2vec)
-#' tokens <- word_tokenizer(tolower(tate_text$medium))
-#' it <- itoken(tokens, ids = seq_along(tate_text$medium))
-#' v <- create_vocabulary(it)
-#' dtm <- create_dtm(it, vocab_vectorizer(v))
-#' lda_model <- LDA$new(n_topics = 15)
-#'
-#' recipe(~., data = tate_text) %>%
-#'   step_tokenize(medium, artist) %>%
-#'   step_lda(medium, artist, lda_models = lda_model) %>%
-#'   prep() %>%
-#'   bake(new_data = NULL) %>%
-#'   slice(1:2)
 #' @export
 step_lda <-
   function(recipe,
@@ -131,11 +92,11 @@ prep.step_lda <- function(x, training, info = NULL, ...) {
 
   model_list <- list()
 
-  for (i in seq_along(col_names)) {
-    tokens <- get_tokens(training[, col_names[i], drop = TRUE])
+  for (col_name in col_names) {
+    tokens <- get_tokens(training[[col_name]])
 
     ddd <- utils::capture.output(
-      model_list[[i]] <- x$lda_models %||%
+      model_list[[col_name]] <- x$lda_models %||%
         attr(word_dims(tokens, n = x$num_topics), "dict")
     )
   }
@@ -159,28 +120,29 @@ bake.step_lda <- function(object, new_data, ...) {
   col_names <- object$columns
   check_new_data(col_names, object, new_data)
 
-  for (i in seq_along(col_names)) {
-    tokens <- get_tokens(new_data[, col_names[i], drop = TRUE])
+  if (is.null(names(object$lda_models))) {
+    # Backwards compatibility with 1.0.3 (#230)
+    names(object$lda_models) <- col_names
+  }
+  
+  for (col_name in col_names) {
+    tokens <- get_tokens(new_data[[col_name]])
 
     ddd <- utils::capture.output(
-      tf_text <- word_dims_newtext(object$lda_models[[i]], tokens)
+      tf_text <- word_dims_newtext(object$lda_models[[col_name]], tokens)
     )
 
     attr(tf_text, "dict") <- NULL
-    colnames(tf_text) <- paste(object$prefix, col_names[i], colnames(tf_text),
+    colnames(tf_text) <- paste(object$prefix, col_name, colnames(tf_text),
       sep = "_"
     )
     
     tf_text <- check_name(tf_text, new_data, object, names(tf_text))
 
-    new_data <- vctrs::vec_cbind(new_data, tf_text)
-
-    keep_original_cols <- get_keep_original_cols(object)
-    if (!keep_original_cols) {
-      new_data <-
-        new_data[, !(colnames(new_data) %in% col_names[i]), drop = FALSE]
-    }
+    new_data <- vec_cbind(new_data, tf_text)
   }
+  
+  new_data <- remove_original_cols(new_data, object, col_names)
 
   new_data
 }

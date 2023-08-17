@@ -22,6 +22,7 @@
 #' @importFrom recipes print_step
 #' @importFrom recipes rand_id
 #' @importFrom recipes recipes_eval_select
+#' @importFrom recipes remove_original_cols
 #' @importFrom recipes sel2char
 #' @importFrom recipes step
 #' @importFrom rlang :=
@@ -37,6 +38,7 @@
 #' @importFrom vctrs obj_print_footer
 #' @importFrom vctrs vec_assert
 #' @importFrom vctrs vec_cast
+#' @importFrom vctrs vec_cbind
 #' @importFrom vctrs vec_ptype_abbr
 #' @importFrom vctrs vec_restore
 #' @useDynLib textrecipes, .registration = TRUE

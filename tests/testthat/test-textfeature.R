@@ -67,20 +67,6 @@ test_that("custom extraction functions work works", {
   )
 })
 
-test_that("bake method errors when needed non-standard role columns are missing", {
-  rec <- recipe(~text, data = test_data) %>%
-    step_textfeature(text) %>%
-    update_role(text, new_role = "potato") %>%
-    update_role_requirements(role = "potato", bake = FALSE)
-
-  trained <- prep(rec, training = test_data, verbose = FALSE)
-
-  expect_error(
-    bake(trained, new_data = test_data[, -1]),
-    class = "new_data_missing_column"
-  )
-})
-
 test_that("check_name() is used", {
   dat <- test_data
   dat$textfeature_text_n_words <- dat$text
@@ -94,86 +80,164 @@ test_that("check_name() is used", {
   )
 })
 
-test_that("printing", {
-  skip_if_not_installed("textfeatures")
-  rec <- rec %>%
-    step_textfeature(text)
-  expect_snapshot(print(rec))
-  expect_snapshot(prep(rec))
-})
+# Infrastructure ---------------------------------------------------------------
 
-test_that("keep_original_cols works", {
-  koc_rec <- rec %>%
-    step_textfeature(text,
-      extract_functions = list(nchar = nchar),
-      keep_original_cols = TRUE
-    )
-
-  koc_trained <- prep(koc_rec, training = test_data, verbose = FALSE)
-
-  koc_pred <- bake(koc_trained, new_data = test_data, all_predictors())
-
-  expect_equal(
-    colnames(koc_pred),
-    c(
-      "text", "textfeature_text_nchar"
-    )
-  )
-})
-
-test_that("can prep recipes with no keep_original_cols", {
-  koc_rec <- rec %>%
-    step_textfeature(text, keep_original_cols = TRUE)
-
-  koc_rec$steps[[1]]$keep_original_cols <- NULL
-
-  expect_snapshot(
-    koc_trained <- prep(koc_rec, training = test_data, verbose = FALSE)
-  )
-
+test_that("bake method errors when needed non-standard role columns are missing", {
+  rec <- recipe(~text, data = test_data) %>%
+    step_textfeature(text) %>%
+    update_role(text, new_role = "potato") %>%
+    update_role_requirements(role = "potato", bake = FALSE)
+  
+  trained <- prep(rec, training = test_data, verbose = FALSE)
+  
   expect_error(
-    pca_pred <- bake(koc_trained, new_data = test_data, all_predictors()),
-    NA
-  )
-})
-
-test_that("empty selection prep/bake is a no-op", {
-  rec1 <- recipe(mpg ~ ., mtcars)
-  rec2 <- step_textfeature(rec1)
-
-  rec1 <- prep(rec1, mtcars)
-  rec2 <- prep(rec2, mtcars)
-
-  baked1 <- bake(rec1, mtcars)
-  baked2 <- bake(rec2, mtcars)
-
-  expect_identical(baked1, baked1)
-})
-
-test_that("empty selection tidy method works", {
-  rec <- recipe(mpg ~ ., mtcars)
-  rec <- step_textfeature(rec)
-
-  expect_identical(
-    tidy(rec, number = 1),
-    tibble(terms = character(), functions = character(), id = character())
-  )
-
-  rec <- prep(rec, mtcars)
-
-  expect_identical(
-    tidy(rec, number = 1),
-    tibble(terms = character(), functions = character(), id = character())
+    bake(trained, new_data = test_data[, -1]),
+    class = "new_data_missing_column"
   )
 })
 
 test_that("empty printing", {
   rec <- recipe(mpg ~ ., mtcars)
   rec <- step_textfeature(rec)
-
+  
   expect_snapshot(rec)
-
+  
   rec <- prep(rec, mtcars)
-
+  
   expect_snapshot(rec)
+})
+
+test_that("empty selection prep/bake is a no-op", {
+  rec1 <- recipe(mpg ~ ., mtcars)
+  rec2 <- step_textfeature(rec1)
+  
+  rec1 <- prep(rec1, mtcars)
+  rec2 <- prep(rec2, mtcars)
+  
+  baked1 <- bake(rec1, mtcars)
+  baked2 <- bake(rec2, mtcars)
+  
+  expect_identical(baked1, baked1)
+})
+
+test_that("empty selection tidy method works", {
+  rec <- recipe(mpg ~ ., mtcars)
+  rec <- step_textfeature(rec)
+  
+  expect <- tibble(
+    terms = character(),
+    functions = character(),
+    id = character()
+  )
+  
+  expect_identical(tidy(rec, number = 1), expect)
+  
+  rec <- prep(rec, mtcars)
+  
+  expect_identical(tidy(rec, number = 1), expect)
+})
+
+test_that("keep_original_cols works", {
+  new_names <- c(
+    "tf_text_am", "tf_text_and", "tf_text_anywhere", "tf_text_do", 
+    "tf_text_eat", "tf_text_eggs", "tf_text_green", "tf_text_ham", 
+    "tf_text_here", "tf_text_i", "tf_text_like", "tf_text_not", "tf_text_or", 
+    "tf_text_sam", "tf_text_them", "tf_text_there", "tf_text_would"
+  )
+  
+  rec <- recipe(~text, data = test_data) %>%
+    step_tokenize(text) %>%
+    step_tf(text, keep_original_cols = FALSE)
+  
+  rec <- prep(rec)
+  res <- bake(rec, new_data = NULL)
+  
+  expect_equal(
+    colnames(res),
+    new_names
+  )
+  
+  rec <- recipe(~text, data = test_data) %>%
+    step_tokenize(text) %>%
+    step_tf(text, keep_original_cols = TRUE)
+  
+  rec <- prep(rec)
+  res <- bake(rec, new_data = NULL)
+  
+  expect_equal(
+    colnames(res),
+    c("text", new_names)
+  )
+})
+
+test_that("keep_original_cols - can prep recipes with it missing", {
+  rec <- recipe(~text, data = test_data) %>%
+    step_tokenize(text) %>%
+    step_tf(text)
+  
+  rec$steps[[2]]$keep_original_cols <- NULL
+  
+  expect_snapshot(
+    rec <- prep(rec)
+  )
+  
+  expect_error(
+    bake(rec, new_data = test_data),
+    NA
+  )
+})
+test_that("keep_original_cols works", {
+  skip_if_not_installed("textfeatures")
+  
+  new_names <- paste0("textfeature_text_", names(textfeatures::count_functions))
+  
+  rec <- recipe(~text, data = test_data) %>%
+    step_textfeature(text, keep_original_cols = FALSE)
+  
+  rec <- prep(rec)
+  res <- bake(rec, new_data = NULL)
+  
+  expect_equal(
+    colnames(res),
+    new_names
+  )
+  
+  rec <- recipe(~text, data = test_data) %>%
+    step_textfeature(text, keep_original_cols = TRUE)
+  
+  rec <- prep(rec)
+  res <- bake(rec, new_data = NULL)
+  
+  expect_equal(
+    colnames(res),
+    c("text", new_names)
+  )
+})
+
+test_that("keep_original_cols - can prep recipes with it missing", {
+  skip_if_not_installed("textfeatures")
+  
+  rec <- recipe(~text, data = test_data) %>%
+    step_textfeature(text)
+  
+  rec$steps[[1]]$keep_original_cols <- NULL
+  
+  expect_snapshot(
+    rec <- prep(rec)
+  )
+  
+  expect_error(
+    bake(rec, new_data = test_data),
+    NA
+  )
+})
+
+
+test_that("printing", {
+  skip_if_not_installed("textfeatures")
+  rec <- rec %>%
+    step_textfeature(text)
+  
+  expect_snapshot(print(rec))
+  expect_snapshot(prep(rec))
 })

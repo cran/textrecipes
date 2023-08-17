@@ -1,6 +1,6 @@
 #' Stemming of Token Variables
 #'
-#' `step_stem` creates a *specification* of a recipe step that will convert a
+#' `step_stem()` creates a *specification* of a recipe step that will convert a
 #' [`token`][tokenlist()] variable to have its stemmed version.
 #'
 #' @template args-recipe
@@ -143,13 +143,11 @@ bake.step_stem <- function(object, new_data, ...) {
   stem_fun <- object$custom_stemmer %||%
     SnowballC::wordStem
 
-  for (i in seq_along(col_names)) {
-    stemmed_tokenlist <- tokenlist_apply(
-      new_data[, col_names[i], drop = TRUE],
+  for (col_name in col_names) {
+    new_data[[col_name]] <- tokenlist_apply(
+      new_data[[col_name]],
       stem_fun, object$options
     )
-
-    new_data[, col_names[i]] <- tibble(stemmed_tokenlist)
   }
   new_data <- factor_to_text(new_data, col_names)
   new_data

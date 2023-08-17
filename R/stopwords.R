@@ -1,7 +1,7 @@
 #' Filtering of Stop Words for Tokens Variables
 #'
-#' `step_stopwords` creates a *specification* of a recipe step that will filter
-#' a [`token`][tokenlist()] variable for stop words.
+#' `step_stopwords()` creates a *specification* of a recipe step that will
+#' filter a [`token`][tokenlist()] variable for stop words.
 #'
 #' @template args-recipe
 #' @template args-dots
@@ -154,14 +154,12 @@ bake.step_stopwords <- function(object, new_data, ...) {
       source = object$stopword_source
     )
 
-  for (i in seq_along(col_names)) {
-    filtered_text <- tokenlist_filter(
-      new_data[, col_names[i], drop = TRUE],
+  for (col_name in col_names) {
+    new_data[[col_name]] <- tokenlist_filter(
+      new_data[[col_name]],
       stopword_list,
       object$keep
     )
-
-    new_data[, col_names[i]] <- tibble(filtered_text)
   }
   new_data <- factor_to_text(new_data, col_names)
 

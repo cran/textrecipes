@@ -1,6 +1,6 @@
 #' Generate n-grams From Token Variables
 #'
-#' `step_ngram` creates a *specification* of a recipe step that will convert a
+#' `step_ngram()` creates a *specification* of a recipe step that will convert a
 #' [`token`][tokenlist()] variable into a [`token`][tokenlist()] variable of
 #' ngrams.
 #'
@@ -134,15 +134,15 @@ bake.step_ngram <- function(object, new_data, ...) {
   col_names <- object$columns
   check_new_data(col_names, object, new_data)
 
-  for (i in seq_along(col_names)) {
+  for (col_name in col_names) {
     ngrammed_tokenlist <- tokenlist_ngram(
-      x = new_data[, col_names[i], drop = TRUE],
+      x = new_data[[col_name]],
       n = object$num_tokens,
       n_min = object$min_num_tokens,
       delim = object$delim
     )
 
-    new_data[, col_names[i]] <- tibble(ngrammed_tokenlist)
+    new_data[[col_name]] <- ngrammed_tokenlist
   }
   new_data <- factor_to_text(new_data, col_names)
   new_data
@@ -165,8 +165,7 @@ tidy.step_ngram <- function(x, ...) {
   } else {
     term_names <- sel2char(x$terms)
     res <- tibble(
-      terms = term_names,
-      value = na_chr
+      terms = term_names
     )
   }
   res$id <- x$id

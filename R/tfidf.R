@@ -1,6 +1,6 @@
 #' Term Frequency-Inverse Document Frequency of Tokens
 #'
-#' `step_tfidf` creates a *specification* of a recipe step that will convert a
+#' `step_tfidf()` creates a *specification* of a recipe step that will convert a
 #' [`token`][tokenlist()] variable into multiple variables containing the term
 #' frequency-inverse document frequency of tokens.
 #'
@@ -146,11 +146,11 @@ prep.step_tfidf <- function(x, training, info = NULL, ...) {
 
   idf_weights <- list()
 
-  for (i in seq_along(col_names)) {
-    column <- training[, col_names[i], drop = TRUE]
-    vocabulary <- x$vocabulary %||% sort(get_unique_tokens(column))
-    column_dtm <- tokenlist_to_dtm(column, vocabulary)
-    idf_weights[[i]] <- calc_idf(column_dtm, x$smooth_idf)
+  for (col_name in col_names) {
+    tokens <- training[[col_name]]
+    vocabulary <- x$vocabulary %||% sort(get_unique_tokens(tokens))
+    column_dtm <- tokenlist_to_dtm(tokens, vocabulary)
+    idf_weights[[col_name]] <- calc_idf(column_dtm, x$smooth_idf)
   }
 
   step_tfidf_new(
@@ -175,26 +175,28 @@ bake.step_tfidf <- function(object, new_data, ...) {
   col_names <- object$columns
   check_new_data(col_names, object, new_data)
 
-  for (i in seq_along(col_names)) {
+  if (is.null(names(object$res))) {
+    # Backwards compatibility with 1.0.3 (#230)
+    names(object$res) <- col_names
+  }
+  
+  for (col_name in col_names) {
     tfidf_text <- tfidf_function(
-      new_data[, col_names[i], drop = TRUE],
-      object$res[[i]],
-      paste0(object$prefix, "_", col_names[i]),
+      new_data[[col_name]],
+      object$res[[col_name]],
+      paste0(object$prefix, "_", col_name),
       object$smooth_idf,
       object$norm,
       object$sublinear_tf
     )
 
-    keep_original_cols <- get_keep_original_cols(object)
-    if (!keep_original_cols) {
-      new_data <-
-        new_data[, !(colnames(new_data) %in% col_names[i]), drop = FALSE]
-    }
-    
     tfidf_text <- check_name(tfidf_text, new_data, object, names(tfidf_text))
 
-    new_data <- vctrs::vec_cbind(new_data, tfidf_text)
+    new_data <- vec_cbind(new_data, tfidf_text)
   }
+  
+  new_data <- remove_original_cols(new_data, object, col_names)
+  
   new_data
 }
 

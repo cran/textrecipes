@@ -1,6 +1,6 @@
 #' BPE Tokenization of Character Variables
 #'
-#' [step_tokenize_bpe()] creates a *specification* of a recipe step that will
+#' `step_tokenize_bpe()` creates a *specification* of a recipe step that will
 #' convert a character predictor into a [`token`][tokenlist()] variable using
 #' Byte Pair Encoding.
 #'
@@ -25,6 +25,12 @@
 #'
 #' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
 #' (the selectors or variables selected).
+#'
+#' ```{r, echo = FALSE, results="asis"}
+#' step <- "step_tokenize_bpe"
+#' result <- knitr::knit_child("man/rmd/tunable-args.Rmd")
+#' cat(result)
+#' ```
 #'
 #' @template case-weights-not-supported
 #'
@@ -116,12 +122,12 @@ prep.step_tokenize_bpe <- function(x, training, info = NULL, ...) {
   }
   bpe_options$vocab_size <- x$vocabulary_size
 
-  for (i in seq_along(col_names)) {
-    text <- training[, col_names[[i]], drop = TRUE]
+  for (col_name in col_names) {
+    text <- training[[col_name]]
 
-    check_bpe_vocab_size(text, x$vocabulary_size, col_names[[i]])
+    check_bpe_vocab_size(text, x$vocabulary_size, col_name)
 
-    tokenizers[[i]] <- tokenizers_bpe_tokens(text, bpe_options)
+    tokenizers[[col_name]] <- tokenizers_bpe_tokens(text, bpe_options)
   }
 
   step_tokenize_bpe_new(
@@ -162,12 +168,16 @@ bake.step_tokenize_bpe <- function(object, new_data, ...) {
   col_names <- object$columns
   check_new_data(col_names, object, new_data)
 
-  for (i in seq_along(col_names)) {
-    new_data[, col_names[i]] <- tokenizer_fun(
-      data = new_data[, col_names[i]],
-      name = col_names[i],
+  if (is.null(names(object$res))) {
+    # Backwards compatibility with 1.0.3 (#230)
+    names(object$res) <- col_names
+  }
+  
+  for (col_name in col_names) {
+    new_data[[col_name]] <- tokenizer_fun(
+      x = new_data[[col_name]],
       options = object$options,
-      token = object$res[[i]]
+      token = object$res[[col_name]]
     )
   }
 
@@ -204,4 +214,18 @@ tidy.step_tokenize_bpe <- function(x, ...) {
 #' @export
 required_pkgs.step_tokenize_bpe <- function(x, ...) {
   c("tokenizers.bpe", "textrecipes")
+}
+
+#' @rdname tunable_textrecipes
+#' @export
+tunable.step_tokenize_bpe <- function(x, ...) {
+  tibble::tibble(
+    name = c("vocabulary_size"),
+    call_info = list(
+      list(pkg = "dials", fun = "vocabulary_size", range = c(1000, 32000))
+    ),
+    source = "recipe",
+    component = "step_tokenize_bpe",
+    component_id = x$id
+  )
 }

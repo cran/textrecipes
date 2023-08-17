@@ -1,8 +1,8 @@
 #' Wordpiece Tokenization of Character Variables
 #'
-#' [step_tokenize_wordpiece()] creates a *specification* of a recipe step
-#' that will convert a character predictor into a [`token`][tokenlist()]
-#' variable using WordPiece tokenization.
+#' `step_tokenize_wordpiece()` creates a *specification* of a recipe step that
+#' will convert a character predictor into a [`token`][tokenlist()] variable
+#' using WordPiece tokenization.
 #'
 #' @template args-recipe
 #' @template args-dots
@@ -123,10 +123,9 @@ bake.step_tokenize_wordpiece <- function(object, new_data, ...) {
   col_names <- object$columns
   check_new_data(col_names, object, new_data)
 
-  for (i in seq_along(col_names)) {
-    new_data[, col_names[i]] <- tokenizer_fun(
-      data = new_data[, col_names[i]],
-      name = col_names[i],
+  for (col_name in col_names) {
+    new_data[[col_name]] <- tokenizer_fun(
+      x = new_data[[col_name]],
       options = list(
         vocab = object$vocab,
         unk_token = object$unk_token,

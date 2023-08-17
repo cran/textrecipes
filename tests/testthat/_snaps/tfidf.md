@@ -4,51 +4,9 @@
       prep(rec, training = dat)
     Error <recipes_error_step>
       Error in `step_tfidf()`:
-      Caused by error in `check_name()`:
-      ! Name collision occured in `step_tfidf`. The following variable names already exists: tfidf_text_i.
-
-# printing
-
-    Code
-      print(rec)
-    Message <cliMessage>
-      
-      -- Recipe ----------------------------------------------------------------------
-      
-      -- Inputs 
-      Number of variables by role
-      predictor: 1
-      
-      -- Operations 
-      * Tokenization for: text
-      * Term frequency-inverse document frequency with: text
-
----
-
-    Code
-      prep(rec)
-    Message <cliMessage>
-      
-      -- Recipe ----------------------------------------------------------------------
-      
-      -- Inputs 
-      Number of variables by role
-      predictor: 1
-      
-      -- Training information 
-      Training data contained 4 data points and no incomplete rows.
-      
-      -- Operations 
-      * Tokenization for: text | Trained
-      * Term frequency-inverse document frequency with: text | Trained
-
-# can prep recipes with no keep_original_cols
-
-    Code
-      koc_trained <- prep(koc_rec, training = test_data, verbose = FALSE)
-    Warning <rlang_warning>
-      'keep_original_cols' was added to `step_tfidf()` after this recipe was created.
-      Regenerate your recipe to avoid this warning.
+      Caused by error in `bake()`:
+      ! Name collision occured. The following variable names already exists:
+      i  tfidf_text_i
 
 # Backwards compatibility with 1592690d36581fc5f4952da3e9b02351b31f1a2e
 
@@ -102,4 +60,47 @@
       
       -- Operations 
       * Term frequency-inverse document frequency with: <none> | Trained
+
+# keep_original_cols - can prep recipes with it missing
+
+    Code
+      rec <- prep(rec)
+    Warning <rlang_warning>
+      'keep_original_cols' was added to `step_tfidf()` after this recipe was created.
+      Regenerate your recipe to avoid this warning.
+
+# printing
+
+    Code
+      print(rec)
+    Message <cliMessage>
+      
+      -- Recipe ----------------------------------------------------------------------
+      
+      -- Inputs 
+      Number of variables by role
+      predictor: 1
+      
+      -- Operations 
+      * Tokenization for: text
+      * Term frequency-inverse document frequency with: text
+
+---
+
+    Code
+      prep(rec)
+    Message <cliMessage>
+      
+      -- Recipe ----------------------------------------------------------------------
+      
+      -- Inputs 
+      Number of variables by role
+      predictor: 1
+      
+      -- Training information 
+      Training data contained 4 data points and no incomplete rows.
+      
+      -- Operations 
+      * Tokenization for: text | Trained
+      * Term frequency-inverse document frequency with: text | Trained
 

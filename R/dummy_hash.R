@@ -1,6 +1,6 @@
 #' Indicator Variables via Feature Hashing
 #'
-#' `step_dummy_hash` creates a *specification* of a recipe step that will
+#' `step_dummy_hash()` creates a *specification* of a recipe step that will
 #' convert factors or character columns into a series of binary (or signed
 #' binary) indicator columns.
 #'
@@ -63,27 +63,9 @@
 #'   Kuhn and Johnson (2019), Chapter 7,
 #'   \url{https://bookdown.org/max/FES/encoding-predictors-with-many-categories.html}
 #'
-#'
-#'
-#'
 #' @seealso [recipes::step_dummy()]
 #' @family Steps for Numeric Variables From Characters
 #'
-#' @examplesIf rlang::is_installed("text2vec")
-#' library(recipes)
-#' library(modeldata)
-#' data(grants)
-#'
-#' grants_rec <- recipe(~sponsor_code, data = grants_other) %>%
-#'   step_dummy_hash(sponsor_code)
-#'
-#' grants_obj <- grants_rec %>%
-#'   prep()
-#'
-#' bake(grants_obj, grants_test)
-#'
-#' tidy(grants_rec, number = 1)
-#' tidy(grants_obj, number = 1)
 #' @export
 step_dummy_hash <-
   function(recipe,
@@ -183,13 +165,13 @@ bake.step_dummy_hash <- function(object, new_data, ...) {
     hash_cols <- new_name
   }
 
-  for (i in seq_along(hash_cols)) {
+  for (hash_col in hash_cols) {
     tf_text <-
       hashing_function(
-        as.character(new_data[[hash_cols[i]]]),
+        as.character(new_data[[hash_col]]),
         paste0(
           object$prefix, "_",
-          hash_cols[i], "_",
+          hash_col, "_",
           names0(object$num_terms, "")
         ),
         object$signed,
@@ -197,16 +179,14 @@ bake.step_dummy_hash <- function(object, new_data, ...) {
       )
 
     tf_text <- purrr::map_dfc(tf_text, as.integer)
-    keep_original_cols <- get_keep_original_cols(object)
-    if (!keep_original_cols) {
-      new_data <-
-        new_data[, !(colnames(new_data) %in% hash_cols[i]), drop = FALSE]
-    }
-
     tf_text <- check_name(tf_text, new_data, object, names(tf_text))
     
-    new_data <- vctrs::vec_cbind(tf_text, new_data)
+    new_data <- vec_cbind(new_data, tf_text)
   }
+  
+  new_data <- remove_original_cols(new_data, object, hash_cols)
+  
+  
   if (object$collapse) {
     new_data <- new_data[, !(colnames(new_data) %in% col_names), drop = FALSE]
   }

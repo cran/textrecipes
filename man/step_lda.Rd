@@ -65,8 +65,8 @@ An updated version of \code{recipe} with the new step added
 to the sequence of existing steps (if any).
 }
 \description{
-\code{step_lda} creates a \emph{specification} of a recipe step that will
-return the lda dimension estimates of a text variable.
+\code{step_lda()} creates a \emph{specification} of a recipe step that will return the
+lda dimension estimates of a text variable.
 }
 \section{Tidying}{
 When you \code{\link[=tidy.recipe]{tidy()}} this step, a tibble with columns \code{terms}
@@ -79,48 +79,6 @@ When you \code{\link[=tidy.recipe]{tidy()}} this step, a tibble with columns \co
 The underlying operation does not allow for case weights.
 }
 
-\examples{
-\dontshow{if (rlang::is_installed("text2vec")) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
-library(recipes)
-library(modeldata)
-data(tate_text)
-
-tate_rec <- recipe(~., data = tate_text) \%>\%
-  step_tokenize(medium) \%>\%
-  step_lda(medium)
-
-tate_obj <- tate_rec \%>\%
-  prep()
-
-bake(tate_obj, new_data = NULL) \%>\%
-  slice(1:2)
-tidy(tate_rec, number = 2)
-tidy(tate_obj, number = 2)
-
-# Changing the number of topics.
-recipe(~., data = tate_text) \%>\%
-  step_tokenize(medium, artist) \%>\%
-  step_lda(medium, artist, num_topics = 20) \%>\%
-  prep() \%>\%
-  bake(new_data = NULL) \%>\%
-  slice(1:2)
-
-# Supplying A pre-trained LDA model trained using text2vec
-library(text2vec)
-tokens <- word_tokenizer(tolower(tate_text$medium))
-it <- itoken(tokens, ids = seq_along(tate_text$medium))
-v <- create_vocabulary(it)
-dtm <- create_dtm(it, vocab_vectorizer(v))
-lda_model <- LDA$new(n_topics = 15)
-
-recipe(~., data = tate_text) \%>\%
-  step_tokenize(medium, artist) \%>\%
-  step_lda(medium, artist, lda_models = lda_model) \%>\%
-  prep() \%>\%
-  bake(new_data = NULL) \%>\%
-  slice(1:2)
-\dontshow{\}) # examplesIf}
-}
 \seealso{
 Other Steps for Numeric Variables From Tokens: 
 \code{\link{step_texthash}()},

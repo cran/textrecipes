@@ -1,6 +1,6 @@
 #' Filter Tokens Based on Term Frequency
 #'
-#' `step_tokenfilter` creates a *specification* of a recipe step that will
+#' `step_tokenfilter()` creates a *specification* of a recipe step that will
 #' convert a [`token`][tokenlist()] variable to be filtered based on frequency.
 #'
 #' @template args-recipe
@@ -150,14 +150,16 @@ prep.step_tokenfilter <- function(x, training, info = NULL, ...) {
   n_words <- integer()
 
   if (is.null(x$filter_fun)) {
-    for (i in seq_along(col_names)) {
-      retain_words[[i]] <- tokenfilter_fun(
-        training[, col_names[i], drop = TRUE],
+    for (col_name in col_names) {
+      retain_words[[col_name]] <- tokenfilter_fun(
+        training[[col_name]],
         x$max_times, x$min_times, x$max_tokens,
         x$percentage
       )
-      n_words[[i]] <- length(unique(unlist(training[, col_names[i], drop = TRUE])))
+      n_words[[col_name]] <- length(unique(unlist(training[[col_name]])))
     }
+  } else {
+    
   }
 
   step_tokenfilter_new(
@@ -181,21 +183,26 @@ bake.step_tokenfilter <- function(object, new_data, ...) {
   col_names <- object$columns
   check_new_data(col_names, object, new_data)
 
-  for (i in seq_along(col_names)) {
+  if (is.null(names(object$res)) && is.null(object$filter_fun)) {
+    # Backwards compatibility with 1.0.3 (#230)
+    names(object$res) <- col_names
+  }
+  
+  for (col_name in col_names) {
     if (is.null(object$filter_fun)) {
       filtered_text <- tokenlist_filter(
-        new_data[, col_names[i], drop = TRUE],
-        object$res[[i]],
+        new_data[[col_name]],
+        object$res[[col_name]],
         TRUE
       )
     } else {
       filtered_text <- tokenlist_filter_function(
-        new_data[, col_names[i], drop = TRUE],
+        new_data[[col_name]],
         object$filter_fun
       )
     }
 
-    new_data[, col_names[i]] <- tibble(filtered_text)
+    new_data[[col_name]] <- filtered_text
   }
   new_data <- factor_to_text(new_data, col_names)
 

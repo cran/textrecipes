@@ -1,6 +1,6 @@
 #' Positional One-Hot encoding of Tokens
 #'
-#' `step_sequence_onehot` creates a *specification* of a recipe step that will
+#' `step_sequence_onehot()` creates a *specification* of a recipe step that will
 #' take a string and do one hot encoding for each character by position.
 #'
 #' @template args-recipe
@@ -133,9 +133,9 @@ prep.step_sequence_onehot <- function(x, training, info = NULL, ...) {
 
   token_list <- list()
 
-  for (i in seq_along(col_names)) {
-    token_list[[i]] <- x$vocabulary %||%
-      sort(get_unique_tokens(training[, col_names[i], drop = TRUE]))
+  for (col_name in col_names) {
+    token_list[[col_name]] <- x$vocabulary %||%
+      sort(get_unique_tokens(training[[col_name]]))
   }
 
   step_sequence_onehot_new(
@@ -158,11 +158,16 @@ prep.step_sequence_onehot <- function(x, training, info = NULL, ...) {
 bake.step_sequence_onehot <- function(object, new_data, ...) {
   col_names <- object$columns
   check_new_data(col_names, object, new_data)
+  
+  if (is.null(names(object$vocabulary))) {
+    # Backwards compatibility with 1.0.3 (#230)
+    names(object$vocabulary) <- col_names
+  }
 
-  for (i in seq_along(col_names)) {
+  for (col_name in col_names) {
     out_text <- string2encoded_matrix(
-      x = new_data[, col_names[i], drop = TRUE],
-      vocabulary = object$vocabulary[[i]],
+      x = new_data[[col_name]],
+      vocabulary = object$vocabulary[[col_name]],
       sequence_length = object$sequence_length,
       padding = object$padding,
       truncating = object$truncating
@@ -171,22 +176,19 @@ bake.step_sequence_onehot <- function(object, new_data, ...) {
     colnames(out_text) <- paste(
       sep = "_",
       object$prefix,
-      col_names[i],
+      col_name,
       seq_len(ncol(out_text))
     )
     
     out_text <- as_tibble(out_text)
-
-    keep_original_cols <- get_keep_original_cols(object)
-    if (!keep_original_cols) {
-      new_data <-
-        new_data[, !(colnames(new_data) %in% col_names[i]), drop = FALSE]
-    }
     
     out_text <- check_name(out_text, new_data, object, names(out_text))
 
-    new_data <- vctrs::vec_cbind(new_data, out_text)
+    new_data <- vec_cbind(new_data, out_text)
   }
+  
+  new_data <- remove_original_cols(new_data, object, col_names)
+  
   new_data
 }
 

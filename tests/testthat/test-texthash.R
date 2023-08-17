@@ -1,5 +1,5 @@
-library(recipes)
 library(textrecipes)
+library(recipes)
 
 test_data <- tibble(text = c(
   "I would not eat them here or there.",
@@ -10,117 +10,78 @@ test_data <- tibble(text = c(
 
 rec <- recipe(~., data = test_data)
 
-test_that("step_tf works as intended", {
+test_that("hashing gives double outputs", {
+  skip_if_not_installed("text2vec")
+  skip_on_cran() # because data.table uses all cores by default 
+  
   rec <- rec %>%
     step_tokenize(text) %>%
-    step_tf(text)
+    step_texthash(text)
 
   obj <- rec %>%
     prep()
 
-  rec_answer <- unname(as.data.frame(bake(obj, new_data = NULL)))
-  manual_answer <- unname(data.frame(
-    am = c(0L, 0L, 0L, 1L),
-    and = c(0L, 0L, 1L, 0L),
-    anywhere = c(0L, 1L, 0L, 0L),
-    do = c(0L, 0L, 0L, 1L),
-    eat = c(1L, 1L, 1L, 0L),
-    eggs = c(0L, 0L, 1L, 0L),
-    green = c(0L, 0L, 1L, 0L),
-    ham = c(0L, 0L, 1L, 0L),
-    here = c(1L, 0L, 0L, 0L),
-    i = c(1L, 1L, 1L, 2L),
-    like = c(0L, 0L, 0L, 1L),
-    not = c(1L, 1L, 1L, 1L),
-    or = c(1L, 0L, 0L, 0L),
-    sam = c(0L, 0L, 0L, 1L),
-    them = c(1L, 1L, 0L, 1L),
-    there = c(1L, 0L, 0L, 0L),
-    would = c(1L, 1L, 1L, 0L)
-  ))
-
-  expect_identical(
-    as.matrix(rec_answer),
-    as.matrix(manual_answer)
+  expect_true(
+    bake(obj, new_data = NULL) %>%
+      select(contains("hash")) %>%
+      lapply(is.integer) %>%
+      unlist() %>%
+      all()
   )
 
-  expect_identical(dim(tidy(rec, 2)), c(1L, 3L))
-  expect_identical(dim(tidy(obj, 2)), c(1L, 3L))
+  expect_equal(dim(tidy(rec, 2)), c(1, 4))
+  expect_equal(dim(tidy(obj, 2)), c(1, 4))
 })
 
-test_that("step_tf works with vocabulary argument", {
+test_that("hashing output width changes accordingly with num_terms", {
+  skip_if_not_installed("text2vec")
+  skip_on_cran() # because data.table uses all cores by default 
+  
   rec <- rec %>%
     step_tokenize(text) %>%
-    step_tf(text, vocabulary = letters)
-
-  obj <- rec %>%
+    step_texthash(text, num_terms = 256) %>%
     prep()
 
-  expect_length(
-    bake(obj, new_data = NULL),
-    26
+  expect_equal(
+    bake(rec, new_data = NULL) %>%
+      select(contains("hash")) %>%
+      ncol(),
+    256
   )
 })
 
-test_that("step_tf works with other weighting schemes", {
-  rec <- rec %>%
-    step_tokenize(text) %>%
-    step_tf(text, weight_scheme = "term frequency")
+test_that("hashing output width changes accordingly with num_terms", {
+  skip_if_not_installed("text2vec")
+  skip_on_cran() # because data.table uses all cores by default 
 
-  obj <- rec %>%
-    prep()
-
-  rec_answer <- unname(as.data.frame(bake(obj, new_data = NULL)))
-  manual_answer <- unname(data.frame(
-    am = c(0 / 8, 0 / 6, 0 / 8, 1 / 8),
-    and = c(0 / 8, 0 / 6, 1 / 8, 0 / 8),
-    anywhere = c(0 / 8, 1 / 6, 0 / 8, 0 / 8),
-    do = c(0 / 8, 0 / 6, 0 / 8, 1 / 8),
-    eat = c(1 / 8, 1 / 6, 1 / 8, 0 / 8),
-    eggs = c(0 / 8, 0 / 6, 1 / 8, 0 / 8),
-    green = c(0 / 8, 0 / 6, 1 / 8, 0 / 8),
-    ham = c(0 / 8, 0 / 6, 1 / 8, 0 / 8),
-    here = c(1 / 8, 0 / 6, 0 / 8, 0 / 8),
-    i = c(1 / 8, 1 / 6, 1 / 8, 2 / 8),
-    like = c(0 / 8, 0 / 6, 0 / 8, 1 / 8),
-    not = c(1 / 8, 1 / 6, 1 / 8, 1 / 8),
-    or = c(1 / 8, 0 / 6, 0 / 8, 0 / 8),
-    sam = c(0 / 8, 0 / 6, 0 / 8, 1 / 8),
-    them = c(1 / 8, 1 / 6, 0 / 8, 1 / 8),
-    there = c(1 / 8, 0 / 6, 0 / 8, 0 / 8),
-    would = c(1 / 8, 1 / 6, 1 / 8, 0 / 8)
-  ))
-
-  expect_identical(
-    as.matrix(rec_answer),
-    as.matrix(manual_answer)
-  )
-})
-
-test_that("step_tf term frequency returns 0 with no tokens", {
-  d <- tibble(text = c("a b a d", ""))
-
-  res <- recipe(~text, data = d) %>%
-    step_tokenize(text) %>%
-    step_tf(text, weight_scheme = "term frequency") %>%
+  signed <- recipe(~., data = test_data) %>%
+    step_tokenize(all_predictors()) %>%
+    step_texthash(all_predictors(), num_terms = 2) %>%
     prep() %>%
     bake(new_data = NULL)
 
-  exp_res <- tibble(
-    tf_text_a = c(0.5, 0),
-    tf_text_b = c(0.25, 0),
-    tf_text_d = c(0.25, 0)
-  )
-  expect_identical(res, exp_res)
+  unsigned <- recipe(~., data = test_data) %>%
+    step_tokenize(all_predictors()) %>%
+    step_texthash(all_predictors(), num_terms = 2, signed = FALSE) %>%
+    prep() %>%
+    bake(new_data = NULL)
+
+  all(unsigned$texthash_text_1 == signed$texthash_text_1)
+  all(unsigned$texthash_text_2 == signed$texthash_text_2)
+  expect_false(all(unsigned$texthash_text_1 == signed$texthash_text_1))
+  expect_false(all(unsigned$texthash_text_2 == signed$texthash_text_2))
 })
 
 test_that("check_name() is used", {
+  skip_if_not_installed("text2vec")
+  skip_on_cran() # because data.table uses all cores by default 
+  
   dat <- test_data
-  dat$tf_text_i <- dat$text
+  dat$texthash_text_0001 <- dat$text
   
   rec <- recipe(~., data = dat) %>%
     step_tokenize(text) %>%
-    step_tf(text)
+    step_texthash(text)
   
   expect_snapshot(
     error = TRUE,
@@ -131,9 +92,9 @@ test_that("check_name() is used", {
 test_that("tunable", {
   rec <-
     recipe(~., data = mtcars) %>%
-    step_tf(all_predictors())
-  rec_param <- tunable.step_tf(rec$steps[[1]])
-  expect_equal(rec_param$name, c("weight_scheme", "weight"))
+    step_texthash(all_predictors())
+  rec_param <- tunable.step_texthash(rec$steps[[1]])
+  expect_equal(rec_param$name, c("signed", "num_terms"))
   expect_true(all(rec_param$source == "recipe"))
   expect_true(is.list(rec_param$call_info))
   expect_equal(nrow(rec_param), 2)
@@ -153,7 +114,7 @@ test_that("bake method errors when needed non-standard role columns are missing"
   
   rec <- recipe(tokenized_test_data) %>%
     update_role(text, new_role = "predictor") %>%
-    step_tf(text) %>%
+    step_texthash(text) %>%
     update_role(text, new_role = "potato") %>%
     update_role_requirements(role = "potato", bake = FALSE)
   
@@ -167,7 +128,7 @@ test_that("bake method errors when needed non-standard role columns are missing"
 
 test_that("empty printing", {
   rec <- recipe(mpg ~ ., mtcars)
-  rec <- step_tf(rec)
+  rec <- step_texthash(rec)
   
   expect_snapshot(rec)
   
@@ -178,7 +139,7 @@ test_that("empty printing", {
 
 test_that("empty selection prep/bake is a no-op", {
   rec1 <- recipe(mpg ~ ., mtcars)
-  rec2 <- step_tf(rec1)
+  rec2 <- step_texthash(rec1)
   
   rec1 <- prep(rec1, mtcars)
   rec2 <- prep(rec2, mtcars)
@@ -191,9 +152,14 @@ test_that("empty selection prep/bake is a no-op", {
 
 test_that("empty selection tidy method works", {
   rec <- recipe(mpg ~ ., mtcars)
-  rec <- step_tf(rec)
+  rec <- step_texthash(rec)
   
-  expect <- tibble(terms = character(), value = character(), id = character())
+  expect <- tibble(
+    terms = character(),
+    value = logical(),
+    length = integer(),
+    id = character()
+  )
   
   expect_identical(tidy(rec, number = 1), expect)
   
@@ -203,16 +169,14 @@ test_that("empty selection tidy method works", {
 })
 
 test_that("keep_original_cols works", {
-  new_names <- c(
-    "tf_text_am", "tf_text_and", "tf_text_anywhere", "tf_text_do", 
-    "tf_text_eat", "tf_text_eggs", "tf_text_green", "tf_text_ham", 
-    "tf_text_here", "tf_text_i", "tf_text_like", "tf_text_not", "tf_text_or", 
-    "tf_text_sam", "tf_text_them", "tf_text_there", "tf_text_would"
-  )
+  skip_if_not_installed("text2vec")
+  skip_on_cran() # because data.table uses all cores by default 
+  
+  new_names <- paste0("texthash_text_", 1:5)
   
   rec <- recipe(~text, data = test_data) %>%
     step_tokenize(text) %>%
-    step_tf(text, keep_original_cols = FALSE)
+    step_texthash(text, num_terms = 5, keep_original_cols = FALSE)
   
   rec <- prep(rec)
   res <- bake(rec, new_data = NULL)
@@ -224,7 +188,7 @@ test_that("keep_original_cols works", {
   
   rec <- recipe(~text, data = test_data) %>%
     step_tokenize(text) %>%
-    step_tf(text, keep_original_cols = TRUE)
+    step_texthash(text, num_terms = 5, keep_original_cols = TRUE)
   
   rec <- prep(rec)
   res <- bake(rec, new_data = NULL)
@@ -238,7 +202,7 @@ test_that("keep_original_cols works", {
 test_that("keep_original_cols - can prep recipes with it missing", {
   rec <- recipe(~text, data = test_data) %>%
     step_tokenize(text) %>%
-    step_tf(text)
+    step_texthash(text)
   
   rec$steps[[2]]$keep_original_cols <- NULL
   
@@ -253,9 +217,12 @@ test_that("keep_original_cols - can prep recipes with it missing", {
 })
 
 test_that("printing", {
+  skip_if_not_installed("text2vec")
+  skip_on_cran() # because data.table uses all cores by default 
+  
   rec <- rec %>%
     step_tokenize(text) %>%
-    step_tf(text)
+    step_texthash(text)
   
   expect_snapshot(print(rec))
   expect_snapshot(prep(rec))
@@ -264,10 +231,10 @@ test_that("printing", {
 test_that("tunable is setup to works with extract_parameter_set_dials", {
   skip_if_not_installed("dials")
   rec <- recipe(~., data = mtcars) %>%
-    step_tf(
+    step_texthash(
       all_predictors(),
-      weight_scheme = hardhat::tune(),
-      weight = hardhat::tune()
+      signed = hardhat::tune(),
+      num_terms = hardhat::tune()
     )
   
   params <- extract_parameter_set_dials(rec)

@@ -4,51 +4,9 @@
       prep(rec, training = dat)
     Error <recipes_error_step>
       Error in `step_lda()`:
-      Caused by error in `check_name()`:
-      ! Name collision occured in `step_lda`. The following variable names already exists: lda_text_1.
-
-# printing
-
-    Code
-      print(rec)
-    Message <cliMessage>
-      
-      -- Recipe ----------------------------------------------------------------------
-      
-      -- Inputs 
-      Number of variables by role
-      predictor: 2
-      
-      -- Operations 
-      * Tokenization for: medium
-      * Text feature extraction for: medium
-
----
-
-    Code
-      prep(rec)
-    Message <cliMessage>
-      
-      -- Recipe ----------------------------------------------------------------------
-      
-      -- Inputs 
-      Number of variables by role
-      predictor: 2
-      
-      -- Training information 
-      Training data contained 100 data points and no incomplete rows.
-      
-      -- Operations 
-      * Tokenization for: medium | Trained
-      * Text feature extraction for: medium | Trained
-
-# can prep recipes with no keep_original_cols
-
-    Code
-      koc_trained <- prep(koc_rec, training = tate_text, verbose = FALSE)
-    Warning <rlang_warning>
-      'keep_original_cols' was added to `step_lda()` after this recipe was created.
-      Regenerate your recipe to avoid this warning.
+      Caused by error in `bake()`:
+      ! Name collision occured. The following variable names already exists:
+      i  lda_text_1
 
 # empty printing
 
@@ -84,4 +42,47 @@
       
       -- Operations 
       * Text feature extraction for: <none> | Trained
+
+# keep_original_cols - can prep recipes with it missing
+
+    Code
+      rec <- prep(rec)
+    Warning <rlang_warning>
+      'keep_original_cols' was added to `step_lda()` after this recipe was created.
+      Regenerate your recipe to avoid this warning.
+
+# printing
+
+    Code
+      print(rec)
+    Message <cliMessage>
+      
+      -- Recipe ----------------------------------------------------------------------
+      
+      -- Inputs 
+      Number of variables by role
+      predictor: 2
+      
+      -- Operations 
+      * Tokenization for: medium
+      * Text feature extraction for: medium
+
+---
+
+    Code
+      prep(rec)
+    Message <cliMessage>
+      
+      -- Recipe ----------------------------------------------------------------------
+      
+      -- Inputs 
+      Number of variables by role
+      predictor: 2
+      
+      -- Training information 
+      Training data contained 100 data points and no incomplete rows.
+      
+      -- Operations 
+      * Tokenization for: medium | Trained
+      * Text feature extraction for: medium | Trained
 
