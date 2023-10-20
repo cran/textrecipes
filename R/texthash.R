@@ -55,6 +55,26 @@
 #'   [step_text_normalization()] to perform text normalization.
 #' @family Steps for Numeric Variables From Tokens
 #'
+#' @examplesIf all(c("text2vec", "data.table") %in% rownames(installed.packages()))
+#' \dontshow{library(data.table)}
+#' \dontshow{data.table::setDTthreads(2)}
+#' \dontshow{Sys.setenv("OMP_THREAD_LIMIT" = 2)}
+#' library(recipes)
+#' library(modeldata)
+#' data(tate_text)
+#'
+#' tate_rec <- recipe(~., data = tate_text) %>%
+#'   step_tokenize(medium) %>%
+#'   step_tokenfilter(medium, max_tokens = 10) %>%
+#'   step_texthash(medium)
+#'
+#' tate_obj <- tate_rec %>%
+#'   prep()
+#'
+#' bake(tate_obj, tate_text)
+#'
+#' tidy(tate_rec, number = 3)
+#' tidy(tate_obj, number = 3)
 #' @export
 step_texthash <-
   function(recipe,

@@ -66,6 +66,34 @@
 #' @seealso [recipes::step_dummy()]
 #' @family Steps for Numeric Variables From Characters
 #'
+#' @examplesIf all(c("text2vec", "data.table") %in% rownames(installed.packages()))
+#' \dontshow{library(data.table)}
+#' \dontshow{data.table::setDTthreads(2)}
+#' \dontshow{Sys.setenv("OMP_NUM_THREADS" = 1)}
+#' \dontshow{Sys.setenv("OMP_THREAD_LIMIT" = 1)}
+#' \dontshow{Sys.setenv("rsparse_omp_threads" = 1L)}
+#' \dontshow{options(rsparse_omp_threads = 1L)}
+#' \dontshow{library(text2vec)}
+#' \dontshow{Sys.setenv("OMP_NUM_THREADS" = 1)}
+#' \dontshow{Sys.setenv("OMP_THREAD_LIMIT" = 1)}
+#' \dontshow{Sys.setenv("rsparse_omp_threads" = 1L)}
+#' \dontshow{options(rsparse_omp_threads = 1L)}
+#' \dontshow{options("text2vec.mc.cores" = 1)}
+#' 
+#' library(recipes)
+#' library(modeldata)
+#' data(grants)
+#'
+#' grants_rec <- recipe(~sponsor_code, data = grants_other) %>%
+#'   step_dummy_hash(sponsor_code)
+#'
+#' grants_obj <- grants_rec %>%
+#'   prep()
+#'
+#' bake(grants_obj, grants_test)
+#'
+#' tidy(grants_rec, number = 1)
+#' tidy(grants_obj, number = 1)
 #' @export
 step_dummy_hash <-
   function(recipe,
