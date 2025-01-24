@@ -36,18 +36,24 @@
 #' The argument `num_terms` controls the number of indices that the hashing
 #' function will map to. This is the tuning parameter for this transformation.
 #' Since the hashing function can map two different tokens to the same index,
-#' will a higher value of `num_terms` result in a lower chance of collision.
+#' a higher value of `num_terms` will result in a lower chance of collision.
 #'
 #' @template details-prefix
 #'
 #' @details
 #'
 #' # Tidying
-#'
-#' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
-#' (the selectors or variables selected), `value` (whether a signed hashing was
-#' performed), `num_terms` (number of terms), and `collapse` (where columns
-#' collapsed).
+#' 
+#' When you [`tidy()`][recipes::tidy.recipe()] this step, a tibble is returned with
+#' columns `terms`, `value`, `num_terms`, `collapse`, and `id`:
+#' 
+#' \describe{
+#'   \item{terms}{character, the selectors or variables selected}
+#'   \item{value}{logical, whether a signed hashing was performed}
+#'   \item{num_terms}{integer, number of terms}
+#'   \item{collapse}{logical, were the columns collapsed}
+#'   \item{id}{character, id of this step}
+#' }
 #' 
 #' ```{r, echo = FALSE, results="asis"}
 #' step <- "step_dummy_hash"
@@ -66,7 +72,7 @@
 #' @seealso [recipes::step_dummy()]
 #' @family Steps for Numeric Variables From Characters
 #'
-#' @examplesIf all(c("text2vec", "data.table") %in% rownames(installed.packages()))
+#' @examplesIf all(c("modeldata", "text2vec", "data.table") %in% rownames(installed.packages()))
 #' \dontshow{library(data.table)}
 #' \dontshow{data.table::setDTthreads(2)}
 #' \dontshow{Sys.setenv("OMP_NUM_THREADS" = 1)}
@@ -151,6 +157,10 @@ step_dummy_hash_new <-
 prep.step_dummy_hash <- function(x, training, info = NULL, ...) {
   col_names <- recipes_eval_select(x$terms, training, info)
 
+  check_bool(x$signed, arg = "signed")
+  check_number_whole(x$num_terms, min = 0, arg = "num_terms")
+  check_bool(x$collapse, arg = "collapse")
+
   check_type(training[, col_names], types = c("string", "factor", "ordered"))
 
   step_dummy_hash_new(
@@ -207,7 +217,7 @@ bake.step_dummy_hash <- function(object, new_data, ...) {
       )
 
     tf_text <- purrr::map_dfc(tf_text, as.integer)
-    tf_text <- check_name(tf_text, new_data, object, names(tf_text))
+    tf_text <- recipes::check_name(tf_text, new_data, object, names(tf_text))
     
     new_data <- vec_cbind(new_data, tf_text)
   }
@@ -230,8 +240,8 @@ print.step_dummy_hash <-
     invisible(x)
   }
 
-#' @rdname tidy.recipe
-#' @param x A `step_dummy_hash` object.
+#' @rdname step_dummy_hash
+#' @usage NULL
 #' @export
 tidy.step_dummy_hash <- function(x, ...) {
   if (is_trained(x)) {

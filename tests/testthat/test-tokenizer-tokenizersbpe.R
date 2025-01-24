@@ -1,5 +1,4 @@
-library(textrecipes)
-library(recipes)
+r_version <- function() paste0("R", getRversion()[, 1:2])
 
 text1 <- c(
   "I would not eat them here or there.",
@@ -95,6 +94,8 @@ test_that("tokenizer works", {
 })
 
 test_that("step_tokenize works with tokenizers.bpe", {
+  skip_if_not_installed("tokenizers.bpe")
+  
   res <- recipe(~text1, data = test_data) %>%
     step_tokenize(text1, engine = "tokenizers.bpe") %>%
     prep() %>%
@@ -107,6 +108,8 @@ test_that("step_tokenize works with tokenizers.bpe", {
 })
 
 test_that("step_tokenize works with tokenizers.bpe and multiple colunms", {
+  skip_if_not_installed("tokenizers.bpe")
+  
   res <- recipe(~., data = test_data) %>%
     step_tokenize(all_predictors(), engine = "tokenizers.bpe") %>%
     prep() %>%
@@ -124,6 +127,8 @@ test_that("step_tokenize works with tokenizers.bpe and multiple colunms", {
 })
 
 test_that("arguments are passed to tokenizers.bpe", {
+  skip_if_not_installed("tokenizers.bpe")
+  
   res <- recipe(~text1, data = test_data) %>%
     step_tokenize(text1,
       engine = "tokenizers.bpe",
@@ -154,6 +159,7 @@ test_that("arguments are passed to tokenizers.bpe", {
 test_that("Errors if vocabulary size is set to low.", {
   expect_snapshot(
     error = TRUE,
+    variant = r_version(),
     recipe(~text, data = tibble(text = "hello")) %>%
       step_tokenize(text,
         engine = "tokenizers.bpe",

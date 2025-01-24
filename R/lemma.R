@@ -23,8 +23,13 @@
 #'
 #' # Tidying
 #'
-#' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
-#' (the selectors or variables selected).
+#' When you [`tidy()`][recipes::tidy.recipe()] this step, a tibble is returned with
+#' columns `terms` and `id`:
+#' 
+#' \describe{
+#'   \item{terms}{character, the selectors or variables selected}
+#'   \item{id}{character, id of this step}
+#' }
 #'
 #' @template case-weights-not-supported
 #'
@@ -110,12 +115,10 @@ bake.step_lemma <- function(object, new_data, ...) {
     variable <- new_data[[col_name]]
 
     if (is.null(maybe_get_lemma(variable))) {
-      rlang::abort(
-        glue(
-          "`{col_name}` doesn't have a lemma attribute. ",
-          "Make sure the tokenization step includes lemmatization."
-        )
-      )
+      cli::cli_abort(c(
+        "{.code {col_name}} doesn't have a lemma attribute.",
+        "i" = "Make sure the tokenization step includes lemmatization."
+      ))
     } else {
       lemma_variable <- tokenlist_lemma(variable)
     }
@@ -134,8 +137,8 @@ print.step_lemma <-
     invisible(x)
   }
 
-#' @rdname tidy.recipe
-#' @param x A `step_lemma` object.
+#' @rdname step_lemma
+#' @usage NULL
 #' @export
 tidy.step_lemma <- function(x, ...) {
   if (is_trained(x)) {

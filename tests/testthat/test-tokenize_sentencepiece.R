@@ -1,6 +1,3 @@
-library(textrecipes)
-library(recipes)
-
 text1 <- c(
   "I would not eat them here or there.",
   "I would not eat them anywhere.",
@@ -60,6 +57,8 @@ text2_out <- list(
 )
 
 test_that("step_tokenize_sentencepiece works", {
+  skip_if_not_installed("sentencepiece")
+  
   res <- recipe(~text1, data = test_data) %>%
     step_tokenize_sentencepiece(text1, vocabulary_size = 80) %>%
     prep() %>%
@@ -72,6 +71,8 @@ test_that("step_tokenize_sentencepiece works", {
 })
 
 test_that("step_tokenize_sentencepiece works with tokenizers.sentencepiece and multiple colunms", {
+  skip_if_not_installed("sentencepiece")
+  
   res <- recipe(~., data = test_data) %>%
     step_tokenize_sentencepiece(all_predictors(), vocabulary_size = 80) %>%
     prep() %>%
@@ -89,6 +90,8 @@ test_that("step_tokenize_sentencepiece works with tokenizers.sentencepiece and m
 })
 
 test_that("arguments are passed to tokenizers.sentencepiece", {
+  skip_if_not_installed("sentencepiece")
+  
   res <- recipe(~text1, data = test_data) %>%
     step_tokenize_sentencepiece(text1, vocabulary_size = 60) %>%
     prep() %>%
@@ -111,6 +114,8 @@ test_that("arguments are passed to tokenizers.sentencepiece", {
 })
 
 test_that("Errors if vocabulary size is set to low.", {
+  skip_if_not_installed("sentencepiece")
+  
   expect_snapshot(
     error = TRUE,
     recipe(~text1, data = test_data) %>%
@@ -119,9 +124,22 @@ test_that("Errors if vocabulary size is set to low.", {
   )
 })
 
+test_that("bad args", {
+  skip_if_not_installed("sentencepiece")
+  
+  expect_snapshot(
+    error = TRUE,
+    recipe(~., data = mtcars) %>%
+      step_tokenize_sentencepiece(vocabulary_size = -4) %>%
+      prep()
+  )
+})
+
 # Infrastructure ---------------------------------------------------------------
 
 test_that("bake method errors when needed non-standard role columns are missing", {
+  skip_if_not_installed("sentencepiece")
+  
   rec <- recipe(~text1, data = test_data) %>%
     step_tokenize_sentencepiece(text1, vocabulary_size = 100) %>%
     update_role(text1, new_role = "potato") %>%
@@ -129,9 +147,9 @@ test_that("bake method errors when needed non-standard role columns are missing"
   
   trained <- prep(rec, training = test_data, verbose = FALSE)
   
-  expect_error(
-    bake(trained, new_data = test_data[, -1]),
-    class = "new_data_missing_column"
+  expect_snapshot(
+    error = TRUE,
+    bake(trained, new_data = test_data[, -1])
   )
 })
 
@@ -173,6 +191,8 @@ test_that("empty selection tidy method works", {
 })
 
 test_that("printing", {
+  skip_if_not_installed("sentencepiece")
+
   rec <- recipe(~., data = test_data) %>%
     step_tokenize_sentencepiece(text1, vocabulary_size = 100)
   

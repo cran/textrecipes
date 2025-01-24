@@ -2,6 +2,7 @@
 % Please edit documentation in R/tokenize.R
 \name{step_tokenize}
 \alias{step_tokenize}
+\alias{tidy.step_tokenize}
 \title{Tokenization of Character Variables}
 \usage{
 step_tokenize(
@@ -20,7 +21,7 @@ step_tokenize(
 )
 }
 \arguments{
-\item{recipe}{A \link{recipe} object. The step will be added to the
+\item{recipe}{A \link[recipes:recipe]{recipes::recipe} object. The step will be added to the
 sequence of operations for this recipe.}
 
 \item{...}{One or more selector functions to choose which
@@ -69,16 +70,16 @@ to the sequence of existing steps (if any).
 convert a character predictor into a \code{\link[=tokenlist]{token}} variable.
 }
 \details{
-Tokenization is the act of splitting a character string into smaller parts to
+Tokenization is the act of splitting a character vector into smaller parts to
 be further analyzed. This step uses the \code{tokenizers} package which includes
 heuristics on how to to split the text into paragraphs tokens, word tokens,
 among others. \code{textrecipes} keeps the tokens as a \code{\link[=tokenlist]{token}}
 variable and other steps will do their tasks on those \code{\link[=tokenlist]{token}}
-variable before transforming them back to numeric variables.
+variables before transforming them back to numeric variables.
 
-Working will \code{textrecipes} will almost always start by calling
+Working with \code{textrecipes} will almost always start by calling
 \code{step_tokenize} followed by modifying and filtering steps. This is not always
-the case as you sometimes want to do apply pre-tokenization steps, this can
+the case as you sometimes want to apply pre-tokenization steps; this can
 be done with \code{\link[recipes:step_mutate]{recipes::step_mutate()}}.
 }
 \section{Engines}{
@@ -244,8 +245,14 @@ recipe(~ text, data = text_tibble) \%>\%
 }
 
 \section{Tidying}{
-When you \code{\link[=tidy.recipe]{tidy()}} this step, a tibble with columns \code{terms}
-(the selectors or variables selected) and \code{value} (unit of tokenization).
+When you \code{\link[recipes:tidy.recipe]{tidy()}} this step, a tibble is returned with
+columns \code{terms}, \code{value}, and \code{id}:
+
+\describe{
+\item{terms}{character, the selectors or variables selected}
+\item{value}{character, unit of tokenization}
+\item{id}{character, id of this step}
+}
 }
 
 \section{Tuning Parameters}{
@@ -262,6 +269,7 @@ The underlying operation does not allow for case weights.
 }
 
 \examples{
+\dontshow{if (rlang::is_installed("modeldata")) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 library(recipes)
 library(modeldata)
 data(tate_text)
@@ -289,6 +297,7 @@ tate_obj_chars <- recipe(~., data = tate_text) \%>\%
 bake(tate_obj, new_data = NULL) \%>\%
   slice(2) \%>\%
   pull(medium)
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[=step_untokenize]{step_untokenize()}} to untokenize.

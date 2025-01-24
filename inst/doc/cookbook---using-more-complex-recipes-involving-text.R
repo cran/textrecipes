@@ -1,5 +1,12 @@
 ## ----setup, include = FALSE---------------------------------------------------
+if (rlang::is_installed(c("modeldata"))) {
+  run <- TRUE
+} else {
+  run <- FALSE
+}
+
 knitr::opts_chunk$set(
+  eval = run,
   collapse = TRUE,
   comment = "#>"
 )

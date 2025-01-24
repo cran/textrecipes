@@ -2,6 +2,7 @@
 % Please edit documentation in R/untokenize.R
 \name{step_untokenize}
 \alias{step_untokenize}
+\alias{tidy.step_untokenize}
 \title{Untokenization of Token Variables}
 \usage{
 step_untokenize(
@@ -16,7 +17,7 @@ step_untokenize(
 )
 }
 \arguments{
-\item{recipe}{A \link{recipe} object. The step will be added to the
+\item{recipe}{A \link[recipes:recipe]{recipes::recipe} object. The step will be added to the
 sequence of operations for this recipe.}
 
 \item{...}{One or more selector functions to choose which
@@ -58,9 +59,14 @@ vector. This step is calling \code{paste} internally to put the tokens back
 together to a character.
 }
 \section{Tidying}{
-When you \code{\link[=tidy.recipe]{tidy()}} this step, a tibble with columns \code{terms}
-(the selectors or variables selected) and \code{value} (seperator used for
-collapsing).
+When you \code{\link[recipes:tidy.recipe]{tidy()}} this step, a tibble is returned with
+columns \code{terms}, \code{value}, and \code{id}:
+
+\describe{
+\item{terms}{character, the selectors or variables selected}
+\item{value}{character, seperator used for collapsing}
+\item{id}{character, id of this step}
+}
 }
 
 \section{Case weights}{
@@ -70,6 +76,7 @@ The underlying operation does not allow for case weights.
 }
 
 \examples{
+\dontshow{if (rlang::is_installed("modeldata")) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 library(recipes)
 library(modeldata)
 data(tate_text)
@@ -90,6 +97,7 @@ bake(tate_obj, new_data = NULL) \%>\%
 
 tidy(tate_rec, number = 2)
 tidy(tate_obj, number = 2)
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[=step_tokenize]{step_tokenize()}} to turn characters into \code{\link[=tokenlist]{tokens}}

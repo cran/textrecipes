@@ -48,6 +48,7 @@ overflow: visible;
 }
 </style>
 <style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
@@ -366,7 +367,7 @@ n-grams.</li>
 </ul>
 <p>Both of these methods come with pros and cons so it will be
 worthwhile for you to be aware of both.</p>
-<p>before we get started let’s make sure we are on the same page of what
+<p>Before we get started let’s make sure we are on the same page of what
 we mean when we are talking about n-grams. We normally tokenize our text
 into words, which we can do with <code>tokenize_words()</code> from the
 tokenizers package (this is the default engine and token for
@@ -384,7 +385,7 @@ tokenizers package (this is the default engine and token for
 <span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="co">#&gt; [[2]]</span></span>
 <span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="co">#&gt; [1] &quot;the&quot;     &quot;bee&quot;     &quot;is&quot;      &quot;an&quot;      &quot;insect&quot;  &quot;that&quot;    &quot;gathers&quot;</span></span>
 <span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a><span class="co">#&gt; [8] &quot;honey&quot;</span></span></code></pre></div>
-<p>N-grams are a contiguous sequence of n tokens. So to get 2-gram (or
+<p>N-grams are a contiguous sequence of n tokens. So to get 2-grams (or
 bigrams as they are also called) we can use the
 <code>tokenize_ngrams()</code> function to get them</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">tokenize_ngrams</span>(abc, <span class="at">n =</span> <span class="dv">2</span>)</span>
@@ -396,7 +397,7 @@ bigrams as they are also called) we can use the
 <span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt; [1] &quot;the bee&quot;       &quot;bee is&quot;        &quot;is an&quot;         &quot;an insect&quot;    </span></span>
 <span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#&gt; [5] &quot;insect that&quot;   &quot;that gathers&quot;  &quot;gathers honey&quot;</span></span></code></pre></div>
 <p>Notice how the words appear in multiple n-grams as the window slides
-across them. And why changing the <code>n</code> argument we can any
+across them. And by changing the <code>n</code> argument we can get any
 kind of n-gram (notice how <code>n = 1</code> is the special case of
 tokenizing to words).</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">tokenize_ngrams</span>(abc, <span class="at">n =</span> <span class="dv">3</span>)</span>
@@ -428,14 +429,14 @@ in your n-gram.</p>
 <span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a><span class="co">#&gt; [4] &quot;an_insect_that&quot;      &quot;insect_that_gathers&quot; &quot;that_gathers_honey&quot;</span></span></code></pre></div>
 <div id="only-using-step_tokenize" class="section level1">
 <h1>Only using <code>step_tokenize()</code></h1>
-<p>The first methods work by using n-gram <code>token</code> from one of
-the built-in engine in <code>step_tokenize()</code> to get a full list
+<p>The first method works by using n-gram <code>token</code> from one of
+the built-in engines in <code>step_tokenize()</code>. To get a full list
 of available tokens type <code>?step_tokenize()</code> and go down to
 <code>Details</code>. We can use the <code>token=&quot;ngrams&quot;</code> along
 with <code>engine = &quot;tokenizers&quot;</code>(the default) to tokenize to
 n-grams. We finish this <code>recipe()</code> with
 <code>step_tokenfilter()</code> and <code>step_tf()</code>. The
-filtering doesn’t do anything to the data of this size but it is a good
+filtering doesn’t do anything to data of this size but it is a good
 practice to use <code>step_tokenfilter()</code> before using
 <code>step_tf()</code> or <code>step_tfidf()</code> to control the size
 of the resulting data.frame.</p>
@@ -449,7 +450,7 @@ of the resulting data.frame.</p>
 <span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>abc_ngram <span class="ot">&lt;-</span> rec <span class="sc">%&gt;%</span></span>
 <span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>  <span class="fu">prep</span>() <span class="sc">%&gt;%</span></span>
 <span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>  <span class="fu">bake</span>(<span class="at">new_data =</span> <span class="cn">NULL</span>)</span>
-<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="co">#&gt; Warning: max_tokens was set to &#39;100&#39;, but only 14 was available and selected.</span></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="co">#&gt; Warning: max_tokens was set to 100, but only 14 was available and selected.</span></span>
 <span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a></span>
 <span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>abc_ngram</span>
 <span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a><span class="co">#&gt; # A tibble: 2 × 14</span></span>
@@ -488,7 +489,7 @@ you can pass a named list to the <code>options</code> argument in
 <span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>abc_ngram <span class="ot">&lt;-</span> rec <span class="sc">%&gt;%</span></span>
 <span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a>  <span class="fu">prep</span>() <span class="sc">%&gt;%</span></span>
 <span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>  <span class="fu">bake</span>(<span class="at">new_data =</span> <span class="cn">NULL</span>)</span>
-<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a><span class="co">#&gt; Warning: max_tokens was set to &#39;100&#39;, but only 16 was available and selected.</span></span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a><span class="co">#&gt; Warning: max_tokens was set to 100, but only 16 was available and selected.</span></span>
 <span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a></span>
 <span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a>abc_ngram</span>
 <span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a><span class="co">#&gt; # A tibble: 2 × 16</span></span>
@@ -526,7 +527,7 @@ argument.</p>
 <span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a>abc_ngram <span class="ot">&lt;-</span> rec <span class="sc">%&gt;%</span></span>
 <span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a>  <span class="fu">prep</span>() <span class="sc">%&gt;%</span></span>
 <span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a>  <span class="fu">bake</span>(<span class="at">new_data =</span> <span class="cn">NULL</span>)</span>
-<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a><span class="co">#&gt; Warning: max_tokens was set to &#39;100&#39;, but only 16 was available and selected.</span></span>
+<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a><span class="co">#&gt; Warning: max_tokens was set to 100, but only 16 was available and selected.</span></span>
 <span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a></span>
 <span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a>abc_ngram</span>
 <span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a><span class="co">#&gt; # A tibble: 2 × 16</span></span>
@@ -555,7 +556,7 @@ argument.</p>
 <p>Cons:</p>
 <ul>
 <li>Minimal flexibility, (<code>tokenizers::tokenize_ngrams()</code>
-don’t let you control how the words are tokenized.)</li>
+doesn’t let you control how the words are tokenized.)</li>
 <li>You are not able to tune the number of tokens in your n-gram</li>
 </ul>
 </div>
@@ -576,7 +577,7 @@ n-grams are being generated.</p>
 <span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a>abc_ngram <span class="ot">&lt;-</span> rec <span class="sc">%&gt;%</span></span>
 <span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a>  <span class="fu">prep</span>() <span class="sc">%&gt;%</span></span>
 <span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a>  <span class="fu">bake</span>(<span class="at">new_data =</span> <span class="cn">NULL</span>)</span>
-<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a><span class="co">#&gt; Warning: max_tokens was set to &#39;100&#39;, but only 14 was available and selected.</span></span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a><span class="co">#&gt; Warning: max_tokens was set to 100, but only 14 was available and selected.</span></span>
 <span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a></span>
 <span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a>abc_ngram</span>
 <span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a><span class="co">#&gt; # A tibble: 2 × 14</span></span>
@@ -613,7 +614,7 @@ and the n-gram creation such as stemming the tokens.</p>
 <span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a>abc_ngram <span class="ot">&lt;-</span> rec <span class="sc">%&gt;%</span></span>
 <span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a>  <span class="fu">prep</span>() <span class="sc">%&gt;%</span></span>
 <span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a>  <span class="fu">bake</span>(<span class="at">new_data =</span> <span class="cn">NULL</span>)</span>
-<span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a><span class="co">#&gt; Warning: max_tokens was set to &#39;100&#39;, but only 14 was available and selected.</span></span>
+<span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a><span class="co">#&gt; Warning: max_tokens was set to 100, but only 14 was available and selected.</span></span>
 <span id="cb10-14"><a href="#cb10-14" tabindex="-1"></a></span>
 <span id="cb10-15"><a href="#cb10-15" tabindex="-1"></a>abc_ngram</span>
 <span id="cb10-16"><a href="#cb10-16" tabindex="-1"></a><span class="co">#&gt; # A tibble: 2 × 14</span></span>

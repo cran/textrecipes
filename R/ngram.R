@@ -23,15 +23,20 @@
 #' @details
 #'
 #' The use of this step will leave the ordering of the tokens meaningless. If
-#' `min_num_tokens <  num_tokens` then the tokens order in increasing fashion
-#' with respect to the number of tokens in the n-gram. If `min_num_tokens = 1`
-#' and `num_tokens = 3` then the output contains all the 1-grams followed by all
+#' `min_num_tokens <  num_tokens` then the tokens will be ordered in increasing 
+#' fashion with respect to the number of tokens in the n-gram. If `min_num_tokens = 1`
+#' and `num_tokens = 3` then the output will contain all the 1-grams followed by all
 #' the 2-grams followed by all the 3-grams.
 #'
 #' # Tidying
-#'
-#' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
-#' (the selectors or variables selected).
+#' 
+#' When you [`tidy()`][recipes::tidy.recipe()] this step, a tibble is returned with
+#' columns `terms` and `id`:
+#' 
+#' \describe{
+#'   \item{terms}{character, the selectors or variables selected}
+#'   \item{id}{character, id of this step}
+#' }
 #' 
 #' ```{r, echo = FALSE, results="asis"}
 #' step <- "step_ngram"
@@ -44,7 +49,7 @@
 #' @seealso [step_tokenize()] to turn characters into [`tokens`][tokenlist()]
 #' @family Steps for Token Modification
 #'
-#' @examples
+#' @examplesIf rlang::is_installed("modeldata")
 #' library(recipes)
 #' library(modeldata)
 #' data(tate_text)
@@ -114,6 +119,10 @@ step_ngram_new <-
 prep.step_ngram <- function(x, training, info = NULL, ...) {
   col_names <- recipes_eval_select(x$terms, training, info)
 
+  check_number_whole(x$num_tokens, min = 0, arg = "num_tokens")
+  check_number_whole(x$min_num_tokens, min = 0, arg = "min_num_tokens")
+  check_string(x$delim, arg = "delim")
+
   check_type(training[, col_names], types = "tokenlist")
 
   step_ngram_new(
@@ -156,8 +165,8 @@ print.step_ngram <-
     invisible(x)
   }
 
-#' @rdname tidy.recipe
-#' @param x A `step_ngram` object.
+#' @rdname step_ngram
+#' @usage NULL
 #' @export
 tidy.step_ngram <- function(x, ...) {
   if (is_trained(x)) {

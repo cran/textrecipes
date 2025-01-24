@@ -2,6 +2,7 @@
 % Please edit documentation in R/texthash.R
 \name{step_texthash}
 \alias{step_texthash}
+\alias{tidy.step_texthash}
 \title{Feature Hashing of Tokens}
 \usage{
 step_texthash(
@@ -19,7 +20,7 @@ step_texthash(
 )
 }
 \arguments{
-\item{recipe}{A \link{recipe} object. The step will be added to the
+\item{recipe}{A \link[recipes:recipe]{recipes::recipe} object. The step will be added to the
 sequence of operations for this recipe.}
 
 \item{...}{One or more selector functions to choose which
@@ -87,8 +88,15 @@ the name of the variable, followed by the tokens all separated by
 \code{hash001} - \code{hash101}.
 }
 \section{Tidying}{
-When you \code{\link[=tidy.recipe]{tidy()}} this step, a tibble with columns \code{terms}
-(the selectors or variables selected) and \code{value} (number of terms).
+When you \code{\link[recipes:tidy.recipe]{tidy()}} this step, a tibble is returned with
+columns \code{terms}, value and \code{id}:
+
+\describe{
+\item{terms}{character, the selectors or variables selected}
+\item{value}{logical, is it signed?}
+\item{length}{integer, number of terms}
+\item{id}{character, id of this step}
+}
 }
 
 \section{Tuning Parameters}{
@@ -106,7 +114,7 @@ The underlying operation does not allow for case weights.
 }
 
 \examples{
-\dontshow{if (all(c("text2vec", "data.table") \%in\% rownames(installed.packages()))) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (all(c("modeldata", "text2vec", "data.table") \%in\% rownames(installed.packages()))) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 \dontshow{library(data.table)}
 \dontshow{data.table::setDTthreads(2)}
 \dontshow{Sys.setenv("OMP_THREAD_LIMIT" = 2)}
@@ -138,8 +146,8 @@ Josh Attenberg (2009).
 
 Other Steps for Numeric Variables From Tokens: 
 \code{\link{step_lda}()},
-\code{\link{step_tfidf}()},
 \code{\link{step_tf}()},
+\code{\link{step_tfidf}()},
 \code{\link{step_word_embeddings}()}
 }
 \concept{Steps for Numeric Variables From Tokens}

@@ -2,6 +2,7 @@
 % Please edit documentation in R/tokenmerge.R
 \name{step_tokenmerge}
 \alias{step_tokenmerge}
+\alias{tidy.step_tokenmerge}
 \title{Combine Multiple Token Variables Into One}
 \usage{
 step_tokenmerge(
@@ -17,7 +18,7 @@ step_tokenmerge(
 )
 }
 \arguments{
-\item{recipe}{A \link{recipe} object. The step will be added to the
+\item{recipe}{A \link[recipes:recipe]{recipes::recipe} object. The step will be added to the
 sequence of operations for this recipe.}
 
 \item{...}{One or more selector functions to choose which
@@ -36,7 +37,7 @@ preprocessing have been estimated.}
 be populated (eventually) by the \code{terms} argument. This is \code{NULL}
 until the step is trained by \code{\link[recipes:prep]{recipes::prep.recipe()}}.}
 
-\item{prefix}{A prefix for generated column names, default to "tokenmerge".}
+\item{prefix}{A prefix for generated column names, defaults to "tokenmerge".}
 
 \item{keep_original_cols}{A logical to keep the original variables in the
 output. Defaults to \code{FALSE}.}
@@ -59,8 +60,13 @@ multiple \code{\link[=tokenlist]{token}} variables and combine them into one
 \code{\link[=tokenlist]{token}} variable.
 }
 \section{Tidying}{
-When you \code{\link[=tidy.recipe]{tidy()}} this step, a tibble with columns \code{terms}
-(the selectors or variables selected).
+When you \code{\link[recipes:tidy.recipe]{tidy()}} this step, a tibble is returned with
+columns \code{terms} and \code{id}:
+
+\describe{
+\item{terms}{character, the selectors or variables selected}
+\item{id}{character, id of this step}
+}
 }
 
 \section{Case weights}{
@@ -70,6 +76,7 @@ The underlying operation does not allow for case weights.
 }
 
 \examples{
+\dontshow{if (rlang::is_installed("modeldata")) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 library(recipes)
 library(modeldata)
 data(tate_text)
@@ -85,6 +92,7 @@ bake(tate_obj, new_data = NULL)
 
 tidy(tate_rec, number = 2)
 tidy(tate_obj, number = 2)
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[=step_tokenize]{step_tokenize()}} to turn characters into \code{\link[=tokenlist]{tokens}}

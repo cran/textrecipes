@@ -2,6 +2,7 @@
 % Please edit documentation in R/textfeature.R
 \name{step_textfeature}
 \alias{step_textfeature}
+\alias{tidy.step_textfeature}
 \title{Calculate Set of Text Features}
 \usage{
 step_textfeature(
@@ -18,7 +19,7 @@ step_textfeature(
 )
 }
 \arguments{
-\item{recipe}{A \link{recipe} object. The step will be added to the
+\item{recipe}{A \link[recipes:recipe]{recipes::recipe} object. The step will be added to the
 sequence of operations for this recipe.}
 
 \item{...}{One or more selector functions to choose which
@@ -38,9 +39,9 @@ be populated (eventually) by the \code{terms} argument. This is \code{NULL}
 until the step is trained by \code{\link[recipes:prep]{recipes::prep.recipe()}}.}
 
 \item{extract_functions}{A named list of feature extracting functions.
-default to \code{count_functions}. See details for more information.}
+Defaults to \code{count_functions}. See details for more information.}
 
-\item{prefix}{A prefix for generated column names, default to "textfeature".}
+\item{prefix}{A prefix for generated column names, defaults to "textfeature".}
 
 \item{keep_original_cols}{A logical to keep the original variables in the
 output. Defaults to \code{FALSE}.}
@@ -71,9 +72,14 @@ as input and return a numeric vector of the same length, otherwise an error
 will be thrown.
 }
 \section{Tidying}{
-When you \code{\link[=tidy.recipe]{tidy()}} this step, a tibble with columns \code{terms}
-(the selectors or variables selected) and \code{functions} (name of feature
-functions).
+When you \code{\link[recipes:tidy.recipe]{tidy()}} this step, a tibble is returned with
+columns \code{terms}, \code{functions}, and \code{id}:
+
+\describe{
+\item{terms}{character, the selectors or variables selected}
+\item{functions}{character, name of feature functions}
+\item{id}{character, id of this step}
+}
 }
 
 \section{Case weights}{
@@ -83,6 +89,7 @@ The underlying operation does not allow for case weights.
 }
 
 \examples{
+\dontshow{if (rlang::is_installed("modeldata")) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 library(recipes)
 library(modeldata)
 data(tate_text)
@@ -111,6 +118,7 @@ recipe(~., data = tate_text) \%>\%
   ) \%>\%
   prep() \%>\%
   bake(new_data = NULL)
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 Other Steps for Numeric Variables From Characters: 

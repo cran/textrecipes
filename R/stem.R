@@ -27,17 +27,22 @@
 #' therefore not work reliably on ngrams or sentences.
 #'
 #' # Tidying
-#'
-#' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
-#' (the selectors or variables selected) and `is_custom_stemmer` (indicate if
-#' custom stemmer was used).
+#' 
+#' When you [`tidy()`][recipes::tidy.recipe()] this step, a tibble is returned with
+#' columns `terms`, `is_custom_stemmer`, and `id`:
+#' 
+#' \describe{
+#'   \item{terms}{character, the selectors or variables selected}
+#'   \item{is_custom_stemmer}{logical, indicate if custom stemmer was used}
+#'   \item{id}{character, id of this step}
+#' }
 #'
 #' @template case-weights-not-supported
 #'
 #' @seealso [step_tokenize()] to turn characters into [`tokens`][tokenlist()]
 #' @family Steps for Token Modification
 #'
-#' @examples
+#' @examplesIf rlang::is_installed("modeldata")
 #' library(recipes)
 #' library(modeldata)
 #' data(tate_text)
@@ -87,6 +92,9 @@ step_stem <-
            custom_stemmer = NULL,
            skip = FALSE,
            id = rand_id("stem")) {
+    
+    check_function(custom_stemmer, allow_null = TRUE)
+    
     add_step(
       recipe,
       step_stem_new(
@@ -161,8 +169,8 @@ print.step_stem <-
     invisible(x)
   }
 
-#' @rdname tidy.recipe
-#' @param x A `step_stem` object.
+#' @rdname step_stem
+#' @usage NULL
 #' @export
 tidy.step_stem <- function(x, ...) {
   if (is_trained(x)) {

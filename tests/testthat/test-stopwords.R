@@ -1,6 +1,3 @@
-library(recipes)
-library(textrecipes)
-
 test_data <- tibble(text = c(
   "I would not eat them here or there.",
   "I would not eat them anywhere.",
@@ -76,9 +73,40 @@ test_that("custom stopwords are supported", {
   )
 })
 
+test_that("bad args", {
+  skip_if_not_installed("stopwords")
+  
+  expect_snapshot(
+    error = TRUE,
+    recipe(~., data = mtcars) %>%
+      step_stopwords(language = -4) %>%
+      prep()
+  )
+  expect_snapshot(
+    error = TRUE,
+    recipe(~., data = mtcars) %>%
+      step_stopwords(keep = -4) %>%
+      prep()
+  )
+  expect_snapshot(
+    error = TRUE,
+    recipe(~., data = mtcars) %>%
+      step_stopwords(stopword_source = -4) %>%
+      prep()
+  )
+  expect_snapshot(
+    error = TRUE,
+    recipe(~., data = mtcars) %>%
+      step_stopwords(custom_stopword_source = 1:10) %>%
+      prep()
+  )
+})
+
 # Infrastructure ---------------------------------------------------------------
 
 test_that("bake method errors when needed non-standard role columns are missing", {
+  skip_if_not_installed("stopwords")
+  
   tokenized_test_data <- recipe(~text, data = test_data) %>%
     step_tokenize(text) %>%
     prep() %>%
@@ -92,13 +120,15 @@ test_that("bake method errors when needed non-standard role columns are missing"
   
   trained <- prep(rec, training = tokenized_test_data, verbose = FALSE)
   
-  expect_error(
-    bake(trained, new_data = tokenized_test_data[, -1]),
-    class = "new_data_missing_column"
+  expect_snapshot(
+    error = TRUE,
+    bake(trained, new_data = tokenized_test_data[, -1])
   )
 })
 
 test_that("empty printing", {
+  skip_if_not_installed("stopwords")
+  
   rec <- recipe(mpg ~ ., mtcars)
   rec <- step_stopwords(rec)
   
@@ -110,6 +140,8 @@ test_that("empty printing", {
 })
 
 test_that("empty selection prep/bake is a no-op", {
+  skip_if_not_installed("stopwords")
+  
   rec1 <- recipe(mpg ~ ., mtcars)
   rec2 <- step_stopwords(rec1)
   
@@ -123,6 +155,8 @@ test_that("empty selection prep/bake is a no-op", {
 })
 
 test_that("empty selection tidy method works", {
+  skip_if_not_installed("stopwords")
+
   rec <- recipe(mpg ~ ., mtcars)
   rec <- step_stopwords(rec)
   

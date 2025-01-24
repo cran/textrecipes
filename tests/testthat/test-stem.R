@@ -1,6 +1,3 @@
-library(recipes)
-library(textrecipes)
-
 test_data <- tibble(text = c(
   "I would not eat them here or there.",
   "I would not eat them anywhere.",
@@ -71,6 +68,15 @@ test_that("arguments are passed by options", {
   )
 })
 
+test_that("bad args", {
+  expect_snapshot(
+    error = TRUE,
+    recipe(~., data = mtcars) %>%
+      step_stem(custom_stemmer = "yes") %>%
+      prep()
+  )
+})
+
 # Infrastructure ---------------------------------------------------------------
 
 test_that("bake method errors when needed non-standard role columns are missing", {
@@ -87,9 +93,9 @@ test_that("bake method errors when needed non-standard role columns are missing"
   
   trained <- prep(rec, training = tokenized_test_data, verbose = FALSE)
   
-  expect_error(
-    bake(trained, new_data = tokenized_test_data[, -1]),
-    class = "new_data_missing_column"
+  expect_snapshot(
+    error = TRUE,
+    bake(trained, new_data = tokenized_test_data[, -1])
   )
 })
 

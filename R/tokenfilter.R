@@ -21,7 +21,7 @@
 #'   will be applied to each observation of the data set. Defaults to `NULL`.
 #'   All other arguments will be ignored if this argument is used.
 #' @param res The words that will be keep will be stored here once this
-#'   preprocessing step has be trained by [prep.recipe()].
+#'   preprocessing step has be trained by [recipes::prep.recipe()].
 #' @template args-skip
 #' @template args-id
 #'
@@ -29,7 +29,7 @@
 #'
 #' @details
 #'
-#' This step allow you to limit the tokens you are looking at by filtering on
+#' This step allows you to limit the tokens you are looking at by filtering on
 #' their occurrence in the corpus. You are able to exclude tokens if they appear
 #' too many times or too few times in the data. It can be specified as counts
 #' using `max_times` and `min_times` or as percentages by setting `percentage`
@@ -43,10 +43,16 @@
 #' limit the number of variables created.
 #'
 #' # Tidying
-#'
-#' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
-#' (the selectors or variables selected) and `value` (number of unique tokens).
-#'
+#' 
+#' When you [`tidy()`][recipes::tidy.recipe()] this step, a tibble is returned with
+#' columns `terms`, `value`, and `id`:
+#' 
+#' \describe{
+#'   \item{terms}{character, the selectors or variables selected}
+#'   \item{value}{integer, number of unique tokens}
+#'   \item{id}{character, id of this step}
+#' }
+#' 
 #' ```{r, echo = FALSE, results="asis"}
 #' step <- "step_tokenfilter"
 #' result <- knitr::knit_child("man/rmd/tunable-args.Rmd")
@@ -58,7 +64,7 @@
 #' @seealso [step_tokenize()] to turn characters into [`tokens`][tokenlist()]
 #' @family Steps for Token Modification
 #'
-#' @examples
+#' @examplesIf rlang::is_installed("modeldata")
 #' library(recipes)
 #' library(modeldata)
 #' data(tate_text)
@@ -94,13 +100,6 @@ step_tokenfilter <-
            res = NULL,
            skip = FALSE,
            id = rand_id("tokenfilter")) {
-    if (percentage && (max_times > 1 | max_times < 0 |
-      min_times > 1 | min_times < 0)) {
-      rlang::abort(
-        "`max_times` and `min_times` should be in the interval [0, 1]."
-      )
-    }
-
     add_step(
       recipe,
       step_tokenfilter_new(
@@ -144,6 +143,17 @@ step_tokenfilter_new <-
 prep.step_tokenfilter <- function(x, training, info = NULL, ...) {
   col_names <- recipes_eval_select(x$terms, training, info)
 
+  check_bool(x$percentage, arg = "percentage")
+  if (x$percentage) {
+    check_number_decimal(x$max_times, min = 0, max = 1, arg = "max_times")
+    check_number_decimal(x$min_times, min = 0, max = 1, arg = "min_times")
+  } else {
+    check_number_whole(x$max_times, min = 0, allow_infinite = TRUE, arg = "max_times")
+    check_number_whole(x$min_times, min = 0, arg = "min_times")
+  }
+  check_number_whole(x$max_tokens, min = 0, arg = "max_tokens")
+  check_function(x$filter_fun, allow_null = TRUE, arg = "filter_fun")
+  
   check_type(training[, col_names], types = "tokenlist")
 
   retain_words <- list()
@@ -217,8 +227,8 @@ print.step_tokenfilter <-
     invisible(x)
   }
 
-#' @rdname tidy.recipe
-#' @param x A `step_tokenfilter` object.
+#' @rdname step_tokenfilter
+#' @usage NULL
 #' @export
 tidy.step_tokenfilter <- function(x, ...) {
   if (is_trained(x)) {
@@ -252,11 +262,9 @@ tokenfilter_fun <- function(data, max_times, min_times, max_tokens,
     names(sort(tf[ids], decreasing = TRUE))
   } else {
     if (max_tokens > sum(ids)) {
-      rlang::warn(
-        glue(
-          "max_tokens was set to '{max_tokens}', ",
-          "but only {sum(ids)} was available and selected."
-        )
+      cli::cli_warn(
+        "max_tokens was set to {.val {max_tokens}}, but only {sum(ids)} was 
+        available and selected."
       )
       max_tokens <- sum(ids)
     }

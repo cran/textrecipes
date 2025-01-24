@@ -2,6 +2,7 @@
 % Please edit documentation in R/dummy_hash.R
 \name{step_dummy_hash}
 \alias{step_dummy_hash}
+\alias{tidy.step_dummy_hash}
 \title{Indicator Variables via Feature Hashing}
 \usage{
 step_dummy_hash(
@@ -20,7 +21,7 @@ step_dummy_hash(
 )
 }
 \arguments{
-\item{recipe}{A \link{recipe} object. The step will be added to the
+\item{recipe}{A \link[recipes:recipe]{recipes::recipe} object. The step will be added to the
 sequence of operations for this recipe.}
 
 \item{...}{One or more selector functions to choose which
@@ -84,7 +85,7 @@ using the MurmurHash3 method.
 The argument \code{num_terms} controls the number of indices that the hashing
 function will map to. This is the tuning parameter for this transformation.
 Since the hashing function can map two different tokens to the same index,
-will a higher value of \code{num_terms} result in a lower chance of collision.
+a higher value of \code{num_terms} will result in a lower chance of collision.
 
 The new components will have names that begin with \code{prefix}, then
 the name of the variable, followed by the tokens all separated by
@@ -94,10 +95,16 @@ the name of the variable, followed by the tokens all separated by
 \code{hash001} - \code{hash101}.
 }
 \section{Tidying}{
-When you \code{\link[=tidy.recipe]{tidy()}} this step, a tibble with columns \code{terms}
-(the selectors or variables selected), \code{value} (whether a signed hashing was
-performed), \code{num_terms} (number of terms), and \code{collapse} (where columns
-collapsed).
+When you \code{\link[recipes:tidy.recipe]{tidy()}} this step, a tibble is returned with
+columns \code{terms}, \code{value}, \code{num_terms}, \code{collapse}, and \code{id}:
+
+\describe{
+\item{terms}{character, the selectors or variables selected}
+\item{value}{logical, whether a signed hashing was performed}
+\item{num_terms}{integer, number of terms}
+\item{collapse}{logical, were the columns collapsed}
+\item{id}{character, id of this step}
+}
 }
 
 \section{Tuning Parameters}{
@@ -115,7 +122,7 @@ The underlying operation does not allow for case weights.
 }
 
 \examples{
-\dontshow{if (all(c("text2vec", "data.table") \%in\% rownames(installed.packages()))) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (all(c("modeldata", "text2vec", "data.table") \%in\% rownames(installed.packages()))) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 \dontshow{library(data.table)}
 \dontshow{data.table::setDTthreads(2)}
 \dontshow{Sys.setenv("OMP_NUM_THREADS" = 1)}

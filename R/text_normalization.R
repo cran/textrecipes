@@ -21,9 +21,14 @@
 #'
 #' # Tidying
 #'
-#' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
-#' (the selectors or variables selected) and `normalization_form` (type of
-#' normalization).
+#' When you [`tidy()`][recipes::tidy.recipe()] this step, a tibble is returned with
+#' columns `terms`, `normalization_form`, and `id`:
+#' 
+#' \describe{
+#'   \item{terms}{character, the selectors or variables selected}
+#'   \item{normalization_form}{character, type of normalization}
+#'   \item{id}{character, id of this step}
+#' }
 #'
 #' @template case-weights-not-supported
 #'
@@ -94,6 +99,12 @@ step_text_normalization_new <-
 prep.step_text_normalization <- function(x, training, info = NULL, ...) {
   col_names <- recipes_eval_select(x$terms, training, info)
 
+  rlang::arg_match0(
+    x$normalization_form, 
+    c("nfc", "nfd", "nfkd", "nfkc", "nfkc_casefold"),
+    arg_nm = "normalization_form"
+  )
+
   training <- factor_to_text(training, col_names)
 
   check_type(training[, col_names], types = c("string", "factor", "ordered"))
@@ -122,15 +133,13 @@ bake.step_text_normalization <- function(object, new_data, ...) {
     nfkd = stringi::stri_trans_nfkd,
     nfkc = stringi::stri_trans_nfkc,
     nfkc_casefold = stringi::stri_trans_nfkc_casefold,
-    rlang::abort(
-      glue(
-        "'normalization_form' must be one of",
-        "'nfc', 'nfd', 'nfkd', 'nfkc', or 'nfkc_casefold'",
-        "but was {object$normalization_form}."
-      )
+    cli::cli_abort(
+      "{.arg normalization_form} must be one of {.val nfc}, {.val nfd}, 
+      {.val nfkd}, {.val nfkc}, or {.val nfkc_casefold} but was 
+      {.val {object$normalization_form}}."
     )
   )
-
+  
   for (col_name in col_names) {
     new_data[[col_name]] <- normalization_fun(new_data[[col_name]])
     new_data[[col_name]] <- factor(new_data[[col_name]])
@@ -147,8 +156,8 @@ print.step_text_normalization <-
     invisible(x)
   }
 
-#' @rdname tidy.recipe
-#' @param x A `step_text_normalization` object.
+#' @rdname step_text_normalization
+#' @usage NULL
 #' @export
 tidy.step_text_normalization <- function(x, ...) {
   if (is_trained(x)) {

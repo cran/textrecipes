@@ -5,7 +5,25 @@
     Condition
       Error in `step_pos_filter()`:
       Caused by error in `bake()`:
-      ! `text` doesn't have a pos attribute. Make sure the tokenization step includes part of speech tagging.
+      ! `text` doesn't have a pos attribute.
+      i Make sure the tokenization step includes part of speech tagging.
+
+# bad args
+
+    Code
+      recipe(~., data = mtcars) %>% step_pos_filter(keep_tags = -4) %>% prep()
+    Condition
+      Error in `step_pos_filter()`:
+      Caused by error in `prep()`:
+      ! `keep_tags` must be a character vector, not the number -4.
+
+# bake method errors when needed non-standard role columns are missing
+
+    Code
+      bake(trained, new_data = tokenized_test_data[, -1])
+    Condition
+      Error in `step_pos_filter()`:
+      ! The following required column is missing from `new_data`: text.
 
 # empty printing
 

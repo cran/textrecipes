@@ -2,6 +2,7 @@
 % Please edit documentation in R/lda.R
 \name{step_lda}
 \alias{step_lda}
+\alias{tidy.step_lda}
 \title{Calculate LDA Dimension Estimates of Tokens}
 \source{
 \url{https://arxiv.org/abs/1301.3781}
@@ -22,7 +23,7 @@ step_lda(
 )
 }
 \arguments{
-\item{recipe}{A \link{recipe} object. The step will be added to the
+\item{recipe}{A \link[recipes:recipe]{recipes::recipe} object. The step will be added to the
 sequence of operations for this recipe.}
 
 \item{...}{One or more selector functions to choose which
@@ -42,12 +43,12 @@ be populated (eventually) by the \code{terms} argument. This is \code{NULL}
 until the step is trained by \code{\link[recipes:prep]{recipes::prep.recipe()}}.}
 
 \item{lda_models}{A WarpLDA model object from the text2vec package. If left
-to NULL, the default, will it train its model based on the training data.
+to NULL, the default, it will train its model based on the training data.
 Look at the examples for how to fit a WarpLDA model.}
 
 \item{num_topics}{integer desired number of latent topics.}
 
-\item{prefix}{A prefix for generated column names, default to "lda".}
+\item{prefix}{A prefix for generated column names, defaults to "lda".}
 
 \item{keep_original_cols}{A logical to keep the original variables in the
 output. Defaults to \code{FALSE}.}
@@ -69,8 +70,14 @@ to the sequence of existing steps (if any).
 lda dimension estimates of a text variable.
 }
 \section{Tidying}{
-When you \code{\link[=tidy.recipe]{tidy()}} this step, a tibble with columns \code{terms}
-(the selectors or variables selected) and \code{num_topics} (number of topics).
+When you \code{\link[recipes:tidy.recipe]{tidy()}} this step, a tibble is returned with
+columns \code{terms}, \code{num_topics}, and \code{id}:
+
+\describe{
+\item{terms}{character, the selectors or variables selected}
+\item{num_topics}{integer, number of topics}
+\item{id}{character, id of this step}
+}
 }
 
 \section{Case weights}{
@@ -80,7 +87,7 @@ The underlying operation does not allow for case weights.
 }
 
 \examples{
-\dontshow{if (all(c("text2vec", "data.table") \%in\% rownames(installed.packages()))) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (all(c("modeldata", "text2vec", "data.table") \%in\% rownames(installed.packages()))) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 \dontshow{library(data.table)}
 \dontshow{data.table::setDTthreads(2)}
 \dontshow{Sys.setenv("OMP_THREAD_LIMIT" = 2)}
@@ -127,8 +134,8 @@ recipe(~., data = tate_text) \%>\%
 \seealso{
 Other Steps for Numeric Variables From Tokens: 
 \code{\link{step_texthash}()},
-\code{\link{step_tfidf}()},
 \code{\link{step_tf}()},
+\code{\link{step_tfidf}()},
 \code{\link{step_word_embeddings}()}
 }
 \concept{Steps for Numeric Variables From Tokens}

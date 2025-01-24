@@ -1,6 +1,3 @@
-library(textrecipes)
-library(recipes)
-
 test_data <- tibble(text = c(
   "I would not eat them here or there.",
   "I would not eat them anywhere.",
@@ -102,6 +99,7 @@ test_that("tokenization errors with wrong engines", {
 
 test_that("tokenization includes lemma attribute when avaliable", {
   skip_on_cran()
+  skip_if_not_installed("spacyr")
   skip_if_no_python_or_no_spacy()
 
   expect_type(
@@ -141,6 +139,27 @@ test_that("tunable", {
   )
 })
 
+test_that("bad args", {
+  expect_snapshot(
+    error = TRUE,
+    recipe(~., data = mtcars) %>%
+      step_tokenize(token = letters) %>%
+      prep()
+  )
+  expect_snapshot(
+    error = TRUE,
+    recipe(~., data = mtcars) %>%
+      step_tokenize(engine = letters) %>%
+      prep()
+  )
+  expect_snapshot(
+    error = TRUE,
+    recipe(~., data = mtcars) %>%
+      step_tokenize(custom_token = "yes") %>%
+      prep()
+  )
+})
+
 # Infrastructure ---------------------------------------------------------------
 
 test_that("bake method errors when needed non-standard role columns are missing", {
@@ -151,9 +170,9 @@ test_that("bake method errors when needed non-standard role columns are missing"
   
   trained <- prep(rec, training = test_data, verbose = FALSE)
   
-  expect_error(
-    bake(trained, new_data = test_data[, -1]),
-    class = "new_data_missing_column"
+  expect_snapshot(
+    error = TRUE,
+    bake(trained, new_data = test_data[, -1])
   )
 })
 

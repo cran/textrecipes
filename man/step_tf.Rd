@@ -2,6 +2,7 @@
 % Please edit documentation in R/tf.R
 \name{step_tf}
 \alias{step_tf}
+\alias{tidy.step_tf}
 \title{Term frequency of Tokens}
 \usage{
 step_tf(
@@ -21,7 +22,7 @@ step_tf(
 )
 }
 \arguments{
-\item{recipe}{A \link{recipe} object. The step will be added to the
+\item{recipe}{A \link[recipes:recipe]{recipes::recipe} object. The step will be added to the
 sequence of operations for this recipe.}
 
 \item{...}{One or more selector functions to choose which
@@ -52,7 +53,7 @@ normalization". Defaults to 0.5.}
 
 \item{res}{The words that will be used to calculate the term frequency will
 be stored here once this preprocessing step has be trained by
-\code{\link[=prep.recipe]{prep.recipe()}}.}
+\code{\link[recipes:prep]{recipes::prep.recipe()}}.}
 
 \item{prefix}{A character string that will be the prefix to the
 resulting new variables. See notes below.}
@@ -83,12 +84,12 @@ limit the number of variables created, otherwise you might run into memory
 issues. A good strategy is to start with a low token count and go up
 according to how much RAM you want to use.
 
-Term frequency is a weight of how many times each token appear in each
+Term frequency is a weight of how many times each token appears in each
 observation. There are different ways to calculate the weight and this step
 can do it in a couple of ways. Setting the argument \code{weight_scheme} to
 "binary" will result in a set of binary variables denoting if a token is
 present in the observation. "raw count" will count the times a token is
-present in the observation. "term frequency" will divide the count with the
+present in the observation. "term frequency" will divide the count by the
 total number of words in the document to limit the effect of the document
 length as longer documents tends to have the word present more times but not
 necessarily at a higher percentage. "log normalization" takes the log of 1
@@ -106,8 +107,14 @@ the name of the variable, followed by the tokens all separated by
 \code{hash001} - \code{hash101}.
 }
 \section{Tidying}{
-When you \code{\link[=tidy.recipe]{tidy()}} this step, a tibble with columns \code{terms}
-(the selectors or variables selected) and \code{value} (the weighting scheme).
+When you \code{\link[recipes:tidy.recipe]{tidy()}} this step, a tibble is returned with
+columns \code{terms}, \code{value}, and \code{id}:
+
+\describe{
+\item{terms}{character, the selectors or variables selected}
+\item{value}{character, the weighting scheme}
+\item{id}{character, id of this step}
+}
 }
 
 \section{Tuning Parameters}{
@@ -125,6 +132,7 @@ The underlying operation does not allow for case weights.
 }
 
 \examples{
+\dontshow{if (rlang::is_installed("modeldata")) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 \donttest{
 library(recipes)
 library(modeldata)
@@ -142,7 +150,7 @@ bake(tate_obj, tate_text)
 tidy(tate_rec, number = 2)
 tidy(tate_obj, number = 2)
 }
-
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[=step_tokenize]{step_tokenize()}} to turn characters into \code{\link[=tokenlist]{tokens}}

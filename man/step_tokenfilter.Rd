@@ -2,6 +2,7 @@
 % Please edit documentation in R/tokenfilter.R
 \name{step_tokenfilter}
 \alias{step_tokenfilter}
+\alias{tidy.step_tokenfilter}
 \title{Filter Tokens Based on Term Frequency}
 \usage{
 step_tokenfilter(
@@ -21,7 +22,7 @@ step_tokenfilter(
 )
 }
 \arguments{
-\item{recipe}{A \link{recipe} object. The step will be added to the
+\item{recipe}{A \link[recipes:recipe]{recipes::recipe} object. The step will be added to the
 sequence of operations for this recipe.}
 
 \item{...}{One or more selector functions to choose which
@@ -56,7 +57,7 @@ will be applied to each observation of the data set. Defaults to \code{NULL}.
 All other arguments will be ignored if this argument is used.}
 
 \item{res}{The words that will be keep will be stored here once this
-preprocessing step has be trained by \code{\link[=prep.recipe]{prep.recipe()}}.}
+preprocessing step has be trained by \code{\link[recipes:prep]{recipes::prep.recipe()}}.}
 
 \item{skip}{A logical. Should the step be skipped when the
 recipe is baked by \code{\link[recipes:bake]{recipes::bake.recipe()}}? While all operations are baked
@@ -75,7 +76,7 @@ to the sequence of existing steps (if any).
 convert a \code{\link[=tokenlist]{token}} variable to be filtered based on frequency.
 }
 \details{
-This step allow you to limit the tokens you are looking at by filtering on
+This step allows you to limit the tokens you are looking at by filtering on
 their occurrence in the corpus. You are able to exclude tokens if they appear
 too many times or too few times in the data. It can be specified as counts
 using \code{max_times} and \code{min_times} or as percentages by setting \code{percentage}
@@ -89,8 +90,14 @@ It is strongly advised to filter before using \link{step_tf} or \link{step_tfidf
 limit the number of variables created.
 }
 \section{Tidying}{
-When you \code{\link[=tidy.recipe]{tidy()}} this step, a tibble with columns \code{terms}
-(the selectors or variables selected) and \code{value} (number of unique tokens).
+When you \code{\link[recipes:tidy.recipe]{tidy()}} this step, a tibble is returned with
+columns \code{terms}, \code{value}, and \code{id}:
+
+\describe{
+\item{terms}{character, the selectors or variables selected}
+\item{value}{integer, number of unique tokens}
+\item{id}{character, id of this step}
+}
 }
 
 \section{Tuning Parameters}{
@@ -109,6 +116,7 @@ The underlying operation does not allow for case weights.
 }
 
 \examples{
+\dontshow{if (rlang::is_installed("modeldata")) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 library(recipes)
 library(modeldata)
 data(tate_text)
@@ -129,6 +137,7 @@ bake(tate_obj, new_data = NULL) \%>\%
 
 tidy(tate_rec, number = 2)
 tidy(tate_obj, number = 2)
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[=step_tokenize]{step_tokenize()}} to turn characters into \code{\link[=tokenlist]{tokens}}

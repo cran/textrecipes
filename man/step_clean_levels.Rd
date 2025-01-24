@@ -2,6 +2,7 @@
 % Please edit documentation in R/clean_levels.R
 \name{step_clean_levels}
 \alias{step_clean_levels}
+\alias{tidy.step_clean_levels}
 \title{Clean Categorical Levels}
 \usage{
 step_clean_levels(
@@ -15,7 +16,7 @@ step_clean_levels(
 )
 }
 \arguments{
-\item{recipe}{A \link{recipe} object. The step will be added to the
+\item{recipe}{A \link[recipes:recipe]{recipes::recipe} object. The step will be added to the
 sequence of operations for this recipe.}
 
 \item{...}{One or more selector functions to choose which
@@ -55,9 +56,15 @@ data to be processed contains novel levels (i.e., not contained in the
 training set), they are converted to missing.
 }
 \section{Tidying}{
-When you \code{\link[=tidy.recipe]{tidy()}} this step, a tibble with columns \code{terms}
-(the selectors or variables selected), \code{original} (the original levels) and
-\code{value} (the cleaned levels) is returned.
+When you \code{\link[recipes:tidy.recipe]{tidy()}} this step, a tibble is returned with
+columns \code{terms}, \code{orginal}, \code{value}, and \code{id}:
+
+\describe{
+\item{terms}{character, the selectors or variables selected}
+\item{original}{character, the original levels}
+\item{value}{character, the cleaned levels}
+\item{id}{character, id of this step}
+}
 }
 
 \section{Case weights}{
@@ -67,7 +74,7 @@ The underlying operation does not allow for case weights.
 }
 
 \examples{
-\dontshow{if (rlang::is_installed("janitor")) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (rlang::is_installed(c("modeldata", "janitor"))) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 library(recipes)
 library(modeldata)
 data(Smithsonian)

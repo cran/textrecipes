@@ -2,6 +2,7 @@
 % Please edit documentation in R/tokenize_bpe.R
 \name{step_tokenize_bpe}
 \alias{step_tokenize_bpe}
+\alias{tidy.step_tokenize_bpe}
 \title{BPE Tokenization of Character Variables}
 \usage{
 step_tokenize_bpe(
@@ -18,7 +19,7 @@ step_tokenize_bpe(
 )
 }
 \arguments{
-\item{recipe}{A \link{recipe} object. The step will be added to the
+\item{recipe}{A \link[recipes:recipe]{recipes::recipe} object. The step will be added to the
 sequence of operations for this recipe.}
 
 \item{...}{One or more selector functions to choose which
@@ -41,7 +42,7 @@ vocabulary. Defaults to 1000. Highly encouraged to be tuned.}
 \item{options}{A list of options passed to the tokenizer.}
 
 \item{res}{The fitted \code{\link[tokenizers.bpe:bpe]{tokenizers.bpe::bpe()}} model tokenizer will be stored
-here once this preprocessing step has be trained by \code{\link[=prep.recipe]{prep.recipe()}}.}
+here once this preprocessing step has be trained by \code{\link[recipes:prep]{recipes::prep.recipe()}}.}
 
 \item{skip}{A logical. Should the step be skipped when the
 recipe is baked by \code{\link[recipes:bake]{recipes::bake.recipe()}}? While all operations are baked
@@ -61,8 +62,13 @@ convert a character predictor into a \code{\link[=tokenlist]{token}} variable us
 Byte Pair Encoding.
 }
 \section{Tidying}{
-When you \code{\link[=tidy.recipe]{tidy()}} this step, a tibble with columns \code{terms}
-(the selectors or variables selected).
+When you \code{\link[recipes:tidy.recipe]{tidy()}} this step, a tibble is returned with
+columns \code{terms} and \code{id}:
+
+\describe{
+\item{terms}{character, the selectors or variables selected}
+\item{id}{character, id of this step}
+}
 }
 
 \section{Tuning Parameters}{
@@ -79,7 +85,7 @@ The underlying operation does not allow for case weights.
 }
 
 \examples{
-\dontshow{if (rlang::is_installed("tokenizers.bpe")) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (rlang::is_installed(c("modeldata", "tokenizers.bpe"))) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 library(recipes)
 library(modeldata)
 data(tate_text)
@@ -105,8 +111,8 @@ tidy(tate_obj, number = 1)
 \code{\link[=step_untokenize]{step_untokenize()}} to untokenize.
 
 Other Steps for Tokenization: 
+\code{\link{step_tokenize}()},
 \code{\link{step_tokenize_sentencepiece}()},
-\code{\link{step_tokenize_wordpiece}()},
-\code{\link{step_tokenize}()}
+\code{\link{step_tokenize_wordpiece}()}
 }
 \concept{Steps for Tokenization}

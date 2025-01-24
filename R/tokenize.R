@@ -29,16 +29,16 @@
 #' options(width = 55)
 #' ```
 #'
-#' Tokenization is the act of splitting a character string into smaller parts to
+#' Tokenization is the act of splitting a character vector into smaller parts to
 #' be further analyzed. This step uses the `tokenizers` package which includes
 #' heuristics on how to to split the text into paragraphs tokens, word tokens,
 #' among others. `textrecipes` keeps the tokens as a [`token`][tokenlist()]
 #' variable and other steps will do their tasks on those [`token`][tokenlist()]
-#' variable before transforming them back to numeric variables.
+#' variables before transforming them back to numeric variables.
 #'
-#' Working will `textrecipes` will almost always start by calling
+#' Working with `textrecipes` will almost always start by calling
 #' `step_tokenize` followed by modifying and filtering steps. This is not always
-#' the case as you sometimes want to do apply pre-tokenization steps, this can
+#' the case as you sometimes want to apply pre-tokenization steps; this can
 #' be done with [recipes::step_mutate()].
 #'
 #' # Engines
@@ -182,8 +182,14 @@
 #'
 #' # Tidying
 #'
-#' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
-#' (the selectors or variables selected) and `value` (unit of tokenization).
+#' When you [`tidy()`][recipes::tidy.recipe()] this step, a tibble is returned with
+#' columns `terms`, `value`, and `id`:
+#' 
+#' \describe{
+#'   \item{terms}{character, the selectors or variables selected}
+#'   \item{value}{character, unit of tokenization}
+#'   \item{id}{character, id of this step}
+#' }
 #'
 #' ```{r, echo = FALSE, results="asis"}
 #' step <- "step_tokenize"
@@ -196,7 +202,7 @@
 #' @seealso [step_untokenize()] to untokenize.
 #' @family Steps for Tokenization
 #'
-#' @examples
+#' @examplesIf rlang::is_installed("modeldata")
 #' library(recipes)
 #' library(modeldata)
 #' data(tate_text)
@@ -279,6 +285,10 @@ step_tokenize_new <-
 prep.step_tokenize <- function(x, training, info = NULL, ...) {
   col_names <- recipes_eval_select(x$terms, training, info)
 
+  check_string(x$token, arg = "token")
+  check_string(x$engine, arg = "engine")
+  check_function(x$custom_token, allow_null = TRUE, arg = "custom_token")
+
   training <- factor_to_text(training, col_names)
 
   check_type(training[, col_names], types = c("string", "factor", "ordered"))
@@ -339,8 +349,8 @@ print.step_tokenize <-
     invisible(x)
   }
 
-#' @rdname tidy.recipe
-#' @param x A `step_tokenize` object.
+#' @rdname step_tokenize
+#' @usage NULL
 #' @export
 tidy.step_tokenize <- function(x, ...) {
   if (is_trained(x)) {
@@ -448,7 +458,7 @@ tokenizer_switch <- function(name, object, data, call = caller_env()) {
     return(res)
   }
 
-  rlang::abort("`engine` argument is not valid.", call = call)
+  cli::cli_abort("The {.arg engine} argument is not valid.", call = call)
 }
 
 #' @rdname required_pkgs.step

@@ -2,6 +2,7 @@
 % Please edit documentation in R/tokenize_wordpiece.R
 \name{step_tokenize_wordpiece}
 \alias{step_tokenize_wordpiece}
+\alias{tidy.step_tokenize_wordpiece}
 \title{Wordpiece Tokenization of Character Variables}
 \usage{
 step_tokenize_wordpiece(
@@ -18,7 +19,7 @@ step_tokenize_wordpiece(
 )
 }
 \arguments{
-\item{recipe}{A \link{recipe} object. The step will be added to the
+\item{recipe}{A \link[recipes:recipe]{recipes::recipe} object. The step will be added to the
 sequence of operations for this recipe.}
 
 \item{...}{One or more selector functions to choose which
@@ -60,8 +61,13 @@ will convert a character predictor into a \code{\link[=tokenlist]{token}} variab
 using WordPiece tokenization.
 }
 \section{Tidying}{
-When you \code{\link[=tidy.recipe]{tidy()}} this step, a tibble with columns \code{terms}
-(the selectors or variables selected).
+When you \code{\link[recipes:tidy.recipe]{tidy()}} this step, a tibble is returned with
+columns \code{terms} and \code{id}:
+
+\describe{
+\item{terms}{character, the selectors or variables selected}
+\item{id}{character, id of this step}
+}
 }
 
 \section{Case weights}{
@@ -71,7 +77,7 @@ The underlying operation does not allow for case weights.
 }
 
 \examples{
-\dontshow{if (rlang::is_installed("wordpiece")) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (rlang::is_installed(c("modeldata", "wordpiece"))) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 library(recipes)
 library(modeldata)
 data(tate_text)
@@ -97,8 +103,8 @@ tidy(tate_obj, number = 1)
 \code{\link[=step_untokenize]{step_untokenize()}} to untokenize.
 
 Other Steps for Tokenization: 
+\code{\link{step_tokenize}()},
 \code{\link{step_tokenize_bpe}()},
-\code{\link{step_tokenize_sentencepiece}()},
-\code{\link{step_tokenize}()}
+\code{\link{step_tokenize_sentencepiece}()}
 }
 \concept{Steps for Tokenization}

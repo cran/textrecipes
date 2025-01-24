@@ -22,15 +22,20 @@
 #'
 #' # Tidying
 #'
-#' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
-#' (the selectors or variables selected).
+#' When you [`tidy()`][recipes::tidy.recipe()] this step, a tibble is returned with
+#' columns `terms` and `id`:
+#' 
+#' \describe{
+#'   \item{terms}{character, the selectors or variables selected}
+#'   \item{id}{character, id of this step}
+#' }
 #'
 #' @template case-weights-not-supported
 #'
 #' @seealso [step_untokenize()] to untokenize.
 #' @family Steps for Tokenization
 #'
-#' @examplesIf rlang::is_installed("wordpiece")
+#' @examplesIf rlang::is_installed(c("modeldata", "wordpiece"))
 #' library(recipes)
 #' library(modeldata)
 #' data(tate_text)
@@ -101,6 +106,9 @@ step_tokenize_wordpiece_new <-
 prep.step_tokenize_wordpiece <- function(x, training, info = NULL, ...) {
   col_names <- recipes_eval_select(x$terms, training, info)
 
+  check_string(x$unk_token, arg = "unk_token")
+  check_number_whole(x$max_chars, min = 0, arg = "max_chars")
+
   training <- factor_to_text(training, col_names)
 
   check_type(training[, col_names], types = c("string", "factor", "ordered"))
@@ -149,8 +157,8 @@ print.step_tokenize_wordpiece <-
     invisible(x)
   }
 
-#' @rdname tidy.recipe
-#' @param x A `step_tokenize_wordpiece` object.
+#' @rdname step_tokenize_wordpiece
+#' @usage NULL
 #' @export
 tidy.step_tokenize_wordpiece <- function(x, ...) {
   if (is_trained(x)) {

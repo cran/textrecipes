@@ -24,9 +24,15 @@
 #'
 #' # Tidying
 #'
-#' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
-#' (the selectors or variables selected), `original` (the original levels) and
-#' `value` (the cleaned levels) is returned.
+#' When you [`tidy()`][recipes::tidy.recipe()] this step, a tibble is returned with
+#' columns `terms`, `orginal`, `value`, and `id`:
+#' 
+#' \describe{
+#'   \item{terms}{character, the selectors or variables selected}
+#'   \item{original}{character, the original levels}
+#'   \item{value}{character, the cleaned levels}
+#'   \item{id}{character, id of this step}
+#' }
 #'
 #' @template case-weights-not-supported
 #'
@@ -35,7 +41,7 @@
 #'   [recipes::step_unknown()], [recipes::step_novel()], [recipes::step_other()]
 #' @family Steps for Text Cleaning
 #'
-#' @examplesIf rlang::is_installed("janitor")
+#' @examplesIf rlang::is_installed(c("modeldata", "janitor"))
 #' library(recipes)
 #' library(modeldata)
 #' data(Smithsonian)
@@ -125,10 +131,15 @@ bake.step_clean_levels <- function(object, new_data, ...) {
   }
   
   for (col_name in col_names) {
-    new_data[[col_name]] <- dplyr::recode_factor(
-      new_data[[col_name]], !!!object$clean[[col_name]]
-    )
-  }
+    if (is.factor(new_data[[col_name]])) {
+      new_data[[col_name]] <- dplyr::recode_factor(
+        new_data[[col_name]], !!!object$clean[[col_name]]
+      )      
+    } else {
+      new_data[[col_name]] <- janitor::make_clean_names(new_data[[col_name]])
+
+    }
+}
 
   new_data
 }
@@ -141,8 +152,8 @@ print.step_clean_levels <-
     invisible(x)
   }
 
-#' @rdname tidy.recipe
-#' @param x A `step_clean_levels` object.
+#' @rdname step_clean_levels
+#' @usage NULL
 #' @export
 tidy.step_clean_levels <- function(x, ...) {
   if (is_trained(x)) {

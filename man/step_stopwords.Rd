@@ -2,6 +2,7 @@
 % Please edit documentation in R/stopwords.R
 \name{step_stopwords}
 \alias{step_stopwords}
+\alias{tidy.step_stopwords}
 \title{Filtering of Stop Words for Tokens Variables}
 \usage{
 step_stopwords(
@@ -19,7 +20,7 @@ step_stopwords(
 )
 }
 \arguments{
-\item{recipe}{A \link{recipe} object. The step will be added to the
+\item{recipe}{A \link[recipes:recipe]{recipes::recipe} object. The step will be added to the
 sequence of operations for this recipe.}
 
 \item{...}{One or more selector functions to choose which
@@ -65,19 +66,25 @@ to the sequence of existing steps (if any).
 filter a \code{\link[=tokenlist]{token}} variable for stop words.
 }
 \details{
-Stop words are words which sometimes are remove before natural language
+Stop words are words which sometimes are removed before natural language
 processing tasks. While stop words usually refers to the most common words in
 the language there is no universal stop word list.
 
 The argument \code{custom_stopword_source} allows you to pass a character vector
-to filter against. With the \code{keep} argument one can specify to keep the words
+to filter against. With the \code{keep} argument one can specify words to keep
 instead of removing thus allowing you to select words with a combination of
 these two arguments.
 }
 \section{Tidying}{
-When you \code{\link[=tidy.recipe]{tidy()}} this step, a tibble with columns \code{terms}
-(the selectors or variables selected), \code{value} (name of stop word list), and
-\code{keep} (whether stop words are removed or kept).
+When you \code{\link[recipes:tidy.recipe]{tidy()}} this step, a tibble is returned with
+columns \code{terms}, \code{value}, \code{keep}, and \code{id}:
+
+\describe{
+\item{terms}{character, the selectors or variables selected}
+\item{value}{character, name of stop word list}
+\item{keep}{logical, whether stop words are removed or kept}
+\item{id}{character, id of this step}
+}
 }
 
 \section{Case weights}{
@@ -87,7 +94,7 @@ The underlying operation does not allow for case weights.
 }
 
 \examples{
-\dontshow{if (rlang::is_installed("stopwords")) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (rlang::is_installed(c("modeldata", "stopwords"))) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 library(recipes)
 library(modeldata)
 data(tate_text)

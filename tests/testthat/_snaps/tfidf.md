@@ -5,8 +5,8 @@
     Condition
       Error in `step_tfidf()`:
       Caused by error in `bake()`:
-      ! Name collision occured. The following variable names already exists:
-      i  tfidf_text_i
+      ! Name collision occurred. The following variable names already exist:
+      * `tfidf_text_i`
 
 # Backwards compatibility with 1592690d36581fc5f4952da3e9b02351b31f1a2e
 
@@ -16,7 +16,7 @@
     Condition
       Warning:
       Please retrain this recipe with version 0.5.1 or higher.
-      * A data leakage bug has been fixed for `step_tfidf()`.
+      i A data leakage bug has been fixed for `step_tfidf()`.
 
 ---
 
@@ -26,7 +26,60 @@
     Condition
       Warning:
       Please retrain this recipe with version 0.5.1 or higher.
-      * A data leakage bug has been fixed for `step_tfidf()`.
+      i A data leakage bug has been fixed for `step_tfidf()`.
+
+# bad args
+
+    Code
+      recipe(~., data = mtcars) %>% step_tfidf(vocabulary = 1:10) %>% prep()
+    Condition
+      Error in `step_tfidf()`:
+      Caused by error in `prep()`:
+      ! `vocabulary` must be a character vector or `NULL`, not an integer vector.
+
+---
+
+    Code
+      recipe(~., data = mtcars) %>% step_tfidf(smooth_idf = "yes") %>% prep()
+    Condition
+      Error in `step_tfidf()`:
+      Caused by error in `prep()`:
+      ! `smooth_idf` must be `TRUE` or `FALSE`, not the string "yes".
+
+---
+
+    Code
+      recipe(~., data = mtcars) %>% step_tfidf(norm = "yes") %>% prep()
+    Condition
+      Error in `step_tfidf()`:
+      Caused by error in `prep()`:
+      ! `norm` must be one of "l1", "l2", or "none", not "yes".
+
+---
+
+    Code
+      recipe(~., data = mtcars) %>% step_tfidf(sublinear_tf = "yes") %>% prep()
+    Condition
+      Error in `step_tfidf()`:
+      Caused by error in `prep()`:
+      ! `sublinear_tf` must be `TRUE` or `FALSE`, not the string "yes".
+
+---
+
+    Code
+      recipe(~., data = mtcars) %>% step_tfidf(prefix = NULL) %>% prep()
+    Condition
+      Error in `step_tfidf()`:
+      Caused by error in `prep()`:
+      ! `prefix` must be a single string, not `NULL`.
+
+# bake method errors when needed non-standard role columns are missing
+
+    Code
+      bake(trained, new_data = tokenized_test_data[, -1])
+    Condition
+      Error in `step_tfidf()`:
+      ! The following required column is missing from `new_data`: text.
 
 # empty printing
 
@@ -69,8 +122,8 @@
       rec <- prep(rec)
     Condition
       Warning:
-      'keep_original_cols' was added to `step_tfidf()` after this recipe was created.
-      Regenerate your recipe to avoid this warning.
+      `keep_original_cols` was added to `step_tfidf()` after this recipe was created.
+      i Regenerate your recipe to avoid this warning.
 
 # printing
 

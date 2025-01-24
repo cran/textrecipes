@@ -1,7 +1,7 @@
 #' Show token output of recipe
 #'
-#' Returns the tokens as a list of character vector of a recipe. This function
-#' can be useful for diagnostics doing recipe construction but should not be
+#' Returns the tokens as a list of character vectors of a recipe. This function
+#' can be useful for diagnostics during recipe construction but should not be
 #' used in final recipe steps. Note that this function will both prep() and
 #' bake() the recipe it is used on.
 #'
@@ -12,7 +12,7 @@
 #' @return A list of character vectors
 #' @export
 #'
-#' @examples
+#' @examplesIf rlang::is_installed("modeldata")
 #' text_tibble <- tibble(text = c("This is words", "They are nice!"))
 #'
 #' recipe(~text, data = text_tibble) %>%
@@ -26,6 +26,8 @@
 #'   step_tokenize(medium) %>%
 #'   show_tokens(medium)
 show_tokens <- function(rec, var, n = 6L) {
+  check_number_whole(n, min = 0, nrow(rec$template))
+  
   res <- rec %>%
     prep() %>%
     bake(new_data = NULL) %>%

@@ -2,6 +2,7 @@
 % Please edit documentation in R/text_normalization.R
 \name{step_text_normalization}
 \alias{step_text_normalization}
+\alias{tidy.step_text_normalization}
 \title{Normalization of Character Variables}
 \usage{
 step_text_normalization(
@@ -16,7 +17,7 @@ step_text_normalization(
 )
 }
 \arguments{
-\item{recipe}{A \link{recipe} object. The step will be added to the
+\item{recipe}{A \link[recipes:recipe]{recipes::recipe} object. The step will be added to the
 sequence of operations for this recipe.}
 
 \item{...}{One or more selector functions to choose which
@@ -55,9 +56,14 @@ to the sequence of existing steps (if any).
 will perform Unicode Normalization on character variables.
 }
 \section{Tidying}{
-When you \code{\link[=tidy.recipe]{tidy()}} this step, a tibble with columns \code{terms}
-(the selectors or variables selected) and \code{normalization_form} (type of
-normalization).
+When you \code{\link[recipes:tidy.recipe]{tidy()}} this step, a tibble is returned with
+columns \code{terms}, \code{normalization_form}, and \code{id}:
+
+\describe{
+\item{terms}{character, the selectors or variables selected}
+\item{normalization_form}{character, type of normalization}
+\item{id}{character, id of this step}
+}
 }
 
 \section{Case weights}{

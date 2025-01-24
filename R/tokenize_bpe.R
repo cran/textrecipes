@@ -13,7 +13,7 @@
 #'   vocabulary. Defaults to 1000. Highly encouraged to be tuned.
 #' @param options A list of options passed to the tokenizer.
 #' @param res The fitted [tokenizers.bpe::bpe()] model tokenizer will be stored
-#'   here once this preprocessing step has be trained by [prep.recipe()].
+#'   here once this preprocessing step has be trained by [recipes::prep.recipe()].
 #' @template args-skip
 #' @template args-id
 #'
@@ -23,8 +23,13 @@
 #'
 #' # Tidying
 #'
-#' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
-#' (the selectors or variables selected).
+#' When you [`tidy()`][recipes::tidy.recipe()] this step, a tibble is returned with
+#' columns `terms` and `id`:
+#' 
+#' \describe{
+#'   \item{terms}{character, the selectors or variables selected}
+#'   \item{id}{character, id of this step}
+#' }
 #'
 #' ```{r, echo = FALSE, results="asis"}
 #' step <- "step_tokenize_bpe"
@@ -37,7 +42,7 @@
 #' @seealso [step_untokenize()] to untokenize.
 #' @family Steps for Tokenization
 #'
-#' @examplesIf rlang::is_installed("tokenizers.bpe")
+#' @examplesIf rlang::is_installed(c("modeldata", "tokenizers.bpe"))
 #' library(recipes)
 #' library(modeldata)
 #' data(tate_text)
@@ -108,6 +113,8 @@ step_tokenize_bpe_new <-
 prep.step_tokenize_bpe <- function(x, training, info = NULL, ...) {
   col_names <- recipes_eval_select(x$terms, training, info)
 
+  check_number_whole(x$vocabulary_size, min = 0, arg = "vocabulary_size")
+
   training <- factor_to_text(training, col_names)
 
   check_type(training[, col_names], types = c("string", "factor", "ordered"))
@@ -116,8 +123,9 @@ prep.step_tokenize_bpe <- function(x, training, info = NULL, ...) {
 
   bpe_options <- x$options
   if (!is.null(bpe_options$vocab_size)) {
-    rlang::abort(
-      "Please supply the vocabulary size using the `vocabulary_size` argument."
+    cli::cli_abort(
+      "Please supply the vocabulary size using the {.arg vocabulary_size} 
+      argument."
     )
   }
   bpe_options$vocab_size <- x$vocabulary_size
@@ -153,11 +161,9 @@ check_bpe_vocab_size <- function(text,
   text_count <- length(text_count)
 
   if (vocabulary_size < text_count) {
-    rlang::abort(
-      glue(
-        "`vocabulary_size` of {vocabulary_size} is too small for column ",
-        "`{column}` which has a unique character count of {text_count}",
-      ),
+    cli::cli_abort(
+      "{.arg vocabulary_size} of {vocabulary_size} is too small for column 
+      {.arg {column}} which has a unique character count of {text_count}",
       call = call
     )
   }
@@ -192,8 +198,8 @@ print.step_tokenize_bpe <-
     invisible(x)
   }
 
-#' @rdname tidy.recipe
-#' @param x A `step_tokenize_bpe` object.
+#' @rdname step_tokenize_bpe
+#' @usage NULL
 #' @export
 tidy.step_tokenize_bpe <- function(x, ...) {
   if (is_trained(x)) {

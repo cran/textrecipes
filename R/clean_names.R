@@ -19,9 +19,15 @@
 #'
 #' # Tidying
 #'
-#' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
-#' (the new clean variable names) and `value` (the original variable names).
-#'
+#' When you [`tidy()`][recipes::tidy.recipe()] this step, a tibble is returned with
+#' columns `terms`, `value`, and `id`:
+#' 
+#' \describe{
+#'   \item{terms}{character, the new clean variable names}
+#'   \item{value}{character, the original variable names}
+#'   \item{id}{character, id of this step}
+#' }
+#' 
 #' @template case-weights-not-supported
 #'
 #' @seealso [step_clean_levels()], [recipes::step_factor2string()],
@@ -122,8 +128,8 @@ print.step_clean_names <-
     invisible(x)
   }
 
-#' @rdname tidy.recipe
-#' @param x A `step_clean_names` object.
+#' @rdname step_clean_names
+#' @usage NULL
 #' @export
 tidy.step_clean_names <- function(x, ...) {
   if (is_trained(x)) {

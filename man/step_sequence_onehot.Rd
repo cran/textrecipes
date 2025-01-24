@@ -2,6 +2,7 @@
 % Please edit documentation in R/sequence_onehot.R
 \name{step_sequence_onehot}
 \alias{step_sequence_onehot}
+\alias{tidy.step_sequence_onehot}
 \title{Positional One-Hot encoding of Tokens}
 \source{
 \url{https://papers.nips.cc/paper/5782-character-level-convolutional-networks-for-text-classification.pdf}
@@ -24,7 +25,7 @@ step_sequence_onehot(
 )
 }
 \arguments{
-\item{recipe}{A \link{recipe} object. The step will be added to the
+\item{recipe}{A \link[recipes:recipe]{recipes::recipe} object. The step will be added to the
 sequence of operations for this recipe.}
 
 \item{...}{One or more selector functions to choose which
@@ -57,7 +58,7 @@ Defaults too 'pre'.}
 Characters not in the vocabulary will be encoded as 0. Defaults to
 \code{letters}.}
 
-\item{prefix}{A prefix for generated column names, default to "seq1hot".}
+\item{prefix}{A prefix for generated column names, defaults to "seq1hot".}
 
 \item{keep_original_cols}{A logical to keep the original variables in the
 output. Defaults to \code{FALSE}.}
@@ -81,13 +82,19 @@ take a string and do one hot encoding for each character by position.
 \details{
 The string will be capped by the sequence_length argument, strings shorter
 then sequence_length will be padded with empty characters. The encoding will
-assign a integer to each character in the vocabulary, and will encode
+assign an integer to each character in the vocabulary, and will encode
 accordingly. Characters not in the vocabulary will be encoded as 0.
 }
 \section{Tidying}{
-When you \code{\link[=tidy.recipe]{tidy()}} this step, a tibble with columns \code{terms}
-(the selectors or variables selected), \code{vocabulary} (index) and \code{token} (text
-correspoding to the index).
+When you \code{\link[recipes:tidy.recipe]{tidy()}} this step, a tibble is returned with
+columns \code{terms}, \code{vocabulary}, \code{token}, and \code{id}:
+
+\describe{
+\item{terms}{character, the selectors or variables selected}
+\item{vocabulary}{integer, index}
+\item{token}{character, text corresponding to the index}
+\item{id}{character, id of this step}
+}
 }
 
 \section{Case weights}{
@@ -97,6 +104,7 @@ The underlying operation does not allow for case weights.
 }
 
 \examples{
+\dontshow{if (rlang::is_installed("modeldata")) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 library(recipes)
 library(modeldata)
 data(tate_text)
@@ -113,6 +121,7 @@ bake(tate_obj, new_data = NULL)
 
 tidy(tate_rec, number = 3)
 tidy(tate_obj, number = 3)
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 Other Steps for Numeric Variables From Characters: 

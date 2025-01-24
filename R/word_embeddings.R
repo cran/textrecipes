@@ -43,10 +43,16 @@
 #' `wordembedding_d1`, `wordembedding_d1`, etc.
 #'
 #' # Tidying
-#'
-#' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
-#' (the selectors or variables selected), `embedding_rows` (number of rows in
-#' embedding), and `aggregation` (the aggregation method).
+#' 
+#' When you [`tidy()`][recipes::tidy.recipe()] this step, a tibble is returned with
+#' columns `terms`, `embedding_rows`, `aggregation`, and `id`:
+#' 
+#' \describe{
+#'   \item{terms}{character, the selectors or variables selected}
+#'   \item{embedding_rows}{integer, number of rows in embedding}
+#'   \item{aggregation}{character,aggregation}
+#'   \item{id}{character, id of this step}
+#' }
 #'
 #' @template case-weights-not-supported
 #'
@@ -104,17 +110,14 @@ step_word_embeddings <- function(recipe,
       ncol(embeddings) == 1 ||
       !all(map_lgl(embeddings[, 2:ncol(embeddings)], is.numeric))
   ) {
-    embeddings_message <- glue(
-      "embeddings should be a tibble with 1 character or factor column and ",
-      "additional numeric columns."
-    )
-    rlang::abort(
-      embeddings_message,
+    cli::cli_abort(
+      "embeddings should be a tibble with {.code 1} character or factor column 
+      and additional numeric columns.",
       class = "bad_embeddings"
     )
   }
-
-  aggregation <- match.arg(aggregation)
+  
+  aggregation <- rlang::arg_match(aggregation)
 
   add_step(
     recipe,
@@ -157,6 +160,9 @@ step_word_embeddings_new <- function(terms, role, trained, columns, embeddings,
 prep.step_word_embeddings <- function(x, training, info = NULL, ...) {
   col_names <- recipes_eval_select(x$terms, training, info)
 
+  check_number_decimal(x$aggregation_default, arg = "aggregation_default")
+  check_string(x$prefix, arg = "prefix")
+
   check_type(training[, col_names], types = "tokenlist")
 
   step_word_embeddings_new(
@@ -195,7 +201,7 @@ bake.step_word_embeddings <- function(object, new_data, ...) {
       sep = "_"
     )
 
-    emb_columns <- check_name(emb_columns, new_data, object, names(emb_columns))
+    emb_columns <- recipes::check_name(emb_columns, new_data, object, names(emb_columns))
     
     new_data <- vec_cbind(new_data, emb_columns)
   }
@@ -231,8 +237,8 @@ print.step_word_embeddings <- function(x,
   invisible(x)
 }
 
-#' @rdname tidy.recipe
-#' @param x A `step_word_embeddings` object.
+#' @rdname step_word_embeddings
+#' @usage NULL
 #' @export
 tidy.step_word_embeddings <- function(x, ...) {
   if (is_trained(x)) {

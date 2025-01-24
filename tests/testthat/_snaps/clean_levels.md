@@ -1,3 +1,11 @@
+# bake method errors when needed non-standard role columns are missing
+
+    Code
+      bake(trained, new_data = smith_tr[, -1])
+    Condition
+      Error in `step_clean_levels()`:
+      ! The following required column is missing from `new_data`: name.
+
 # empty printing
 
     Code
@@ -43,10 +51,10 @@
       
       -- Inputs 
       Number of variables by role
-      predictor: 3
+      predictor: 5
       
       -- Operations 
-      * Cleaning factor levels for: name
+      * Cleaning factor levels for: Species
 
 ---
 
@@ -58,11 +66,11 @@
       
       -- Inputs 
       Number of variables by role
-      predictor: 3
+      predictor: 5
       
       -- Training information 
-      Training data contained 15 data points and no incomplete rows.
+      Training data contained 150 data points and no incomplete rows.
       
       -- Operations 
-      * Cleaning factor levels for: name | Trained
+      * Cleaning factor levels for: Species | Trained
 

@@ -5,8 +5,43 @@
     Condition
       Error in `step_texthash()`:
       Caused by error in `bake()`:
-      ! Name collision occured. The following variable names already exists:
-      i  texthash_text_0001
+      ! Name collision occurred. The following variable names already exist:
+      * `texthash_text_0001`
+
+# bad args
+
+    Code
+      recipe(~., data = mtcars) %>% step_texthash(signed = "yes") %>% prep()
+    Condition
+      Error in `step_texthash()`:
+      Caused by error in `prep()`:
+      ! `signed` must be `TRUE` or `FALSE`, not the string "yes".
+
+---
+
+    Code
+      recipe(~., data = mtcars) %>% step_texthash(num_terms = -4) %>% prep()
+    Condition
+      Error in `step_texthash()`:
+      Caused by error in `prep()`:
+      ! `num_terms` must be a whole number larger than or equal to 0, not the number -4.
+
+---
+
+    Code
+      recipe(~., data = mtcars) %>% step_texthash(prefix = NULL) %>% prep()
+    Condition
+      Error in `step_texthash()`:
+      Caused by error in `prep()`:
+      ! `prefix` must be a single string, not `NULL`.
+
+# bake method errors when needed non-standard role columns are missing
+
+    Code
+      bake(trained, new_data = tokenized_test_data[, -1])
+    Condition
+      Error in `step_texthash()`:
+      ! The following required column is missing from `new_data`: text.
 
 # empty printing
 
@@ -49,8 +84,8 @@
       rec <- prep(rec)
     Condition
       Warning:
-      'keep_original_cols' was added to `step_texthash()` after this recipe was created.
-      Regenerate your recipe to avoid this warning.
+      `keep_original_cols` was added to `step_texthash()` after this recipe was created.
+      i Regenerate your recipe to avoid this warning.
 
 # printing
 

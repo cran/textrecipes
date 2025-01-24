@@ -9,7 +9,7 @@
 #' @template args-role_predictors
 #' @template args-trained
 #' @template args-columns
-#' @param prefix A prefix for generated column names, default to "tokenmerge".
+#' @param prefix A prefix for generated column names, defaults to "tokenmerge".
 #' @template args-keep_original_cols
 #' @template args-skip
 #' @template args-id
@@ -20,15 +20,20 @@
 #'
 #' # Tidying
 #'
-#' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
-#' (the selectors or variables selected).
+#' When you [`tidy()`][recipes::tidy.recipe()] this step, a tibble is returned with
+#' columns `terms` and `id`:
+#' 
+#' \describe{
+#'   \item{terms}{character, the selectors or variables selected}
+#'   \item{id}{character, id of this step}
+#' }
 #'
 #' @template case-weights-not-supported
 #'
 #' @seealso [step_tokenize()] to turn characters into [`tokens`][tokenlist()]
 #' @family Steps for Token Modification
 #'
-#' @examples
+#' @examplesIf rlang::is_installed("modeldata")
 #' library(recipes)
 #' library(modeldata)
 #' data(tate_text)
@@ -90,6 +95,8 @@ step_tokenmerge_new <-
 prep.step_tokenmerge <- function(x, training, info = NULL, ...) {
   col_names <- recipes_eval_select(x$terms, training, info)
 
+check_string(x$prefix, arg = "prefix")
+  
   check_type(training[, col_names], types = "tokenlist")
 
   step_tokenmerge_new(
@@ -122,7 +129,7 @@ bake.step_tokenmerge <- function(object, new_data, ...) {
 
   new_data <- remove_original_cols(new_data, object, col_names)
   
-  new_col <- check_name(new_col, new_data, object, names(new_col))
+  new_col <- recipes::check_name(new_col, new_data, object, names(new_col))
   
   new_data <- vec_cbind(new_data, new_col)
 
@@ -137,8 +144,8 @@ print.step_tokenmerge <-
     invisible(x)
   }
 
-#' @rdname tidy.recipe
-#' @param x A `step_tokenmerge` object.
+#' @rdname step_tokenmerge
+#' @usage NULL
 #' @export
 tidy.step_tokenmerge <- function(x, ...) {
   if (is_trained(x)) {

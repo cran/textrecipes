@@ -25,8 +25,13 @@
 #'
 #' # Tidying
 #'
-#' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
-#' (the selectors or variables selected) and `num_topics` (number of topics).
+#' When you [`tidy()`][recipes::tidy.recipe()] this step, a tibble is returned with
+#' columns `terms` and `id`:
+#' 
+#' \describe{
+#'   \item{terms}{character, the selectors or variables selected}
+#'   \item{id}{character, id of this step}
+#' }
 #'
 #' @template case-weights-not-supported
 #'
@@ -94,6 +99,8 @@ step_pos_filter_new <-
 prep.step_pos_filter <- function(x, training, info = NULL, ...) {
   col_names <- recipes_eval_select(x$terms, training, info)
 
+  check_character(x$keep_tags, arg = "keep_tags")
+
   check_type(training[, col_names], types = "tokenlist")
 
   step_pos_filter_new(
@@ -116,11 +123,10 @@ bake.step_pos_filter <- function(object, new_data, ...) {
     variable <- new_data[[col_name]]
 
     if (is.null(maybe_get_pos(variable))) {
-      rlang::abort(
-        glue(
-          "`{col_name}` doesn't have a pos attribute. ",
-          "Make sure the tokenization step includes ",
-          "part of speech tagging."
+      cli::cli_abort(
+        c(
+          "{.arg {col_name}} doesn't have a pos attribute.",
+          "i" = "Make sure the tokenization step includes part of speech tagging."
         )
       )
     }
@@ -139,8 +145,8 @@ print.step_pos_filter <-
     invisible(x)
   }
 
-#' @rdname tidy.recipe
-#' @param x A `step_pos_filter` object.
+#' @rdname step_pos_filter
+#' @usage NULL
 #' @export
 tidy.step_pos_filter <- function(x, ...) {
   if (is_trained(x)) {

@@ -4,7 +4,7 @@
       rec %>% step_tokenize(text) %>% step_sequence_onehot(text, padding = "not pre")
     Condition
       Error in `step_sequence_onehot()`:
-      ! `padding` should be one of: 'pre', 'post'
+      ! `padding` must be one of "pre" or "post", not "not pre".
 
 ---
 
@@ -12,7 +12,7 @@
       rec %>% step_tokenize(text) %>% step_sequence_onehot(text, truncating = "Wrong")
     Condition
       Error in `step_sequence_onehot()`:
-      ! `truncating` should be one of: 'pre', 'post'
+      ! `truncating` must be one of "pre" or "post", not "Wrong".
 
 ---
 
@@ -21,7 +21,7 @@
         "pre"))
     Condition
       Error in `step_sequence_onehot()`:
-      ! `padding` should be one of: 'pre', 'post'
+      ! `arg` must be length 1 or a permutation of `c("pre", "post")`.
 
 ---
 
@@ -29,7 +29,7 @@
       rec %>% step_tokenize(text) %>% step_sequence_onehot(text, truncating = "Wrong")
     Condition
       Error in `step_sequence_onehot()`:
-      ! `truncating` should be one of: 'pre', 'post'
+      ! `truncating` must be one of "pre" or "post", not "Wrong".
 
 # check_name() is used
 
@@ -38,8 +38,51 @@
     Condition
       Error in `step_sequence_onehot()`:
       Caused by error in `bake()`:
-      ! Name collision occured. The following variable names already exists:
-      i  seq1hot_text_1
+      ! Name collision occurred. The following variable names already exist:
+      * `seq1hot_text_1`
+
+# bad args
+
+    Code
+      recipe(~., data = mtcars) %>% step_sequence_onehot(padding = "yes")
+    Condition
+      Error in `step_sequence_onehot()`:
+      ! `padding` must be one of "pre" or "post", not "yes".
+
+---
+
+    Code
+      recipe(~., data = mtcars) %>% step_sequence_onehot(truncating = "yes")
+    Condition
+      Error in `step_sequence_onehot()`:
+      ! `truncating` must be one of "pre" or "post", not "yes".
+
+---
+
+    Code
+      recipe(~., data = mtcars) %>% step_sequence_onehot(sequence_length = -4) %>%
+        prep()
+    Condition
+      Error in `step_sequence_onehot()`:
+      Caused by error in `prep()`:
+      ! `sequence_length` must be a whole number larger than or equal to 0, not the number -4.
+
+---
+
+    Code
+      recipe(~., data = mtcars) %>% step_sequence_onehot(prefix = NULL) %>% prep()
+    Condition
+      Error in `step_sequence_onehot()`:
+      Caused by error in `prep()`:
+      ! `prefix` must be a single string, not `NULL`.
+
+# bake method errors when needed non-standard role columns are missing
+
+    Code
+      bake(trained, new_data = tokenized_test_data[, -1])
+    Condition
+      Error in `step_sequence_onehot()`:
+      ! The following required column is missing from `new_data`: text.
 
 # empty printing
 
@@ -82,8 +125,8 @@
       rec <- prep(rec)
     Condition
       Warning:
-      'keep_original_cols' was added to `step_sequence_onehot()` after this recipe was created.
-      Regenerate your recipe to avoid this warning.
+      `keep_original_cols` was added to `step_sequence_onehot()` after this recipe was created.
+      i Regenerate your recipe to avoid this warning.
 
 # printing
 

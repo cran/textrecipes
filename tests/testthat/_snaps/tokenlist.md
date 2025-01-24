@@ -80,7 +80,7 @@
       tokenlist_apply(letters, toupper)
     Condition
       Error in `tokenlist_apply()`:
-      ! Input must be a tokenlist.
+      ! Input must be <tokenlist> object.
 
 # tokenlist_lemma works
 
@@ -96,7 +96,7 @@
       tokenlist_lemma(tokenlist(list(letters)))
     Condition
       Error in `tokenlist_lemma()`:
-      ! `lemma` attribute not avaliable.
+      ! The `lemma` attribute is not available.
 
 # tokenlist_pos_filter works
 
@@ -112,7 +112,7 @@
       tokenlist_pos_filter(tokenlist(data), "NOUN")
     Condition
       Error in `tokenlist_pos_filter()`:
-      ! pos attribute not avaliable.
+      ! `pos` attribute not available.
 
 # tokenlist_ngram errors
 
@@ -127,7 +127,7 @@
     Code
       tokenlist_ngram(tokenlist(data), 0, 3, " ")
     Condition
-      Error:
+      Error in `ngram()`:
       ! n must be a positive integer.
 
 ---
@@ -135,7 +135,7 @@
     Code
       tokenlist_ngram(tokenlist(data), 3, 0, " ")
     Condition
-      Error:
+      Error in `ngram()`:
       ! n_min must be a positive integer.
 
 ---
@@ -143,6 +143,6 @@
     Code
       tokenlist_ngram(tokenlist(data), 1, 2, " ")
     Condition
-      Error:
-      ! n_min must be larger then n.
+      Error in `ngram()`:
+      ! n_min must be less then n.
 

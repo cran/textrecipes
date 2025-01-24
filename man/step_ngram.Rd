@@ -2,6 +2,7 @@
 % Please edit documentation in R/ngram.R
 \name{step_ngram}
 \alias{step_ngram}
+\alias{tidy.step_ngram}
 \title{Generate n-grams From Token Variables}
 \usage{
 step_ngram(
@@ -18,7 +19,7 @@ step_ngram(
 )
 }
 \arguments{
-\item{recipe}{A \link{recipe} object. The step will be added to the
+\item{recipe}{A \link[recipes:recipe]{recipes::recipe} object. The step will be added to the
 sequence of operations for this recipe.}
 
 \item{...}{One or more selector functions to choose which
@@ -63,14 +64,19 @@ ngrams.
 }
 \details{
 The use of this step will leave the ordering of the tokens meaningless. If
-\code{min_num_tokens <  num_tokens} then the tokens order in increasing fashion
-with respect to the number of tokens in the n-gram. If \code{min_num_tokens = 1}
-and \code{num_tokens = 3} then the output contains all the 1-grams followed by all
+\code{min_num_tokens <  num_tokens} then the tokens will be ordered in increasing
+fashion with respect to the number of tokens in the n-gram. If \code{min_num_tokens = 1}
+and \code{num_tokens = 3} then the output will contain all the 1-grams followed by all
 the 2-grams followed by all the 3-grams.
 }
 \section{Tidying}{
-When you \code{\link[=tidy.recipe]{tidy()}} this step, a tibble with columns \code{terms}
-(the selectors or variables selected).
+When you \code{\link[recipes:tidy.recipe]{tidy()}} this step, a tibble is returned with
+columns \code{terms} and \code{id}:
+
+\describe{
+\item{terms}{character, the selectors or variables selected}
+\item{id}{character, id of this step}
+}
 }
 
 \section{Tuning Parameters}{
@@ -87,6 +93,7 @@ The underlying operation does not allow for case weights.
 }
 
 \examples{
+\dontshow{if (rlang::is_installed("modeldata")) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 library(recipes)
 library(modeldata)
 data(tate_text)
@@ -107,6 +114,7 @@ bake(tate_obj, new_data = NULL) \%>\%
 
 tidy(tate_rec, number = 2)
 tidy(tate_obj, number = 2)
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[=step_tokenize]{step_tokenize()}} to turn characters into \code{\link[=tokenlist]{tokens}}

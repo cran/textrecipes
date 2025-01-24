@@ -18,7 +18,7 @@
 #' @param vocabulary A character vector of strings to be considered.
 #' @param res The words that will be used to calculate the term frequency will
 #'   be stored here once this preprocessing step has be trained by
-#'   [prep.recipe()].
+#'   [recipes::prep.recipe()].
 #' @template args-prefix
 #' @template args-keep_original_cols
 #' @template args-skip
@@ -33,12 +33,12 @@
 #' issues. A good strategy is to start with a low token count and go up
 #' according to how much RAM you want to use.
 #'
-#' Term frequency is a weight of how many times each token appear in each
+#' Term frequency is a weight of how many times each token appears in each
 #' observation. There are different ways to calculate the weight and this step
 #' can do it in a couple of ways. Setting the argument `weight_scheme` to
 #' "binary" will result in a set of binary variables denoting if a token is
 #' present in the observation. "raw count" will count the times a token is
-#' present in the observation. "term frequency" will divide the count with the
+#' present in the observation. "term frequency" will divide the count by the
 #' total number of words in the document to limit the effect of the document
 #' length as longer documents tends to have the word present more times but not
 #' necessarily at a higher percentage. "log normalization" takes the log of 1
@@ -54,8 +54,14 @@
 #'
 #' # Tidying
 #'
-#' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
-#' (the selectors or variables selected) and `value` (the weighting scheme).
+#' When you [`tidy()`][recipes::tidy.recipe()] this step, a tibble is returned with
+#' columns `terms`, `value`, and `id`:
+#' 
+#' \describe{
+#'   \item{terms}{character, the selectors or variables selected}
+#'   \item{value}{character, the weighting scheme}
+#'   \item{id}{character, id of this step}
+#' }
 #'
 #' ```{r, echo = FALSE, results="asis"}
 #' step <- "step_tf"
@@ -68,7 +74,7 @@
 #' @seealso [step_tokenize()] to turn characters into [`tokens`][tokenlist()]
 #' @family Steps for Numeric Variables From Tokens
 #'
-#' @examples
+#' @examplesIf rlang::is_installed("modeldata")
 #' \donttest{
 #' library(recipes)
 #' library(modeldata)
@@ -150,6 +156,11 @@ step_tf_new <-
 prep.step_tf <- function(x, training, info = NULL, ...) {
   col_names <- recipes_eval_select(x$terms, training, info)
 
+  rlang::arg_match0(x$weight_scheme, tf_funs, arg_nm = "weight_scheme")
+  check_number_decimal(x$weight, arg = "weight")
+  check_character(x$vocabulary, allow_null = TRUE, arg = "vocabulary")
+  check_string(x$prefix, arg = "prefix")
+
   check_type(training[, col_names], types = "tokenlist")
 
   token_list <- list()
@@ -198,7 +209,7 @@ bake.step_tf <- function(object, new_data, ...) {
       tf_text <- purrr::map_dfc(tf_text, as.integer)
     }
 
-    tf_text <- check_name(tf_text, new_data, object, names(tf_text))
+    tf_text <- recipes::check_name(tf_text, new_data, object, names(tf_text))
 
     new_data <- vec_cbind(new_data, tf_text)
   }
@@ -216,8 +227,8 @@ print.step_tf <-
     invisible(x)
   }
 
-#' @rdname tidy.recipe
-#' @param x A `step_tf` object.
+#' @rdname step_tf
+#' @usage NULL
 #' @export
 tidy.step_tf <- function(x, ...) {
   if (is_trained(x)) {

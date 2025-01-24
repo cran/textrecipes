@@ -2,6 +2,7 @@
 % Please edit documentation in R/stem.R
 \name{step_stem}
 \alias{step_stem}
+\alias{tidy.step_stem}
 \title{Stemming of Token Variables}
 \usage{
 step_stem(
@@ -17,7 +18,7 @@ step_stem(
 )
 }
 \arguments{
-\item{recipe}{A \link{recipe} object. The step will be added to the
+\item{recipe}{A \link[recipes:recipe]{recipes::recipe} object. The step will be added to the
 sequence of operations for this recipe.}
 
 \item{...}{One or more selector functions to choose which
@@ -65,9 +66,14 @@ Note that the stemming will only be done at the end of the word and will
 therefore not work reliably on ngrams or sentences.
 }
 \section{Tidying}{
-When you \code{\link[=tidy.recipe]{tidy()}} this step, a tibble with columns \code{terms}
-(the selectors or variables selected) and \code{is_custom_stemmer} (indicate if
-custom stemmer was used).
+When you \code{\link[recipes:tidy.recipe]{tidy()}} this step, a tibble is returned with
+columns \code{terms}, \code{is_custom_stemmer}, and \code{id}:
+
+\describe{
+\item{terms}{character, the selectors or variables selected}
+\item{is_custom_stemmer}{logical, indicate if custom stemmer was used}
+\item{id}{character, id of this step}
+}
 }
 
 \section{Case weights}{
@@ -77,6 +83,7 @@ The underlying operation does not allow for case weights.
 }
 
 \examples{
+\dontshow{if (rlang::is_installed("modeldata")) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 library(recipes)
 library(modeldata)
 data(tate_text)
@@ -115,6 +122,7 @@ bake(tate_obj, new_data = NULL, medium) \%>\%
 bake(tate_obj, new_data = NULL) \%>\%
   slice(2) \%>\%
   pull(medium)
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[=step_tokenize]{step_tokenize()}} to turn characters into \code{\link[=tokenlist]{tokens}}

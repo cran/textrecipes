@@ -12,7 +12,7 @@
 #' @param vocabulary A character vector of strings to be considered.
 #' @param res The words that will be used to calculate the term frequency will
 #'   be stored here once this preprocessing step has be trained by
-#'   [prep.recipe()].
+#'   [recipes::prep.recipe()].
 #' @param smooth_idf TRUE smooth IDF weights by adding one to document
 #'   frequencies, as if an extra document was seen containing every term in the
 #'   collection exactly once. This prevents division by zero.
@@ -51,9 +51,15 @@
 #'
 #' # Tidying
 #'
-#' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
-#' (the selectors or variables selected), `token` (name of the tokens),
-#' `weight` (the calculated IDF weight) is returned.
+#' When you [`tidy()`][recipes::tidy.recipe()] this step, a tibble is returned with
+#' columns `terms`, `token`, `weight`, and `id`:
+#' 
+#' \describe{
+#'   \item{terms}{character, the selectors or variables selected}
+#'   \item{token}{character, name of token}
+#'   \item{weight}{numeric, the calculated IDF weight}
+#'   \item{id}{character, id of this step}
+#' }
 #'
 #' @template details-prefix
 #'
@@ -62,7 +68,7 @@
 #' @seealso [step_tokenize()] to turn characters into [`tokens`][tokenlist()]
 #' @family Steps for Numeric Variables From Tokens
 #'
-#' @examples
+#' @examplesIf rlang::is_installed("modeldata")
 #' \donttest{
 #' library(recipes)
 #' library(modeldata)
@@ -142,6 +148,12 @@ step_tfidf_new <-
 prep.step_tfidf <- function(x, training, info = NULL, ...) {
   col_names <- recipes_eval_select(x$terms, training, info)
 
+  check_character(x$vocabulary, allow_null = TRUE, arg = "vocabulary")
+  check_bool(x$smooth_idf, arg = "smooth_idf")
+  rlang::arg_match0(x$norm, c("l1", "l2", "none"), arg_nm = "norm")
+  check_bool(x$sublinear_tf, arg = "sublinear_tf")
+  check_string(x$prefix, arg = "prefix")
+
   check_type(training[, col_names], types = "tokenlist")
 
   idf_weights <- list()
@@ -190,7 +202,7 @@ bake.step_tfidf <- function(object, new_data, ...) {
       object$sublinear_tf
     )
 
-    tfidf_text <- check_name(tfidf_text, new_data, object, names(tfidf_text))
+    tfidf_text <- recipes::check_name(tfidf_text, new_data, object, names(tfidf_text))
 
     new_data <- vec_cbind(new_data, tfidf_text)
   }
@@ -208,8 +220,8 @@ print.step_tfidf <-
     invisible(x)
   }
 
-#' @rdname tidy.recipe
-#' @param x A `step_tfidf` object.
+#' @rdname step_tfidf
+#' @usage NULL
 #' @export
 tidy.step_tfidf <- function(x, ...) {
   if (is_trained(x)) {
@@ -265,10 +277,10 @@ dtm_to_tfidf <- function(dtm, idf_weights, smooth_idf, norm, sublinear_tf) {
     dtm@x <- 1 + log(dtm@x)
   }
   if (is.character(idf_weights)) {
-    rlang::warn(
+    cli::cli_warn(
       c(
         "Please retrain this recipe with version 0.5.1 or higher.",
-        "A data leakage bug has been fixed for `step_tfidf()`."
+        "i" = "A data leakage bug has been fixed for {.fn step_tfidf}."
       )
     )
     idf_weights <- log(smooth_idf + nrow(dtm) / Matrix::colSums(dtm > 0))

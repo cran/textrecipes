@@ -1,12 +1,19 @@
-# Errors if vocabulary size is set to low.
+# bad args
 
     Code
-      recipe(~text1, data = test_data) %>% step_tokenize_bpe(text1, vocabulary_size = 10) %>%
-        prep()
+      recipe(~., data = mtcars) %>% step_tokenize_bpe(vocabulary_size = -4) %>% prep()
     Condition
       Error in `step_tokenize_bpe()`:
       Caused by error in `prep()`:
-      ! `vocabulary_size` of 10 is too small for column `text1` which has a unique character count of 23
+      ! `vocabulary_size` must be a whole number larger than or equal to 0, not the number -4.
+
+# bake method errors when needed non-standard role columns are missing
+
+    Code
+      bake(trained, new_data = test_data[, -1])
+    Condition
+      Error in `step_tokenize_bpe()`:
+      ! The following required column is missing from `new_data`: text1.
 
 # empty printing
 

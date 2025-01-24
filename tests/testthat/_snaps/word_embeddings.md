@@ -5,8 +5,42 @@
     Condition
       Error in `step_word_embeddings()`:
       Caused by error in `bake()`:
-      ! Name collision occured. The following variable names already exists:
-      i  wordembed_text_d1
+      ! Name collision occurred. The following variable names already exist:
+      * `wordembed_text_d1`
+
+# bad args
+
+    Code
+      recipe(~., data = mtcars) %>% step_word_embeddings(aggregation = "wrong") %>%
+        prep()
+    Condition
+      Error in `step_word_embeddings()`:
+      ! argument "embeddings" is missing, with no default
+
+---
+
+    Code
+      recipe(~., data = mtcars) %>% step_word_embeddings(aggregation_default = "yes") %>%
+        prep()
+    Condition
+      Error in `step_word_embeddings()`:
+      ! argument "embeddings" is missing, with no default
+
+---
+
+    Code
+      recipe(~., data = mtcars) %>% step_word_embeddings(prefix = NULL) %>% prep()
+    Condition
+      Error in `step_word_embeddings()`:
+      ! argument "embeddings" is missing, with no default
+
+# bake method errors when needed non-standard role columns are missing
+
+    Code
+      bake(trained, new_data = tokenized_test_data[, -1])
+    Condition
+      Error in `step_word_embeddings()`:
+      ! The following required column is missing from `new_data`: text.
 
 # empty printing
 
@@ -49,8 +83,8 @@
       rec <- prep(rec)
     Condition
       Warning:
-      'keep_original_cols' was added to `step_word_embeddings()` after this recipe was created.
-      Regenerate your recipe to avoid this warning.
+      `keep_original_cols` was added to `step_word_embeddings()` after this recipe was created.
+      i Regenerate your recipe to avoid this warning.
 
 # printing
 

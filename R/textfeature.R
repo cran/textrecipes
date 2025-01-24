@@ -9,8 +9,8 @@
 #' @template args-trained
 #' @template args-columns
 #' @param extract_functions A named list of feature extracting functions.
-#'   default to `count_functions`. See details for more information.
-#' @param prefix A prefix for generated column names, default to "textfeature".
+#'   Defaults to `count_functions`. See details for more information.
+#' @param prefix A prefix for generated column names, defaults to "textfeature".
 #' @template args-keep_original_cols
 #' @template args-skip
 #' @template args-id
@@ -28,16 +28,21 @@
 #' will be thrown.
 #'
 #' # Tidying
-#'
-#' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
-#' (the selectors or variables selected) and `functions` (name of feature
-#' functions).
+#' 
+#' When you [`tidy()`][recipes::tidy.recipe()] this step, a tibble is returned with
+#' columns `terms`, `functions`, and `id`:
+#' 
+#' \describe{
+#'   \item{terms}{character, the selectors or variables selected}
+#'   \item{functions}{character, name of feature functions}
+#'   \item{id}{character, id of this step}
+#' }
 #'
 #' @template case-weights-not-supported
 #'
 #' @family Steps for Numeric Variables From Characters
 #'
-#' @examples
+#' @examplesIf rlang::is_installed("modeldata")
 #' library(recipes)
 #' library(modeldata)
 #' data(tate_text)
@@ -117,6 +122,8 @@ step_textfeature_new <-
 prep.step_textfeature <- function(x, training, info = NULL, ...) {
   col_names <- recipes_eval_select(x$terms, training, info)
 
+  check_string(x$prefix, arg = "prefix")
+
   training <- factor_to_text(training, col_names)
 
   check_type(training[, col_names], types = c("string", "factor", "ordered"))
@@ -153,7 +160,7 @@ bake.step_textfeature <- function(object, new_data, ...) {
       sep = "_"
     )
 
-    tf_text <- check_name(tf_text, new_data, object, names(tf_text))
+    tf_text <- recipes::check_name(tf_text, new_data, object, names(tf_text))
     
     new_data <- vec_cbind(new_data, tf_text)
   }
@@ -171,8 +178,8 @@ print.step_textfeature <-
     invisible(x)
   }
 
-#' @rdname tidy.recipe
-#' @param x A `step_textfeature` object.
+#' @rdname step_textfeature 
+#' @usage NULL
 #' @export
 tidy.step_textfeature <- function(x, ...) {
   if (is_trained(x)) {
@@ -203,14 +210,14 @@ validate_string2num <- function(fun) {
 
   out <- fun(string)
   if (!(is.numeric(out) | is.logical(out))) {
-    rlang::abort(paste0(deparse(substitute(fun)), " must return a numeric."))
+    cli::cli_abort("Function {.fn {fun}} must return a numeric.")
   }
 
   if (length(string) != length(out)) {
-    rlang::abort(paste0(
-      deparse(substitute(fun)),
-      " must return the same length output as its input."
-    ))
+    cli::cli_abort(
+      "{.fn {deparse(substitute(fun))}} must return the same length output as 
+      its input."
+    )
   }
 }
 

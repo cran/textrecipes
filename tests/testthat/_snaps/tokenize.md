@@ -5,7 +5,7 @@
     Condition
       Error in `step_tokenize()`:
       Caused by error in `prep()`:
-      ! token should be one of the supported: characters, character_shingle, lines, ngrams, paragraphs, ptb, regex, sentences, skip_ngrams, words, or word_stems
+      ! Token should be one of characters, character_shingle, lines, ngrams, paragraphs, ptb, regex, sentences, skip_ngrams, words, and word_stems.
 
 # tokenization errors with wrong engines
 
@@ -14,7 +14,42 @@
     Condition
       Error in `step_tokenize()`:
       Caused by error in `prep()`:
-      ! `engine` argument is not valid.
+      ! The `engine` argument is not valid.
+
+# bad args
+
+    Code
+      recipe(~., data = mtcars) %>% step_tokenize(token = letters) %>% prep()
+    Condition
+      Error in `step_tokenize()`:
+      Caused by error in `prep()`:
+      ! `token` must be a single string, not a character vector.
+
+---
+
+    Code
+      recipe(~., data = mtcars) %>% step_tokenize(engine = letters) %>% prep()
+    Condition
+      Error in `step_tokenize()`:
+      Caused by error in `prep()`:
+      ! `engine` must be a single string, not a character vector.
+
+---
+
+    Code
+      recipe(~., data = mtcars) %>% step_tokenize(custom_token = "yes") %>% prep()
+    Condition
+      Error in `step_tokenize()`:
+      Caused by error in `prep()`:
+      ! `custom_token` must be a function or `NULL`, not the string "yes".
+
+# bake method errors when needed non-standard role columns are missing
+
+    Code
+      bake(trained, new_data = test_data[, -1])
+    Condition
+      Error in `step_tokenize()`:
+      ! The following required column is missing from `new_data`: text.
 
 # empty printing
 

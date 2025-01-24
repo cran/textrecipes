@@ -23,16 +23,21 @@
 #'
 #' # Tidying
 #'
-#' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
-#' (the selectors or variables selected) and `value` (seperator used for
-#' collapsing).
+#' When you [`tidy()`][recipes::tidy.recipe()] this step, a tibble is returned with
+#' columns `terms`, `value`, and `id`:
+#' 
+#' \describe{
+#'   \item{terms}{character, the selectors or variables selected}
+#'   \item{value}{character, seperator used for collapsing}
+#'   \item{id}{character, id of this step}
+#' }
 #'
 #' @template case-weights-not-supported
 #'
 #' @seealso [step_tokenize()] to turn characters into [`tokens`][tokenlist()]
 #' @family Steps for Un-Tokenization
 #'
-#' @examples
+#' @examplesIf rlang::is_installed("modeldata")
 #' library(recipes)
 #' library(modeldata)
 #' data(tate_text)
@@ -95,6 +100,8 @@ step_untokenize_new <-
 prep.step_untokenize <- function(x, training, info = NULL, ...) {
   col_names <- recipes_eval_select(x$terms, training, info)
 
+  check_string(x$sep, arg = "sep")
+
   check_type(training[, col_names], types = "tokenlist")
 
   step_untokenize_new(
@@ -130,8 +137,8 @@ print.step_untokenize <-
     invisible(x)
   }
 
-#' @rdname tidy.recipe
-#' @param x A `step_untokenize` object.
+#' @rdname step_untokenize
+#' @usage NULL
 #' @export
 tidy.step_untokenize <- function(x, ...) {
   if (is_trained(x)) {

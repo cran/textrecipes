@@ -9,10 +9,10 @@
 #' @template args-trained
 #' @template args-columns
 #' @param lda_models A WarpLDA model object from the text2vec package. If left
-#'   to NULL, the default, will it train its model based on the training data.
+#'   to NULL, the default, it will train its model based on the training data.
 #'   Look at the examples for how to fit a WarpLDA model.
 #' @param num_topics integer desired number of latent topics.
-#' @param prefix A prefix for generated column names, default to "lda".
+#' @param prefix A prefix for generated column names, defaults to "lda".
 #' @template args-keep_original_cols
 #' @template args-skip
 #' @template args-id
@@ -21,9 +21,15 @@
 #'
 #' # Tidying
 #'
-#' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
-#' (the selectors or variables selected) and `num_topics` (number of topics).
-#'
+#' When you [`tidy()`][recipes::tidy.recipe()] this step, a tibble is returned with
+#' columns `terms`, `num_topics`, and `id`:
+#' 
+#' \describe{
+#'   \item{terms}{character, the selectors or variables selected}
+#'   \item{num_topics}{integer, number of topics}
+#'   \item{id}{character, id of this step}
+#' }
+#' 
 #' @template case-weights-not-supported
 #'
 #' @source \url{https://arxiv.org/abs/1301.3781}
@@ -32,7 +38,7 @@
 #'
 #' @family Steps for Numeric Variables From Tokens
 #'
-#' @examplesIf all(c("text2vec", "data.table") %in% rownames(installed.packages()))
+#' @examplesIf all(c("modeldata", "text2vec", "data.table") %in% rownames(installed.packages()))
 #' \dontshow{library(data.table)}
 #' \dontshow{data.table::setDTthreads(2)}
 #' \dontshow{Sys.setenv("OMP_THREAD_LIMIT" = 2)}
@@ -128,6 +134,9 @@ step_lda_new <-
 prep.step_lda <- function(x, training, info = NULL, ...) {
   col_names <- recipes_eval_select(x$terms, training, info)
 
+  check_number_whole(x$num_topics, min = 0, arg = "num_topics")
+  check_string(x$prefix, arg = "prefix")
+
   check_lda_character(training[, col_names])
 
   check_type(training[, col_names], types = "tokenlist")
@@ -179,7 +188,7 @@ bake.step_lda <- function(object, new_data, ...) {
       sep = "_"
     )
     
-    tf_text <- check_name(tf_text, new_data, object, names(tf_text))
+    tf_text <- recipes::check_name(tf_text, new_data, object, names(tf_text))
 
     new_data <- vec_cbind(new_data, tf_text)
   }
@@ -197,8 +206,8 @@ print.step_lda <-
     invisible(x)
   }
 
-#' @rdname tidy.recipe
-#' @param x A `step_lda` object.
+#' @rdname step_lda
+#' @usage NULL
 #' @export
 tidy.step_lda <- function(x, ...) {
   if (is_trained(x)) {
@@ -261,12 +270,11 @@ check_lda_character <- function(dat) {
   all_good <- character_ind | factor_ind
 
   if (any(all_good)) {
-    rlang::abort(
-      glue(
+    cli::cli_abort(
+      c(
         "All columns selected for this step should be tokenlists.",
-        "\n",
-        "See https://github.com/tidymodels/textrecipes#breaking-changes",
-        " for more information."
+        "i" = "See {.url https://github.com/tidymodels/textrecipes#breaking-changes}
+           for more information."
       )
     )
   }

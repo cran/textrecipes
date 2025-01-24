@@ -2,6 +2,7 @@
 % Please edit documentation in R/tfidf.R
 \name{step_tfidf}
 \alias{step_tfidf}
+\alias{tidy.step_tfidf}
 \title{Term Frequency-Inverse Document Frequency of Tokens}
 \usage{
 step_tfidf(
@@ -22,7 +23,7 @@ step_tfidf(
 )
 }
 \arguments{
-\item{recipe}{A \link{recipe} object. The step will be added to the
+\item{recipe}{A \link[recipes:recipe]{recipes::recipe} object. The step will be added to the
 sequence of operations for this recipe.}
 
 \item{...}{One or more selector functions to choose which
@@ -45,7 +46,7 @@ until the step is trained by \code{\link[recipes:prep]{recipes::prep.recipe()}}.
 
 \item{res}{The words that will be used to calculate the term frequency will
 be stored here once this preprocessing step has be trained by
-\code{\link[=prep.recipe]{prep.recipe()}}.}
+\code{\link[recipes:prep]{recipes::prep.recipe()}}.}
 
 \item{smooth_idf}{TRUE smooth IDF weights by adding one to document
 frequencies, as if an extra document was seen containing every term in the
@@ -109,9 +110,15 @@ the name of the variable, followed by the tokens all separated by
 \code{hash001} - \code{hash101}.
 }
 \section{Tidying}{
-When you \code{\link[=tidy.recipe]{tidy()}} this step, a tibble with columns \code{terms}
-(the selectors or variables selected), \code{token} (name of the tokens),
-\code{weight} (the calculated IDF weight) is returned.
+When you \code{\link[recipes:tidy.recipe]{tidy()}} this step, a tibble is returned with
+columns \code{terms}, \code{token}, \code{weight}, and \code{id}:
+
+\describe{
+\item{terms}{character, the selectors or variables selected}
+\item{token}{character, name of token}
+\item{weight}{numeric, the calculated IDF weight}
+\item{id}{character, id of this step}
+}
 }
 
 \section{Case weights}{
@@ -121,6 +128,7 @@ The underlying operation does not allow for case weights.
 }
 
 \examples{
+\dontshow{if (rlang::is_installed("modeldata")) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 \donttest{
 library(recipes)
 library(modeldata)
@@ -138,7 +146,7 @@ bake(tate_obj, tate_text)
 tidy(tate_rec, number = 2)
 tidy(tate_obj, number = 2)
 }
-
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[=step_tokenize]{step_tokenize()}} to turn characters into \code{\link[=tokenlist]{tokens}}

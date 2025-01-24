@@ -23,27 +23,33 @@
 #'
 #' @details
 #'
-#' Stop words are words which sometimes are remove before natural language
+#' Stop words are words which sometimes are removed before natural language
 #' processing tasks. While stop words usually refers to the most common words in
 #' the language there is no universal stop word list.
 #'
 #' The argument `custom_stopword_source` allows you to pass a character vector
-#' to filter against. With the `keep` argument one can specify to keep the words
+#' to filter against. With the `keep` argument one can specify words to keep
 #' instead of removing thus allowing you to select words with a combination of
 #' these two arguments.
 #'
 #' # Tidying
-#'
-#' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
-#' (the selectors or variables selected), `value` (name of stop word list), and
-#' `keep` (whether stop words are removed or kept).
+#' 
+#' When you [`tidy()`][recipes::tidy.recipe()] this step, a tibble is returned with
+#' columns `terms`, `value`, `keep`, and `id`:
+#' 
+#' \describe{
+#'   \item{terms}{character, the selectors or variables selected}
+#'   \item{value}{character, name of stop word list}
+#'   \item{keep}{logical, whether stop words are removed or kept}
+#'   \item{id}{character, id of this step}
+#' }
 #'
 #' @template case-weights-not-supported
 #'
 #' @seealso [step_tokenize()] to turn characters into [`tokens`][tokenlist()]
 #' @family Steps for Token Modification
 #'
-#' @examplesIf rlang::is_installed("stopwords")
+#' @examplesIf rlang::is_installed(c("modeldata", "stopwords"))
 #' library(recipes)
 #' library(modeldata)
 #' data(tate_text)
@@ -127,6 +133,13 @@ step_stopwords_new <-
 prep.step_stopwords <- function(x, training, info = NULL, ...) {
   col_names <- recipes_eval_select(x$terms, training, info)
 
+  check_string(x$language, arg = "language")
+  check_bool(x$keep, arg = "keep")
+  check_string(x$stopword_source, arg = "stopword_source")
+  check_character(
+    x$custom_stopword_source, allow_null = TRUE, arg = "custom_stopword_source"
+  )
+
   check_type(training[, col_names], types = "tokenlist")
 
   step_stopwords_new(
@@ -174,8 +187,8 @@ print.step_stopwords <-
     invisible(x)
   }
 
-#' @rdname tidy.recipe
-#' @param x A `step_stopwords` object.
+#' @rdname step_stopwords
+#' @usage NULL
 #' @export
 tidy.step_stopwords <- function(x, ...) {
   if (is_trained(x)) {

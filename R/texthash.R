@@ -37,9 +37,16 @@
 #'
 #' @details # Tidying
 #'
-#'   When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
-#'   (the selectors or variables selected) and `value` (number of terms).
-#'
+#' When you [`tidy()`][recipes::tidy.recipe()] this step, a tibble is returned with
+#'  columns `terms`, value and `id`:
+#' 
+#' \describe{
+#'   \item{terms}{character, the selectors or variables selected}
+#'   \item{value}{logical, is it signed?}
+#'   \item{length}{integer, number of terms}
+#'   \item{id}{character, id of this step}
+#' }
+#' 
 #' ```{r, echo = FALSE, results="asis"}
 #' step <- "step_texthash"
 #' result <- knitr::knit_child("man/rmd/tunable-args.Rmd")
@@ -55,7 +62,7 @@
 #'   [step_text_normalization()] to perform text normalization.
 #' @family Steps for Numeric Variables From Tokens
 #'
-#' @examplesIf all(c("text2vec", "data.table") %in% rownames(installed.packages()))
+#' @examplesIf all(c("modeldata", "text2vec", "data.table") %in% rownames(installed.packages()))
 #' \dontshow{library(data.table)}
 #' \dontshow{data.table::setDTthreads(2)}
 #' \dontshow{Sys.setenv("OMP_THREAD_LIMIT" = 2)}
@@ -134,6 +141,10 @@ step_texthash_new <-
 prep.step_texthash <- function(x, training, info = NULL, ...) {
   col_names <- recipes_eval_select(x$terms, training, info)
 
+  check_bool(x$signed, arg = "signed")
+  check_number_whole(x$num_terms, min = 0, arg = "num_terms")
+  check_string(x$prefix, arg = "prefix")
+
   check_type(training[, col_names], types = "tokenlist")
 
   step_texthash_new(
@@ -169,7 +180,7 @@ bake.step_texthash <- function(object, new_data, ...) {
 
     tf_text <- purrr::map_dfc(tf_text, as.integer)
 
-    tf_text <- check_name(tf_text, new_data, object, names(tf_text))
+    tf_text <- recipes::check_name(tf_text, new_data, object, names(tf_text))
 
     new_data <- vec_cbind(new_data, tf_text)
   }
@@ -187,8 +198,8 @@ print.step_texthash <-
     invisible(x)
   }
 
-#' @rdname tidy.recipe
-#' @param x A `step_texthash` object.
+#' @rdname step_texthash
+#' @usage NULL
 #' @export
 tidy.step_texthash <- function(x, ...) {
   if (is_trained(x)) {

@@ -18,7 +18,7 @@
 #' @param vocabulary A character vector, characters to be mapped to integers.
 #'   Characters not in the vocabulary will be encoded as 0. Defaults to
 #'   `letters`.
-#' @param prefix A prefix for generated column names, default to "seq1hot".
+#' @param prefix A prefix for generated column names, defaults to "seq1hot".
 #' @template args-keep_original_cols
 #' @template args-skip
 #' @template args-id
@@ -33,20 +33,26 @@
 #'
 #' The string will be capped by the sequence_length argument, strings shorter
 #' then sequence_length will be padded with empty characters. The encoding will
-#' assign a integer to each character in the vocabulary, and will encode
+#' assign an integer to each character in the vocabulary, and will encode
 #' accordingly. Characters not in the vocabulary will be encoded as 0.
 #'
 #' # Tidying
-#'
-#' When you [`tidy()`][tidy.recipe()] this step, a tibble with columns `terms`
-#' (the selectors or variables selected), `vocabulary` (index) and `token` (text
-#' correspoding to the index).
+#' 
+#' When you [`tidy()`][recipes::tidy.recipe()] this step, a tibble is returned with
+#' columns `terms`, `vocabulary`, `token`, and `id`:
+#' 
+#' \describe{
+#'   \item{terms}{character, the selectors or variables selected}
+#'   \item{vocabulary}{integer, index}
+#'   \item{token}{character, text corresponding to the index}
+#'   \item{id}{character, id of this step}
+#' }
 #'
 #' @template case-weights-not-supported
 #'
 #' @family Steps for Numeric Variables From Characters
 #'
-#' @examples
+#' @examplesIf rlang::is_installed("modeldata")
 #' library(recipes)
 #' library(modeldata)
 #' data(tate_text)
@@ -78,13 +84,8 @@ step_sequence_onehot <-
            keep_original_cols = FALSE,
            skip = FALSE,
            id = rand_id("sequence_onehot")) {
-    if (length(padding) != 1 || !(padding %in% c("pre", "post"))) {
-      rlang::abort("`padding` should be one of: 'pre', 'post'")
-    }
-
-    if (length(truncating) != 1 || !(truncating %in% c("pre", "post"))) {
-      rlang::abort("`truncating` should be one of: 'pre', 'post'")
-    }
+    rlang::arg_match0(padding, c("pre", "post"))
+    rlang::arg_match0(truncating, c("pre", "post"))
 
     add_step(
       recipe,
@@ -128,6 +129,9 @@ step_sequence_onehot_new <-
 #' @export
 prep.step_sequence_onehot <- function(x, training, info = NULL, ...) {
   col_names <- recipes_eval_select(x$terms, training, info)
+
+  check_number_whole(x$sequence_length, min = 0, arg = "sequence_length")
+  check_string(x$prefix, arg = "prefix")
 
   check_type(training[, col_names], types = "tokenlist")
 
@@ -182,7 +186,7 @@ bake.step_sequence_onehot <- function(object, new_data, ...) {
     
     out_text <- as_tibble(out_text)
     
-    out_text <- check_name(out_text, new_data, object, names(out_text))
+    out_text <- recipes::check_name(out_text, new_data, object, names(out_text))
 
     new_data <- vec_cbind(new_data, out_text)
   }
@@ -200,8 +204,8 @@ print.step_sequence_onehot <-
     invisible(x)
   }
 
-#' @rdname tidy.recipe
-#' @param x A `step_sequence_onehot` object.
+#' @rdname step_sequence_onehot
+#' @usage NULL
 #' @export
 tidy.step_sequence_onehot <- function(x, ...) {
   if (is_trained(x)) {

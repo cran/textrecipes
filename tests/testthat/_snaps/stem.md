@@ -1,3 +1,19 @@
+# bad args
+
+    Code
+      recipe(~., data = mtcars) %>% step_stem(custom_stemmer = "yes") %>% prep()
+    Condition
+      Error in `step_stem()`:
+      ! `custom_stemmer` must be a function or `NULL`, not the string "yes".
+
+# bake method errors when needed non-standard role columns are missing
+
+    Code
+      bake(trained, new_data = tokenized_test_data[, -1])
+    Condition
+      Error in `step_stem()`:
+      ! The following required column is missing from `new_data`: text.
+
 # empty printing
 
     Code
