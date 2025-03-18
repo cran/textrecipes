@@ -1,3 +1,13 @@
+# textrecipes 1.1.0
+
+## Improvements
+
+* The following steps has gained the argument `sparse`. When set to `"yes"`, they will produce sparse vectors. (#277)
+    - `step_dummy_hash()`
+    - `step_texthash()`
+    - `step_tf()`
+    - `step_tfidf()`
+
 # textrecipes 1.0.7
 
 ## Improvements
